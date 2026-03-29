@@ -35,7 +35,7 @@ const Landing = () => {
           <div className="brand-icon-box">
             <TrendingUp size={18} strokeWidth={3} />
           </div>
-          <span className="brand-name">NEURAL<span className="text-brand">TRADE</span></span>
+          <span className="brand-name">StockMind <span className="text-brand">AI</span></span>
         </div>
         
         <div className="nav-links-desktop">
@@ -112,7 +112,7 @@ const Landing = () => {
         >
           <div className="viewport-header">
             <div className="mac-controls"><span></span><span></span><span></span></div>
-            <div className="viewport-title font-mono">NEURAL_TERMINAL_V2.EXE</div>
+            <div className="viewport-title font-mono">STOCKMIND_TERMINAL_V2.EXE</div>
           </div>
           <div className="viewport-body">
              <div className="viewport-sidebar">
@@ -216,7 +216,7 @@ const Landing = () => {
       {/* Core Technology Features - Bento Pro */}
       <section id="engine" className="engine-pro-section">
          <div className="section-head-pro">
-            <span className="tag-pro">NEURAL INFRASTRUCTURE</span>
+            <span className="tag-pro">STOCKMIND AI INFRASTRUCTURE</span>
             <h2>Sub-Millisecond AI Core</h2>
          </div>
          
@@ -234,7 +234,7 @@ const Landing = () => {
                </div>
                <div className="b-pro-visual">
                   <div className="visual-code-term">
-                     <span className="c-blue">export</span> <span className="c-gold">class</span> <span className="c-cyan">NeuralEngine</span> &#123; <br />
+                     <span className="c-blue">export</span> <span className="c-gold">class</span> <span className="c-cyan">StockMindEngine</span> &#123; <br />
                      &nbsp;&nbsp;<span className="c-muted">// High-Frequency Execution Hook</span> <br />
                      &nbsp;&nbsp;<span className="c-gold">async</span> <span className="c-cyan">executeTarget</span>(symbol) &#123; <br />
                      &nbsp;&nbsp;&nbsp;&nbsp;<span className="c-blue">const</span> signal = <span className="c-blue">await</span> <span className="c-red">model</span>.<span className="c-gold">forwardPass</span>(symbol); <br />
@@ -298,7 +298,7 @@ const Landing = () => {
             <div className="f-pro-identity">
                 <div className="brand-logo-small mb-4">
                   <TrendingUp size={16} strokeWidth={3} className="text-brand" />
-                  <span className="font-bold">NEURALTRADE</span>
+                  <span className="font-bold">STOCKMIND AI</span>
                 </div>
                 <p className="text-muted text-sm">Empowering quantitative traders with the world's most sophisticated deep learning engine.</p>
             </div>
@@ -322,7 +322,7 @@ const Landing = () => {
             </div>
          </div>
          <div className="f-pro-bottom">
-            <span>© 2026 NeuralTrade High-Frequency Infrastructure. All rights reserved.</span>
+            <span>© 2026 StockMind AI High-Frequency Infrastructure. All rights reserved.</span>
             <div className="f-pro-legal">
                <a href="#">Terms of Execution</a>
                <a href="#">Privacy Matrix</a>
