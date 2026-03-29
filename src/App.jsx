@@ -4,6 +4,7 @@ import { LineChart, LayoutDashboard, Activity, Database, Settings as SettingsIco
 import './App.css';
 
 import Landing from './pages/Landing/Landing';
+import Login from './pages/Login/Login';
 import Home from './pages/Home/Home';
 import Predictions from './pages/Predictions/Predictions';
 import Portfolio from './pages/Portfolio/Portfolio';
@@ -86,7 +87,7 @@ const Navbar = ({ toggleSidebar }) => {
           <span className="badge indicator-pulse"></span>
         </button>
         <button className="connect-wallet-btn">
-          Connect Broker
+          Connected API
         </button>
       </div>
     </header>
@@ -116,8 +117,9 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Public Landing Page */}
+        {/* Public Routes */}
         <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
         
         {/* Protected Dashboard Routes */}
         <Route path="/dashboard" element={<DashboardLayout><Home /></DashboardLayout>} />

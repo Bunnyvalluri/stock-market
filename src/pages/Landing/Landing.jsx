@@ -40,8 +40,8 @@ const Landing = () => {
         </div>
         
         <div className="nav-actions">
-          <button className="nav-login hidden-mobile">Log In</button>
-          <button className="btn-launch" onClick={() => navigate('/dashboard')}>
+          <button className="nav-login hidden-mobile" onClick={() => navigate('/login')}>Log In</button>
+          <button className="btn-launch" onClick={() => navigate('/login')}>
             Launch Dashboard <ArrowRight size={16} />
           </button>
         </div>
@@ -88,7 +88,7 @@ const Landing = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <button className="btn-primary-large" onClick={() => navigate('/dashboard')}>
+            <button className="btn-primary-large" onClick={() => navigate('/login')}>
               Access Terminal
             </button>
             <button className="btn-secondary-large">
