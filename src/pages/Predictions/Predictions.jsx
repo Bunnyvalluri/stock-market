@@ -60,6 +60,12 @@ const Predictions = () => {
   const [basePrice, setBasePrice] = useState(850);
   const [inferenceLogs, setInferenceLogs] = useState([]);
 
+  // Instant data snap on model or stock change
+  useEffect(() => {
+     setChartData(generatePredictionData(selectedModel, basePrice));
+     setInferenceLogs(prev => [`[${selectedModel}] Architecture recompiled for $${selectedStock}.`, ...prev].slice(0, 4));
+  }, [selectedModel, selectedStock]);
+
   useEffect(() => {
     if (!isLive) return;
     const interval = setInterval(() => {
@@ -137,10 +143,29 @@ const Predictions = () => {
       <div className="predictions-main-grid-pro">
          {/* Main Simulation Viewport */}
          <div className="predictions-viewport-pro glass-card">
-            <div className="card-header-pro flex-between mb-2">
-                <div className="flex-row">
-                    <Target size={18} className="text-brand" />
-                    <h4>$ {selectedStock} - 7D Forward Pass</h4>
+            <div className="card-header-pro flex-between mb-2 border-b border-light pb-3">
+                <div className="flex-row gap-4 items-center">
+                    <div className="flex-row items-center gap-2">
+                        <Target size={18} className="text-brand" />
+                        <h4 className="font-bold tracking-wide uppercase">Asset Forecast:</h4>
+                    </div>
+                    {/* Interactive Ticker Selection */}
+                    <div className="flex gap-2">
+                        {['NVDA', 'AAPL', 'SPY', 'BTC'].map(ticker => (
+                            <button 
+                                key={ticker} 
+                                className={`px-3 py-1 text-xs font-mono font-bold rounded-full border transition-all ${selectedStock === ticker ? 'bg-brand/20 text-brand border-brand/40' : 'bg-transparent text-muted hover:text-white border-light'}`}
+                                onClick={() => {
+                                    setSelectedStock(ticker);
+                                    const baseMap = { NVDA: 850, AAPL: 175, SPY: 512, BTC: 65000 };
+                                    setBasePrice(baseMap[ticker]);
+                                    toast(`Routing signal feed to ${ticker}...`, {icon:'📡'});
+                                }}
+                            >
+                                {ticker}
+                            </button>
+                        ))}
+                    </div>
                 </div>
                 <div className="viewport-legend">
                     <div className="leg-item"><span className="dot historical"></span> Actual</div>
@@ -148,7 +173,7 @@ const Predictions = () => {
                 </div>
             </div>
 
-            <div className="chart-wrapper-pro">
+            <div className="chart-wrapper-pro mt-4">
               <ResponsiveContainer width="100%" height={450}>
                 <AreaChart data={chartData}>
                   <defs>
