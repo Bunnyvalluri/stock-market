@@ -1,0 +1,48 @@
+import 'dotenv/config';
+import express from 'express';
+import { createServer } from 'http';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+
+import { initSocket } from './socket/socketManager.js';
+import stockRoutes from './routes/stocks.js';
+import predictionRoutes from './routes/predictions.js';
+import portfolioRoutes from './routes/portfolio.js';
+import alertRoutes from './routes/alerts.js';
+import newsRoutes from './routes/news.js';
+import { verifyFirebaseToken } from './middleware/auth.js';
+
+const app = express();
+const httpServer = createServer(app);
+
+// ─── Middleware ───────────────────────────────────────────────────────────────
+app.use(helmet());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  credentials: true,
+}));
+app.use(morgan('dev'));
+app.use(express.json());
+
+// ─── Health Check ─────────────────────────────────────────────────────────────
+app.get('/health', (_req, res) => res.json({ status: 'ok', service: 'neuraltrade-backend' }));
+
+// ─── API Routes ───────────────────────────────────────────────────────────────
+// All routes below require a valid Firebase JWT token
+app.use('/api/stocks',      verifyFirebaseToken, stockRoutes);
+app.use('/api/predict',     verifyFirebaseToken, predictionRoutes);
+app.use('/api/portfolio',   verifyFirebaseToken, portfolioRoutes);
+app.use('/api/alerts',      verifyFirebaseToken, alertRoutes);
+app.use('/api/news',        verifyFirebaseToken, newsRoutes);
+
+// ─── Socket.io Real-time ──────────────────────────────────────────────────────
+initSocket(httpServer);
+
+// ─── Start Server ─────────────────────────────────────────────────────────────
+const PORT = process.env.PORT || 5000;
+httpServer.listen(PORT, () => {
+  console.log(`\n🚀 NeuralTrade Backend running on http://localhost:${PORT}`);
+  console.log(`📡 Socket.io real-time layer active`);
+  console.log(`🤖 ML Service proxy → ${process.env.ML_SERVICE_URL || 'http://localhost:8000'}\n`);
+});

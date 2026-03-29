@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { LineChart, LayoutDashboard, Activity, Database, Settings as SettingsIcon, Bell, Search, Menu, X, TrendingUp, Zap } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
+import { LineChart, LayoutDashboard, Activity, Database, Settings as SettingsIcon, Bell, Search, Menu, X, TrendingUp, Zap, LogOut } from 'lucide-react';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { auth } from './firebase';
 import './App.css';
 
 import Landing from './pages/Landing/Landing';
@@ -11,41 +13,72 @@ import Portfolio from './pages/Portfolio/Portfolio';
 import Markets from './pages/Markets/Markets';
 import Alerts from './pages/Alerts/Alerts';
 import Settings from './pages/Settings/Settings';
+import StockDetail from './pages/StockDetail/StockDetail';
 
-const Sidebar = ({ isOpen, toggleSidebar }) => {
+// ──────────────────────────────────────────────
+// Protected Route Guard
+// ──────────────────────────────────────────────
+const ProtectedRoute = ({ children }) => {
+  const [user, setUser] = useState(undefined); // undefined = still loading
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (u) => setUser(u));
+    return unsub;
+  }, []);
+
+  if (user === undefined) {
+    return (
+      <div className="auth-loading">
+        <div className="auth-loading-spinner"></div>
+        <p>Authenticating...</p>
+      </div>
+    );
+  }
+
+  return user ? children : <Navigate to="/login" replace />;
+};
+
+// ──────────────────────────────────────────────
+// Sidebar
+// ──────────────────────────────────────────────
+const Sidebar = ({ isOpen, toggleSidebar, user }) => {
   const location = useLocation();
-  
+
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
-    { name: 'Markets', path: '/markets', icon: <Activity size={20} /> },
+    { name: 'Markets',   path: '/markets',   icon: <Activity size={20} /> },
     { name: 'Predictions', path: '/predictions', icon: <Zap size={20} /> },
     { name: 'Portfolio', path: '/portfolio', icon: <Database size={20} /> },
-    { name: 'Alerts', path: '/alerts', icon: <Bell size={20} /> },
-    { name: 'Settings', path: '/settings', icon: <SettingsIcon size={20} /> }
+    { name: 'Alerts',   path: '/alerts',    icon: <Bell size={20} /> },
+    { name: 'Settings', path: '/settings',  icon: <SettingsIcon size={20} /> },
   ];
+
+  const handleLogout = () => signOut(auth);
+  const initials = user?.displayName
+    ? user.displayName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+    : (user?.email?.[0]?.toUpperCase() || 'U');
+  const displayName = user?.displayName || user?.email?.split('@')[0] || 'Investor';
 
   return (
     <aside className={`sidebar glass-card ${isOpen ? 'open' : ''}`}>
       <div className="sidebar-header">
         <div className="logo-container">
           <div className="logo-icon">
-            <TrendingUp size={24} color="var(--bg-primary)" />
+            <TrendingUp size={20} color="#fff" />
           </div>
           <h2 className="logo-text">Neural<span className="text-gradient">Trade</span></h2>
         </div>
-        <button className="mobile-close" onClick={toggleSidebar}>
-          <X size={24} />
-        </button>
+        <button className="mobile-close" onClick={toggleSidebar}><X size={22} /></button>
       </div>
-      
+
       <nav className="sidebar-nav">
         <ul>
           {navItems.map((item) => (
             <li key={item.name}>
-              <Link 
-                to={item.path} 
-                className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
-                onClick={() => { if(window.innerWidth <= 768) toggleSidebar() }}
+              <Link
+                to={item.path}
+                className={`nav-link ${location.pathname.startsWith(item.path) ? 'active' : ''}`}
+                onClick={() => { if (window.innerWidth <= 768) toggleSidebar(); }}
               >
                 <div className="nav-icon">{item.icon}</div>
                 <span>{item.name}</span>
@@ -54,86 +87,101 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           ))}
         </ul>
       </nav>
-      
+
       <div className="sidebar-footer">
-        <div className="user-profile">
-          <div className="avatar">A</div>
-          <div className="user-info">
-            <p className="user-name">Alex Investor</p>
-            <p className="user-tier text-gradient-purple">Pro Member</p>
+        {user && (
+          <div className="user-profile">
+            {user.photoURL ? (
+              <img src={user.photoURL} alt="avatar" className="avatar-img" />
+            ) : (
+              <div className="avatar">{initials}</div>
+            )}
+            <div className="user-info">
+              <p className="user-name">{displayName}</p>
+              <p className="user-tier text-gradient-purple">Pro Member</p>
+            </div>
+            <button className="logout-btn" onClick={handleLogout} title="Sign out">
+              <LogOut size={16} />
+            </button>
           </div>
-        </div>
+        )}
       </div>
     </aside>
   );
 };
 
-const Navbar = ({ toggleSidebar }) => {
-  return (
-    <header className="navbar glass">
-      <div className="nav-left">
-        <button className="menu-toggle" onClick={toggleSidebar}>
-          <Menu size={24} />
-        </button>
-        <div className="search-bar">
-          <Search size={18} className="search-icon" />
-          <input type="text" placeholder="Search stocks, models, news..." />
-        </div>
+// ──────────────────────────────────────────────
+// Navbar
+// ──────────────────────────────────────────────
+const Navbar = ({ toggleSidebar }) => (
+  <header className="navbar glass">
+    <div className="nav-left">
+      <button className="menu-toggle" onClick={toggleSidebar}><Menu size={24} /></button>
+      <div className="search-bar">
+        <Search size={18} className="search-icon" />
+        <input type="text" placeholder="Search stocks, models, news..." />
       </div>
-      
-      <div className="nav-right">
-        <button className="icon-btn">
-          <Bell size={20} />
-          <span className="badge indicator-pulse"></span>
-        </button>
-        <button className="connect-wallet-btn">
-          Connected API
-        </button>
+    </div>
+    <div className="nav-right">
+      <button className="icon-btn">
+        <Bell size={20} />
+        <span className="badge indicator-pulse"></span>
+      </button>
+      <div className="live-status-badge">
+        <span className="live-dot"></span>
+        Live
       </div>
-    </header>
-  );
-};
+    </div>
+  </header>
+);
 
+// ──────────────────────────────────────────────
+// Dashboard Layout
+// ──────────────────────────────────────────────
 const DashboardLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  const [user, setUser] = useState(null);
+  const toggleSidebar = () => setSidebarOpen(s => !s);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, setUser);
+    return unsub;
+  }, []);
 
   return (
     <div className="app-container">
-      {/* Sleek Apple-style blurred backdrop for mobile drawer */}
-      <div 
-        className={`mobile-overlay ${sidebarOpen ? 'active' : ''}`} 
-        onClick={toggleSidebar}
-      ></div>
-      
-      <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
-      
+      <div className={`mobile-overlay ${sidebarOpen ? 'active' : ''}`} onClick={toggleSidebar}></div>
+      <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} user={user} />
       <main className="main-content">
         <Navbar toggleSidebar={toggleSidebar} />
-        
-        <div className="page-wrapper animate-fade-in">
-          {children}
-        </div>
+        <div className="page-wrapper animate-fade-in">{children}</div>
       </main>
     </div>
   );
 };
 
+// ──────────────────────────────────────────────
+// App Router
+// ──────────────────────────────────────────────
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Public Routes */}
+        {/* Public */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
-        
-        {/* Protected Dashboard Routes */}
-        <Route path="/dashboard" element={<DashboardLayout><Home /></DashboardLayout>} />
-        <Route path="/markets" element={<DashboardLayout><Markets /></DashboardLayout>} />
-        <Route path="/predictions" element={<DashboardLayout><Predictions /></DashboardLayout>} />
-        <Route path="/portfolio" element={<DashboardLayout><Portfolio /></DashboardLayout>} />
-        <Route path="/alerts" element={<DashboardLayout><Alerts /></DashboardLayout>} />
-        <Route path="/settings" element={<DashboardLayout><Settings /></DashboardLayout>} />
+
+        {/* Protected Dashboard */}
+        <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout><Home /></DashboardLayout></ProtectedRoute>} />
+        <Route path="/markets"   element={<ProtectedRoute><DashboardLayout><Markets /></DashboardLayout></ProtectedRoute>} />
+        <Route path="/stocks/:symbol" element={<ProtectedRoute><DashboardLayout><StockDetail /></DashboardLayout></ProtectedRoute>} />
+        <Route path="/predictions" element={<ProtectedRoute><DashboardLayout><Predictions /></DashboardLayout></ProtectedRoute>} />
+        <Route path="/portfolio" element={<ProtectedRoute><DashboardLayout><Portfolio /></DashboardLayout></ProtectedRoute>} />
+        <Route path="/alerts"    element={<ProtectedRoute><DashboardLayout><Alerts /></DashboardLayout></ProtectedRoute>} />
+        <Route path="/settings"  element={<ProtectedRoute><DashboardLayout><Settings /></DashboardLayout></ProtectedRoute>} />
+
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );
