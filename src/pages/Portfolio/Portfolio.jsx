@@ -144,12 +144,6 @@ const Portfolio = () => {
       {/* Institutional Navigation Actions */}
       <div className="portfolio-header-pro">
         <div className="header-pro-left">
-            <div className="brand-icon-box" style={{ width: '40px', height: '40px', background: 'rgba(37,99,235,0.1)', color: 'var(--accent-brand)' }}>
-                <div className="flex items-center gap-3">
-                <Shield className="text-brand" size={28} />
-                <h1 className="font-outfit text-2xl font-bold tracking-tight">STOCKMIND AI PORTFOLIO</h1>
-              </div>  <p className="text-muted text-xs font-mono mt-1">UUID: 8F92-A14B • INSTITUTIONAL OMNIBUS • LIVE STREAM</p>
-            </div>
         </div>
         <div className="header-pro-right">
             <div className="header-pro-pills">
