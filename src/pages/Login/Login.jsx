@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Lock, ShieldCheck, FileKey, Database, Server, Fingerprint, Eye, EyeOff, AlertCircle, Terminal } from 'lucide-react';
+import { Lock, ShieldCheck, FileKey, Database, Server, Fingerprint, Eye, EyeOff, AlertCircle, Terminal, TrendingUp } from 'lucide-react';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider, githubProvider } from '../../firebase';
+import Spline from '@splinetool/react-spline';
 import './Login.css';
 
 const Login = () => {
@@ -14,6 +15,25 @@ const Login = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isRegisterMode, setIsRegisterMode] = useState(false); // Toggle between Sign In / Sign Up
+
+  // 3D Parallax Tilt State
+  const [rotateX, setRotateX] = useState(0);
+  const [rotateY, setRotateY] = useState(0);
+
+  const handleMouseMove = (e) => {
+    const card = e.currentTarget;
+    const box = card.getBoundingClientRect();
+    const x = e.clientX - box.left - box.width / 2;
+    const y = e.clientY - box.top - box.height / 2;
+    const MULTIPLIER = 12; // Maximum tilt angle
+    setRotateX(-(y / (box.height / 2)) * MULTIPLIER);
+    setRotateY((x / (box.width / 2)) * MULTIPLIER);
+  };
+
+  const handleMouseLeave = () => {
+    setRotateX(0);
+    setRotateY(0);
+  };
 
   const validateForm = () => {
     if (!email) return 'Email is required';
@@ -100,21 +120,32 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      <div className="login-background"></div>
-      
+      <div className="spline-background">
+        <Spline scene="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode" />
+      </div>
+
       <div className="login-wrapper">
         <motion.div 
           className="login-card glass-card"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, type: 'spring' }}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+          style={{
+            transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+            transformStyle: 'preserve-3d',
+            transition: 'transform 0.1s ease-out',
+            position: 'relative',
+            zIndex: 10
+          }}
         >
           <div className="login-header">
-            <div className="brand-logo mb-4">
-              <Fingerprint size={28} />
+            <div className="brand-logo mb-4" style={{ background: 'var(--bg-card)', border: '1px solid var(--accent-brand)', color: 'var(--accent-brand)' }}>
+              <TrendingUp size={28} />
             </div>
-            <h2>{isRegisterMode ? 'Deploy Workspace' : 'Authentication'}</h2>
-            <p className="text-muted">{isRegisterMode ? 'Create a secure NeuralTrade terminal account.' : 'Enter credentials to access the terminal.'}</p>
+            <h2>{isRegisterMode ? 'Open an Account' : 'Log firmly into NeuralTrade'}</h2>
+            <p className="text-muted">{isRegisterMode ? 'Deploy a secure market terminal account.' : 'Authenticate to access live market streams.'}</p>
           </div>
 
           <form onSubmit={handleEmailAuth} className="login-form">
@@ -154,8 +185,8 @@ const Login = () => {
               </div>
             </div>
 
-            <button type="submit" className="btn-primary-large login-submit mt-4" disabled={isLoading}>
-              {isLoading ? <div className="loader-ring"></div> : <>{isRegisterMode ? 'Initialize Account' : 'Establish Secure Session'} <Lock size={16} /></>}
+            <button type="submit" className="login-submit mt-4" disabled={isLoading}>
+              {isLoading ? <div className="loader-ring"></div> : <>{isRegisterMode ? 'Fund Account' : 'Connect Terminal'} <Lock size={16} /></>}
             </button>
           </form>
 
@@ -196,61 +227,6 @@ const Login = () => {
           </div>
         </motion.div>
 
-        {/* Security Manifesto / Badges Panel */}
-        <motion.div 
-          className="security-panel"
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <div className="security-header flex items-center gap-2 mb-4 text-cyan">
-             <ShieldCheck size={24} />
-             <h3>Enterprise-Grade Security</h3>
-          </div>
-          <p className="text-muted mb-6">NeuralTrade architecture enforces rigorous security protocols to protect your financial models and API integrations.</p>
-
-          <div className="security-grid">
-            <div className="security-item">
-              <FileKey size={20} className="text-purple" />
-              <div>
-                <h4>Firebase Authentication</h4>
-                <span>Stateless tokenized OAuth sessions</span>
-              </div>
-            </div>
-            
-            <div className="security-item">
-              <Database size={20} className="text-status-down" />
-              <div>
-                <h4>Bcrypt Cloud Hashing</h4>
-                <span>Salting and stretching passwords via GCP</span>
-              </div>
-            </div>
-            
-            <div className="security-item">
-              <Terminal size={20} className="text-brand" />
-              <div>
-                <h4>Input Validation</h4>
-                <span>Strict sanitization to prevent XSS/SQLi</span>
-              </div>
-            </div>
-
-            <div className="security-item">
-              <Server size={20} className="text-status-neutral" />
-              <div>
-                <h4>Rate Limiting & WAF</h4>
-                <span>Throttling brute-force & DDoS attempts</span>
-              </div>
-            </div>
-
-            <div className="security-item">
-              <Lock size={20} className="text-status-up" />
-              <div>
-                <h4>HTTPS & .ENV Secrets</h4>
-                <span>End-to-End Encryption & hidden keys</span>
-              </div>
-            </div>
-          </div>
-        </motion.div>
       </div>
     </div>
   );

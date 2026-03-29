@@ -2,8 +2,8 @@
 .landing-premium {
   width: 100vw;
   min-height: 100vh;
-  background-color: #030712; /* DeepestSlate */
-  color: #f8fafc;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   overflow-x: hidden;
   font-family: 'Inter', sans-serif;
   position: relative;
@@ -447,7 +447,7 @@
   font-family: monospace;
   font-size: 0.85rem;
   color: #94a3b8;
-  background: #030712;
+  background: var(--bg-primary);
   padding: 1.5rem;
   border-radius: 8px;
   border: 1px solid rgba(255,255,255,0.05);

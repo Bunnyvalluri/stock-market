@@ -44,8 +44,8 @@
   transition: all 0.2s;
 }
 .sd-action-btn:hover, .sd-action-btn.active {
-  background: rgba(79, 70, 229, 0.15);
-  border-color: rgba(79, 70, 229, 0.4);
+  background: rgba(0, 229, 114, 0.15);
+  border-color: rgba(0, 229, 114, 0.4);
   color: #a5b4fc;
 }
 
@@ -76,7 +76,7 @@
   background-clip: text;
   color: transparent;
   padding: 0.5rem 1rem;
-  border: 1px solid rgba(79, 70, 229, 0.3);
+  border: 1px solid rgba(0, 229, 114, 0.3);
   border-radius: var(--radius-md);
   min-width: 80px;
   text-align: center;
@@ -180,7 +180,7 @@
 .sd-chart-tab.active {
   background: var(--accent-brand);
   color: #fff;
-  box-shadow: 0 0 12px rgba(79, 70, 229, 0.4);
+  box-shadow: 0 0 12px rgba(0, 229, 114, 0.4);
 }
 
 .sd-range-tabs {

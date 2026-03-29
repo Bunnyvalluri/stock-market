@@ -13,6 +13,7 @@ import Portfolio from './pages/Portfolio/Portfolio';
 import Markets from './pages/Markets/Markets';
 import Alerts from './pages/Alerts/Alerts';
 import Settings from './pages/Settings/Settings';
+import ThemeToggle from './components/ThemeToggle';
 import StockDetail from './pages/StockDetail/StockDetail';
 
 // ──────────────────────────────────────────────
@@ -166,6 +167,7 @@ const DashboardLayout = ({ children }) => {
 function App() {
   return (
     <Router>
+      <ThemeToggle />
       <Routes>
         {/* Public */}
         <Route path="/" element={<Landing />} />

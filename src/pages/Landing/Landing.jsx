@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { AreaChart, Area, ResponsiveContainer, YAxis } from 'recharts';
-import { TrendingUp, Cpu, Activity, ShieldCheck, ArrowRight, Database, BarChart3, LineChart } from 'lucide-react';
+import { TrendingUp, Cpu, Activity, ShieldCheck, ArrowRight, Database, BarChart3, LineChart, CheckCircle, TerminalSquare } from 'lucide-react';
 import './Landing.css';
 
 const generateSparkline = () => Array.from({ length: 40 }, (_, i) => ({ time: i, val: 100 + Math.random() * 20 + i }));
@@ -216,6 +216,112 @@ const Landing = () => {
          </div>
       </section>
 
+      {/* Models Section */}
+      <section id="models" className="bento-section mt-16">
+         <div className="bento-header">
+            <h2>Real-Time Neural Architectures</h2>
+            <p className="text-muted mt-4 max-w-2xl mx-auto">Our models aren't static. They ingest tick-by-tick WebSocket data, continuously adjusting weights in production to capture fleeting market anomalies as they happen.</p>
+         </div>
+         <div className="bento-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
+            <motion.div className="bento-card" whileHover={{ y: -5 }}>
+               <div className="bento-content">
+                 <div className="bIcon"><Activity size={24} /></div>
+                 <h3>Live Tensor Streaming</h3>
+                 <p>Market events trigger instantaneous forward passes. Get predictive signals via Socket.io with latency under 40ms, directly embedded into your high-frequency trading environment.</p>
+               </div>
+            </motion.div>
+            <motion.div className="bento-card" whileHover={{ y: -5 }}>
+               <div className="bento-content">
+                 <div className="bIcon"><Database size={24} /></div>
+                 <h3>Continuous Reinforcement Learning</h3>
+                 <p>As actual closing prices stream in, models calculate loss gradients in real-time, executing background micro-retraining epochs securely on live infrastructure without downtime.</p>
+               </div>
+            </motion.div>
+         </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="bento-section mt-16">
+         <div className="bento-header">
+            <h2>Real-Time Access Tiers</h2>
+            <p className="text-muted mt-4 max-w-2xl mx-auto">Scale your data velocity. Tailored websocket quotas and sub-millisecond execution speeds for every class of algorithmic trader.</p>
+         </div>
+         <div className="bento-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+            <div className="bento-card">
+               <div className="bento-content">
+                  <h3 className="text-muted">Retail</h3>
+                  <div className="price-tag mt-4 mb-4"><span className="text-3xl font-bold">$0</span><span className="text-muted">/mo</span></div>
+                  <ul className="pricing-features">
+                     <li><CheckCircle size={16} className="text-cyan inline mr-2"/> 1-Minute Delayed Quotes</li>
+                     <li><CheckCircle size={16} className="text-cyan inline mr-2"/> 5 Predictions / day</li>
+                     <li><CheckCircle size={16} className="text-cyan inline mr-2"/> REST API only</li>
+                  </ul>
+                  <button className="btn-secondary-large w-full mt-6" onClick={() => navigate('/login')}>Start Free</button>
+               </div>
+            </div>
+            <div className="bento-card" style={{ borderColor: '#3b82f6', background: 'rgba(59,130,246,0.05)' }}>
+               <div className="bento-content">
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="text-cyan">Pro Trader</h3>
+                    <span className="live-pill" style={{ margin: 0 }}>POPULAR</span>
+                  </div>
+                  <div className="price-tag mt-2 mb-4"><span className="text-3xl font-bold">$49</span><span className="text-muted">/mo</span></div>
+                  <ul className="pricing-features">
+                     <li><CheckCircle size={16} className="text-cyan inline mr-2"/> Real-time WebSocket Feed</li>
+                     <li><CheckCircle size={16} className="text-cyan inline mr-2"/> Unlimited Predictions</li>
+                     <li><CheckCircle size={16} className="text-cyan inline mr-2"/> Live Portfolio Sync</li>
+                  </ul>
+                  <button className="btn-primary-large w-full mt-6" onClick={() => navigate('/login')}>Upgrade Pro</button>
+               </div>
+            </div>
+            <div className="bento-card">
+               <div className="bento-content">
+                  <h3 className="text-muted">Institutional</h3>
+                  <div className="price-tag mt-4 mb-4"><span className="text-3xl font-bold">$999</span><span className="text-muted">/mo</span></div>
+                  <ul className="pricing-features">
+                     <li><CheckCircle size={16} className="text-cyan inline mr-2"/> FIX Protocol & Level 2 Data</li>
+                     <li><CheckCircle size={16} className="text-cyan inline mr-2"/> Dedicated GPU Nodes</li>
+                     <li><CheckCircle size={16} className="text-cyan inline mr-2"/> Sub-millisecond execution latency</li>
+                  </ul>
+                  <button className="btn-secondary-large w-full mt-6">Contact Sales</button>
+               </div>
+            </div>
+         </div>
+      </section>
+
+      {/* Docs Section */}
+      <section id="docs" className="bento-section mt-16">
+         <div className="bento-header">
+            <h2>Developer API & WebSockets</h2>
+            <p className="text-muted mt-4 max-w-2xl mx-auto">Integrate our prediction engine directly into your quantitative algorithms using our real-time streaming infrastructure.</p>
+         </div>
+         <div className="bento-grid">
+            <motion.div className="bento-card col-span-3 horizontal" whileHover={{ y: -5 }}>
+               <div className="bento-content w-half">
+                 <div className="bIcon"><TerminalSquare size={24} /></div>
+                 <h3>Event-Driven Trading Hooks</h3>
+                 <p>Stop polling REST endpoints. Subscribe to `stock:prediction`, `market:anomaly`, and `portfolio:rebalance` events to build perfectly reactive trading scripts that trigger exactly when models output new confidence scores.</p>
+                 <button className="btn-secondary-large mt-6" style={{ padding: '0.75rem 1.5rem', fontSize: '0.9rem' }}>View Full Documentation</button>
+               </div>
+               <div className="bento-visual right-side w-half">
+                  <div className="mock-code">
+                     <code><span className="text-muted">// Connect to real-time prediction stream</span></code><br/>
+                     <code>import &#123; io &#125; from 'socket.io-client';</code><br/>
+                     <code className="block mt-2"></code>
+                     <code>const socket = io('wss://api.neuraltrade.com', &#123;</code><br/>
+                     <code>  auth: &#123; token: 'YOUR_API_KEY' &#125;</code><br/>
+                     <code>&#125;);</code><br/>
+                     <code className="block mt-2"></code>
+                     <code>socket.on('stock:prediction', (data) =&gt; &#123;</code><br/>
+                     <code>  <span className="text-cyan">console.log(`Live Target for $&#123;data.symbol&#125;:`, data.target);</span></code><br/>
+                     <code>  <span className="text-muted">// Execute high-frequency trade...</span></code><br/>
+                     <code>&#125;);</code>
+                  </div>
+               </div>
+            </motion.div>
+         </div>
+      </section>
+
       {/* Footer */}
       <footer className="footer-premium">
          <div className="footer-top">
@@ -228,15 +334,15 @@ const Landing = () => {
             </div>
             <div className="f-col">
                <h4>Product</h4>
-               <a href="#">Terminal</a>
-               <a href="#">ML Models</a>
-               <a href="#">API Access</a>
+               <a href="/terminal">Terminal</a>
+               <a href="/ml-models">ML Models</a>
+               <a href="/api-access">API Access</a>
             </div>
             <div className="f-col">
                <h4>Company</h4>
-               <a href="#">About</a>
-               <a href="#">Research</a>
-               <a href="#">Security</a>
+               <a href="/about">About</a>
+               <a href="/research">Research</a>
+               <a href="/security">Security</a>
             </div>
          </div>
          <div className="footer-bottom">

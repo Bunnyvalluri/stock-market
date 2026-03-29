@@ -215,7 +215,7 @@ export default function StockDetail() {
               <span>SMA 20</span>
             </div>
             <div className="sd-legend-item">
-              <span className="sd-legend-dot" style={{ background: '#4f46e5', opacity: 0.6 }}></span>
+              <span className="sd-legend-dot" style={{ background: '#00b4d8', opacity: 0.6 }}></span>
               <span>Volume</span>
             </div>
           </div>
