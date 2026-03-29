@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuralTrade - College Presentation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0B0F19; /* Deep Space Black */
+            color: #E5E7EB; /* Crisp White */
+            overflow: hidden; /* Hide scrollbar for presentation */
+        }
+
+        .slider {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .slide {
+            min-width: 100vw;
+            min-height: 100vh;
+            padding: 5rem 10vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: -20%; left: -10%;
+            width: 50%; height: 50%;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, transparent 70%);
+            filter: blur(100px);
+            z-index: 0; pointer-events: none;
+        }
+
+        .slide::after {
+            content: '';
+            position: absolute;
+            bottom: -20%; right: -10%;
+            width: 50%; height: 50%;
+            background: radial-gradient(circle, rgba(34, 197, 94, 0.1) 0%, transparent 70%);
+            filter: blur(100px);
+            z-index: 0; pointer-events: none;
+        }
+
+        .content { z-index: 10; position: relative; max-width: 1200px; margin: 0 auto; width: 100%; }
+
+        .slide-number {
+            position: absolute;
+            top: 40px; right: 40px;
+            font-family: 'Outfit';
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.2);
+            z-index: 20;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+            background: linear-gradient(135deg, #FFF, #89D4FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3.5rem;
+            margin-bottom: 2rem;
+            color: #4F46E5; /* Indigo */
+        }
+
+        p {
+            font-size: 1.4rem;
+            line-height: 1.6;
+            color: #9CA3AF; /* Gray */
+            margin-bottom: 1.5rem;
+        }
+
+        ul {
+            list-style: none; /* Custom bullets */
+        }
+
+        li {
+            font-size: 1.8rem;
+            color: #E5E7EB;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        li::before {
+            content: '✦';
+            color: #22C55E; /* Neon Green */
+            margin-right: 15px;
+            font-size: 2rem;
+        }
+
+        .highlight-green { color: #22C55E; font-weight: bold; }
+        .highlight-blue { color: #89D4FF; font-weight: bold; }
+        .highlight-red { color: #EF4444; font-weight: bold; }
+
+        .btn-controls {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        button {
+            background: rgba(18, 24, 38, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid #1F2937;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter';
+            font-weight: 600;
+        }
+
+        button:hover {
+            background: #4F46E5;
+            box-shadow: 0 0 20px rgba(79, 70, 229, 0.4);
+        }
+
+        /* Speaker Notes section */
+        .speaker-notes {
+            margin-top: 3rem;
+            padding: 1.5rem;
+            background: rgba(255,255,255,0.03);
+            border-left: 4px solid #4F46E5;
+            border-radius: 0 12px 12px 0;
+            font-size: 1.2rem;
+            color: #ccc;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="slider" id="slider">
+        <!-- 1 -->
+        <div class="slide">
+            <span class="slide-number">01</span>
+            <div class="content">
+                <h1>NeuralTrade</h1>
+                <p style="font-size: 2.2rem; color: #E5E7EB;">Next-Generation Stock Market & AI Trading Platform</p>
+                <p style="margin-top: 4rem;">Developed & Presented By: <span class="highlight-blue">Your Name Here</span></p>
+                <div class="speaker-notes">🎤 "Good morning. I am thrilled to present NeuralTrade, a project built to bridge the gap between complex Wall Street trading software, and simple retail apps."</div>
+            </div>
+        </div>
+
+        <!-- 2 -->
+        <div class="slide">
+            <span class="slide-number">02</span>
+            <div class="content">
+                <h2>The Problem</h2>
+                <p>Trading apps face two massive extremes today:</p>
+                <ul>
+                    <li><span class="highlight-red">Too Complex:</span> Software like Bloomberg Terminal is impossible for beginners to learn.</li>
+                    <li><span class="highlight-red">Too Basic:</span> Mobile apps (like Robinhood) lack serious data and AI logic.</li>
+                    <li><span class="highlight-red">Delayed Data:</span> Normal college apps use old, static data instead of live feeds.</li>
+                </ul>
+                <div class="speaker-notes">🎤 "Currently, if you want to trade, you either use software that is incredibly confusing, or a basic app that doesn't give you enough data."</div>
+            </div>
+        </div>
+
+        <!-- 3 -->
+        <div class="slide">
+            <span class="slide-number">03</span>
+            <div class="content">
+                <h2>Our Solution</h2>
+                <p>Bringing professional speed to everyday users.</p>
+                <ul>
+                    <li><span class="highlight-green">Beautiful Design:</span> A sleek, clear interface that scales across desktop and mobile.</li>
+                    <li><span class="highlight-green">Smart Alerts:</span> An engine that automatically tracks market momentum.</li>
+                    <li><span class="highlight-green">Live Infrastructure:</span> Real-time UI updates that happen in milliseconds.</li>
+                </ul>
+                <div class="speaker-notes">🎤 "My solution is a web application built for speed and design. It uses a Smart Alerts Engine to notify users of critical events instantly."</div>
+            </div>
+        </div>
+
+        <!-- 4 -->
+        <div class="slide">
+            <span class="slide-number">04</span>
+            <div class="content">
+                <h2>User Interface (UI/UX)</h2>
+                <p>Designed like a multi-billion dollar Fintech startup.</p>
+                <ul>
+                    <li>Custom <span class="highlight-blue">Glassmorphism</span> styling without heavy templates.</li>
+                    <li>A global <b>Dynamic Theme Engine</b> featuring 'Neon Dark' and 'Clean Light' modes.</li>
+                    <li>Smooth animations so the interface feels "alive".</li>
+                </ul>
+                <div class="speaker-notes">🎤 "Instead of boring grids, I built a custom CSS engine using 'Glassmorphism' to make the cards look beautiful and modern."</div>
+            </div>
+        </div>
+
+        <!-- 5 -->
+        <div class="slide">
+            <span class="slide-number">05</span>
+            <div class="content">
+                <h2>Global Dashboard</h2>
+                <p>The core matrix.</p>
+                <ul>
+                    <li>Tracking S&P 500, Tech, and Crypto simultaneously.</li>
+                    <li>A scrolling terminal indicating <span class="highlight-green">Live Orders</span> happening in real-time.</li>
+                    <li>Live Heatmaps to visualize volatility across the market.</li>
+                </ul>
+                <div class="speaker-notes">🎤 "The core of the application features a live matrix of assets, updating instantly. We also implemented a scrolling stream to track block trades!"</div>
+            </div>
+        </div>
+
+        <!-- 6 -->
+        <div class="slide">
+            <span class="slide-number">06</span>
+            <div class="content">
+                <h2>Smart Alerts & AI</h2>
+                <p>No more staring at charts manually.</p>
+                <ul>
+                    <li>Users can create custom Price Rules.</li>
+                    <li>The system listens for specific market events algorithmically.</li>
+                    <li>Displays notifications instantly directly in the browser.</li>
+                </ul>
+                <div class="speaker-notes">🎤 "Users don't have to watch the screen constantly. The AI engine listens for events and generates notifications immediately."</div>
+            </div>
+        </div>
+
+        <!-- 7 -->
+        <div class="slide">
+            <span class="slide-number">07</span>
+            <div class="content">
+                <h2>Risk Management</h2>
+                <p>Protecting the user's capital.</p>
+                <ul>
+                    <li>Built an <span class="highlight-red">Emergency 'Sell All' Kill-Switch</span>.</li>
+                    <li>Designed for extreme Black Swan / Market Crash scenarios.</li>
+                    <li>Instantly liquidates all positions to preserve cash.</li>
+                </ul>
+                <div class="speaker-notes">🎤 "I included a highly requested feature for risk management: a Panic Kill-Switch that automatically liquidates all open positions if the market crashes."</div>
+            </div>
+        </div>
+
+        <!-- 8 -->
+        <div class="slide">
+            <span class="slide-number">08</span>
+            <div class="content">
+                <h2>Frontend Technology</h2>
+                <p>Performance-first architecture.</p>
+                <ul>
+                    <li><span class="highlight-blue">React.js</span> for real-time DOM reconciliation.</li>
+                    <li><span class="highlight-blue">Vite</span> for incredibly fast compilation.</li>
+                    <li><span class="highlight-blue">Framer Motion</span> for complex physics-based UI transitions.</li>
+                </ul>
+                <div class="speaker-notes">🎤 "I chose React because it handles thousands of small data ticks per second without lagging the browser."</div>
+            </div>
+        </div>
+
+        <!-- 9 -->
+        <div class="slide">
+            <span class="slide-number">09</span>
+            <div class="content">
+                <h2>Backend Technology</h2>
+                <p>The engine running underneath.</p>
+                <ul>
+                    <li><span class="highlight-blue">Firebase</span> for secure Google/Email Authentication.</li>
+                    <li><span class="highlight-blue">Node.js</span> environment setup.</li>
+                    <li>Connecting to External APIS (AlphaVantage & OpenAI).</li>
+                </ul>
+                <div class="speaker-notes">🎤 "The backend relies on Firebase for secure user logins and data storage, while leveraging APIs to pull in live pricing feeds."</div>
+            </div>
+        </div>
+
+        <!-- 10 -->
+        <div class="slide">
+            <span class="slide-number">10</span>
+            <div class="content">
+                <h1 style="text-align: center; margin-top: 10%;">LIVE DEMONSTRATION</h1>
+                <p style="text-align: center; font-size: 1.5rem; color: #22C55E;">Switching from Presentation to Application</p>
+                <div class="speaker-notes">🎤 Action Step: "Now, I will switch over to the browser and show you the actual application running locally on my machine." (Show Dark/Light Mode, the Live Feed on Alerts page, and the glowing Dashboard numbers).</div>
+            </div>
+        </div>
+
+        <!-- 11 -->
+        <div class="slide">
+            <span class="slide-number">11</span>
+            <div class="content">
+                <h2>Conclusion & Future Scope</h2>
+                <p>What comes next?</p>
+                <ul>
+                    <li>Deploying as a Native iOS & Android application.</li>
+                    <li>Connecting real banking data via Plaid API.</li>
+                    <li>Expanding the Machine Learning predictive models.</li>
+                </ul>
+                <h2 style="margin-top: 3rem;">Thank You! Questions?</h2>
+                <div class="speaker-notes">🎤 "In the future, I plan to turn this into a mobile app and connect real banks. Thank you for your time, I’d be happy to answer any questions!"</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="btn-controls">
+        <button onclick="prevSlide()">◀ PREV</button>
+        <button onclick="nextSlide()">NEXT ▶</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 11;
+        const slider = document.getElementById('slider');
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlider();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlider();
+            }
+        }
+
+        function updateSlider() {
+            slider.style.transform = `translateX(-${currentSlide * 100}vw)`;
+        }
+
+        // Navigate with Arrow Keys
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+    </script>
+</body>
+</html>

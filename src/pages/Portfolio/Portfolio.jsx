@@ -106,7 +106,7 @@ const Portfolio = () => {
                 <Layers size={22} />
             </div>
             <div>
-                <h1 className="font-outfit text-2xl font-bold tracking-tight">GLOBAL MACRO FUND I</h1>
+                <h1 className="font-outfit text-2xl font-bold tracking-tight">NEURALTRADE PORTFOLIO</h1>
                 <p className="text-muted text-xs font-mono mt-1">UUID: 8F92-A14B • INSTITUTIONAL OMNIBUS • LIVE STREAM</p>
             </div>
         </div>
