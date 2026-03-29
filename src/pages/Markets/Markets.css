@@ -43,20 +43,29 @@
 
 /* Specific Market Card CSS */
 .market-card {
-  padding: 1.25rem;
+  padding: 1.5rem;
   border-radius: var(--radius-md);
   display: flex;
   flex-direction: column;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--border-medium);
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
-  transition: transform var(--transition-fast), border-color var(--transition-fast);
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  transition: all var(--transition-vibrant);
+  overflow: hidden;
 }
 
+.market-card:nth-child(3n+1) { border-left: 3px solid var(--accent-cyan); }
+.market-card:nth-child(3n+2) { border-left: 3px solid var(--accent-magenta); }
+.market-card:nth-child(3n+3) { border-left: 3px solid var(--accent-lime); }
+
 .market-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-5px);
+  background: var(--bg-card-hover);
   border-color: rgba(255, 255, 255, 0.2);
 }
+
+.market-card:nth-child(3n+1):hover { box-shadow: var(--glow-cyan); }
+.market-card:nth-child(3n+2):hover { box-shadow: var(--glow-magenta); }
+.market-card:nth-child(3n+3):hover { box-shadow: 0 0 20px rgba(132, 204, 22, 0.2); }
 
 .mc-header {
   display: flex;
