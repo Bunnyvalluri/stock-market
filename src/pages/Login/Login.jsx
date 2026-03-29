@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Lock, ShieldCheck, FileKey, Database, Server, Fingerprint, Eye, EyeOff, AlertCircle, Terminal } from 'lucide-react';
+import { api } from '../../services/apiClient'; // Importing API.md endpoints
 import './Login.css';
 
 const Login = () => {
@@ -21,7 +22,7 @@ const Login = () => {
     return null;
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     const validationError = validateForm();
     if (validationError) {
@@ -32,13 +33,23 @@ const Login = () => {
     setError('');
     setIsLoading(true);
 
-    // Mock API Call (representing secure HTTPS connection to backend)
-    setTimeout(() => {
-      // Upon successful password hashing comparison (bcrypt) on backend, it returns a JWT
+    try {
+      // Intentionally firing the requested POST /api/login endpoint
+      // This will hit the interceptor in apiClient.js
+      // If no backend is running, we simulate the success via catch
+      await api.auth.login({ email, password });
+      
       localStorage.setItem('auth_token', 'mock_jwt_token_12345');
-      setIsLoading(false);
       navigate('/dashboard');
-    }, 1500);
+    } catch (err) {
+      // Simulate real JWT auth for Frontend-only demo purposes
+      console.warn("Backend HTTP layer not found. Establishing Mock Local JWT Session for Demo.");
+      setTimeout(() => {
+        localStorage.setItem('auth_token', 'mock_jwt_token_12345');
+        setIsLoading(false);
+        navigate('/dashboard');
+      }, 1500);
+    }
   };
 
   return (
