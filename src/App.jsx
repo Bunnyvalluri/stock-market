@@ -49,7 +49,7 @@ const Sidebar = ({ isOpen, toggleSidebar, user }) => {
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
     { name: 'Markets',   path: '/markets',   icon: <Activity size={20} /> },
-    { name: 'Predictions', path: '/predictions', icon: <Zap size={20} /> },
+    { name: 'AI Insights', path: '/predictions', icon: <Zap size={20} /> },
     { name: 'Portfolio', path: '/portfolio', icon: <Database size={20} /> },
     { name: 'Alerts',   path: '/alerts',    icon: <Bell size={20} /> },
     { name: 'Settings', path: '/settings',  icon: <SettingsIcon size={20} /> },
@@ -68,7 +68,7 @@ const Sidebar = ({ isOpen, toggleSidebar, user }) => {
           <div className="logo-icon">
             <TrendingUp size={20} color="#fff" />
           </div>
-          <h2 className="logo-text">Neural<span className="text-gradient">Trade</span></h2>
+          <h2 className="logo-text">StockMind <span className="text-gradient">AI</span></h2>
         </div>
         <button className="mobile-close" onClick={toggleSidebar}><X size={22} /></button>
       </div>
@@ -151,7 +151,7 @@ const DashboardLayout = ({ children }) => {
   }, []);
 
   return (
-    <div className="app-container">
+    <div className="app-container bg-grid-pattern">
       <div className={`mobile-overlay ${sidebarOpen ? 'active' : ''}`} onClick={toggleSidebar}></div>
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} user={user} />
       <main className="main-content">

@@ -2,15 +2,15 @@
 
 :root {
   /* Customer Requested Premium Dark Theme (Fintech + AI) */
-  --bg-primary: #0B0F19;       /* Deep Indigo Black */
-  --bg-secondary: #0B0F19;     
-  --bg-card: #121826;          /* Soft Card Background */
-  --bg-card-hover: #1f2937;    
-  --glass-bg: linear-gradient(145deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.4) 100%);
+  --bg-primary: #050505;       /* True OLED Black */
+  --bg-secondary: #0a0a0a;     
+  --bg-card: #0f0f11;          /* Sharper Card Background */
+  --bg-card-hover: #1a1a1f;    
+  --glass-bg: linear-gradient(145deg, rgba(24, 24, 27, 0.6) 0%, rgba(9, 9, 11, 0.6) 100%);
   
-  --text-primary: #E5E7EB;     
-  --text-secondary: #9CA3AF;   
-  --text-muted: #6b7280;       
+  --text-primary: #f8fafc;     
+  --text-secondary: #a1a1aa;   
+  --text-muted: #71717a;       
   
   /* Core Brand Colors */
   --accent-brand: #4F46E5;      /* Primary Indigo */
@@ -205,9 +205,31 @@ ul {
 
 .glass-card {
   background: var(--glass-bg, var(--bg-card));
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--border-light);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.02);
+  border-radius: var(--radius-lg);
+}
+
+:root[data-theme='light'] .glass-card {
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255,255,255,0.8);
+}
+
+/* Institutional Grid Background */
+.bg-grid-pattern {
+  background-image: 
+    linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: center top;
+}
+
+:root[data-theme='light'] .bg-grid-pattern {
+  background-image: 
+    linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px);
 }
 
 /* Animations */
