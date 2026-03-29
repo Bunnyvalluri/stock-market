@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Settings as SettingsIcon, Key, Database, ShieldCheck, Mail, Smartphone, Globe, Save } from 'lucide-react';
 import { motion } from 'framer-motion';
 import './Settings.css';
@@ -6,8 +6,18 @@ import './Settings.css';
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('api');
   const [saveStatus, setSaveStatus] = useState('');
+  
+  // API Keys state
+  const [alphaKey, setAlphaKey] = useState('');
+
+  useEffect(() => {
+    const savedKey = localStorage.getItem('alphaVantageKey');
+    if (savedKey) setAlphaKey(savedKey);
+  }, []);
 
   const handleSave = () => {
+      // Save logic
+      localStorage.setItem('alphaVantageKey', alphaKey);
       setSaveStatus('Saving configuration...');
       setTimeout(() => setSaveStatus('All changes saved to cloud.'), 1000);
       setTimeout(() => setSaveStatus(''), 4000);
@@ -24,7 +34,14 @@ const Settings = () => {
             <div className="form-group grid-2">
               <div className="input-block">
                 <label>Alpha Vantage Key</label>
-                <input type="password" placeholder="ALPHAV-XXXX-XXXX" defaultValue="sk_live_123456789" className="custom-input" />
+                <input 
+                  type="password" 
+                  placeholder="ALPHAV-XXXX-XXXX" 
+                  value={alphaKey}
+                  onChange={(e) => setAlphaKey(e.target.value)}
+                  className="custom-input" 
+                />
+                <span className="text-muted text-xs mt-1 block">Used for fetching real market data limits depending on your usage tier.</span>
               </div>
               <div className="input-block">
                 <label>Yahoo Finance API</label>

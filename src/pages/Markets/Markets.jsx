@@ -85,11 +85,50 @@ const Markets = () => {
       price: t.basePrice,
       change: (Math.random() - 0.3) * 3, // Initial random change
       history: generateHistory(t.basePrice),
-      pulseDir: null
+      pulseDir: null,
+      isLive: false
     }))
   );
   
   const [isLive, setIsLive] = useState(true);
+
+  // Fetch true baseline prices on mount
+  useEffect(() => {
+    import('../../services/alphaVantage').then(({ fetchGlobalQuote }) => {
+      // Pick one symbol to fetch to avoid quick limit issues on free tier.
+      const sym = 'IBM'; 
+      fetchGlobalQuote(sym).then(realData => {
+         if (realData) {
+            setMarketsData(prev => {
+                const arr = [...prev];
+                const i = arr.findIndex(x => x.symbol === sym);
+                if (i !== -1) {
+                   arr[i] = { 
+                     ...arr[i], 
+                     price: realData.price, 
+                     basePrice: realData.price,
+                     change: realData.change, 
+                     history: generateHistory(realData.price),
+                     isLive: true 
+                   };
+                } else {
+                   arr.push({
+                     symbol: realData.symbol,
+                     name: 'IBM Corp (LIVE)',
+                     price: realData.price,
+                     basePrice: realData.price,
+                     change: realData.change,
+                     history: generateHistory(realData.price),
+                     pulseDir: null,
+                     isLive: true
+                   });
+                }
+                return arr;
+            });
+         }
+      });
+    });
+  }, []);
 
   // High Frequency Trading Simulation
   useEffect(() => {

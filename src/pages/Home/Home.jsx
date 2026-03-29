@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
 import { TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Activity, Cpu, Newspaper, DollarSign } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { fetchGlobalQuote } from '../../services/alphaVantage';
 import './Home.css';
 
 // Mock Data
@@ -11,12 +12,12 @@ const mainChartData = Array.from({ length: 30 }, (_, i) => ({
   volume: 1000 + Math.random() * 5000
 }));
 
-const marketOverview = [
-  { symbol: 'AAPL', name: 'Apple Inc.', price: 173.50, change: '+1.2%', isUp: true },
-  { symbol: 'TSLA', name: 'Tesla Inc.', price: 212.45, change: '-3.4%', isUp: false },
-  { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 890.10, change: '+5.7%', isUp: true },
-  { symbol: 'AMZN', name: 'Amazon.com', price: 145.20, change: '+0.8%', isUp: true },
-  { symbol: 'MSFT', name: 'Microsoft Corp.', price: 405.30, change: '-0.2%', isUp: false },
+const initialMarketOverview = [
+  { symbol: 'AAPL', name: 'Apple Inc.', price: 173.50, change: 1.2, isUp: true, isLive: false },
+  { symbol: 'TSLA', name: 'Tesla Inc.', price: 212.45, change: -3.4, isUp: false, isLive: false },
+  { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 890.10, change: 5.7, isUp: true, isLive: false },
+  { symbol: 'AMZN', name: 'Amazon.com', price: 145.20, change: 0.8, isUp: true, isLive: false },
+  { symbol: 'MSFT', name: 'Microsoft Corp.', price: 405.30, change: -0.2, isUp: false, isLive: false },
 ];
 
 const newsArticles = [
@@ -47,7 +48,40 @@ const StatCard = ({ title, value, change, isUp, icon }) => (
 );
 
 const Home = () => {
-  const [tickerOffset, setTickerOffset] = useState(0);
+  const [marketOverview, setMarketOverview] = useState(initialMarketOverview);
+
+  // Fetch real data for active widget
+  useEffect(() => {
+    const loadRealData = async () => {
+       try {
+         // To avoid immediately hitting the 5/min limit, we'll fetch just 2 symbols initially: IBM/AAPL
+         const symbolsToFetch = ['AAPL', 'IBM']; 
+         
+         const updatedData = [...marketOverview];
+         
+         for (const sym of symbolsToFetch) {
+            const realData = await fetchGlobalQuote(sym);
+            if (realData) {
+               // Update or push into array
+               const index = updatedData.findIndex(s => s.symbol === realData.symbol);
+               const formatChange = `${realData.change > 0 ? '+' : ''}${realData.change.toFixed(2)}%`;
+               
+               if (index !== -1) {
+                  updatedData[index] = { ...updatedData[index], price: realData.price, change: realData.change, isUp: realData.change >= 0, isLive: true };
+               } else {
+                  updatedData.push({ symbol: realData.symbol, name: 'Live Data', price: realData.price, change: realData.change, isUp: realData.change > 0, isLive: true });
+               }
+            }
+         }
+         
+         setMarketOverview(updatedData);
+       } catch(err) {
+         console.error('Failed API fetch', err);
+       }
+    };
+    
+    loadRealData();
+  }, []);
 
   return (
     <div className="home-container">
@@ -58,10 +92,11 @@ const Home = () => {
           <div className="ticker-content">
             {[...marketOverview, ...marketOverview].map((stock, i) => (
               <div key={i} className="ticker-item">
-                <span className="ticker-symbol">{stock.symbol}</span>
+                <span className="ticker-symbol" style={{color: stock.isLive ? 'var(--accent-purple)' : 'inherit'}}>{stock.symbol}</span>
                 <span className="ticker-price">${stock.price.toFixed(2)}</span>
                 <span className={`ticker-change ${stock.isUp ? 'text-up' : 'text-down'}`}>
-                  {stock.change}
+                  {stock.change > 0 && typeof stock.change === 'number' ? '+' : ''}
+                  {typeof stock.change === 'number' ? stock.change.toFixed(2) + '%' : stock.change}
                 </span>
               </div>
             ))}
