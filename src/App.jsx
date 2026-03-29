@@ -100,6 +100,12 @@ const DashboardLayout = ({ children }) => {
 
   return (
     <div className="app-container">
+      {/* Sleek Apple-style blurred backdrop for mobile drawer */}
+      <div 
+        className={`mobile-overlay ${sidebarOpen ? 'active' : ''}`} 
+        onClick={toggleSidebar}
+      ></div>
+      
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
       
       <main className="main-content">

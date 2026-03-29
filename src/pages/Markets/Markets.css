@@ -157,3 +157,51 @@
 .ob-buy { color: var(--status-up); }
 .ob-sell { color: var(--status-down); }
 .ob-qty { text-align: right; color: var(--text-secondary); }
+/* Markets CSS - Deep Responsive Apple Breakpoints */
+@media (max-width: 1024px) {
+  .markets-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .grid-feed {
+    grid-template-columns: 1fr; /* Single column stack for small mobile */
+    gap: 1rem;
+  }
+  
+  .mc-price {
+    font-size: 1.5rem;
+  }
+  
+  .order-book {
+    max-height: 400px; /* Shorter order book for mobile visibility */
+  }
+
+  .ob-row {
+    grid-template-columns: 1fr 1fr 1fr; /* Reduce columns on mobile */
+    font-size: 0.75rem;
+  }
+  
+  .ob-qty {
+    display: none; /* Hide quantity on extra small screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .market-status {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.75rem;
+  }
+  
+  .mc-price-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .mc-price {
+    padding-left: 0;
+    margin-left: 0;
+  }
+}

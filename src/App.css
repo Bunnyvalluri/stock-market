@@ -276,19 +276,38 @@
   margin-bottom: 1rem;
 }
 
-/* Responsive Design */
+/* Responsive Design Overrides (Apple-style scaling) */
 @media (max-width: 1024px) {
   .search-bar { width: 240px; }
+  .page-wrapper { padding: 1.5rem; }
+}
+
+.mobile-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 7, 18, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 90;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.mobile-overlay.active {
+  display: block;
+  opacity: 1;
 }
 
 @media (max-width: 768px) {
   .sidebar {
     transform: translateX(-100%);
+    width: 260px; /* Slightly slimmer on mobile */
   }
   
   .sidebar.open {
     transform: translateX(0);
-    box-shadow: 10px 0 50px rgba(0,0,0,0.5);
+    box-shadow: 10px 0 50px rgba(0,0,0,0.8);
   }
   
   .main-content {
@@ -296,10 +315,36 @@
     width: 100vw;
   }
   
+  .navbar {
+    padding: 0 1.25rem;
+    height: 64px;
+    background: rgba(10, 14, 23, 0.6) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
   .menu-toggle { display: block; }
   .mobile-close { display: block; }
   
-  .search-bar { display: none; }
+  .search-bar { display: none; } /* Hide heavy search bar on mobile screens to save space */
   
-  .page-wrapper { padding: 1.5rem 1rem; }
+  .page-wrapper { 
+    padding: 1rem; 
+    padding-bottom: 4rem; /* Safe area for mobile home bars */
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .connect-wallet-btn {
+    padding: 0.4rem 1rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Deep container fluidity for nested pages */
+@media (max-width: 480px) {
+  .page-wrapper {
+    padding: 0.75rem;
+  }
 }

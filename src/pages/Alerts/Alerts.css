@@ -214,3 +214,83 @@
   color: var(--text-secondary);
   flex-basis: 100%;
 }
+/* Alerts CSS - Deep Responsive Apple Breakpoints */
+@media (max-width: 1024px) {
+  .alerts-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .active-rules, .live-logs {
+    padding: 1.25rem;
+  }
+  
+  .rule-item {
+    gap: 1rem;
+    padding: 0.75rem;
+  }
+  
+  .rule-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .rule-info h4 {
+    font-size: 0.9rem;
+  }
+  
+  .rule-info h4 span {
+    font-size: 0.75rem;
+    margin-left: 0.25rem;
+  }
+  
+  .rule-info p {
+    font-size: 0.8rem;
+  }
+
+  .log-entry {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+  
+  .log-timestamp {
+    font-size: 0.7rem;
+  }
+  
+  .log-content {
+    gap: 0.5rem;
+  }
+  
+  .log-target {
+    font-size: 0.8rem;
+  }
+  
+  .log-msg {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .active-rules, .live-logs {
+    padding: 1rem;
+  }
+  
+  .rule-item {
+    flex-wrap: wrap;
+  }
+  
+  .toggle-btn {
+    margin-left: auto;
+  }
+  
+  .rule-info {
+    flex-basis: calc(100% - 60px);
+  }
+  
+  .toggle-btn {
+    flex-basis: 44px;
+    margin-top: 5px;
+  }
+}

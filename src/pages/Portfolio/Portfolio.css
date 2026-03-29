@@ -288,3 +288,86 @@
   background: rgba(255, 255, 255, 0.1);
   color: var(--text-primary);
 }
+/* Portfolio CSS - Deep Responsive Apple Breakpoints */
+@media (max-width: 1024px) {
+  .portfolio-summary-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .flex-between {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+  
+  .header-actions {
+    width: 100%;
+  }
+  
+  .primary-btn, .secondary-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .portfolio-summary-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .summary-card {
+    padding: 1.25rem;
+  }
+
+  .summary-value {
+    font-size: 1.75rem;
+  }
+
+  .assets-table-container {
+    padding: 1rem;
+  }
+
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .custom-input {
+    min-width: 100%;
+  }
+
+  /* Hide less critical columns on small mobile */
+  .assets-table th:nth-child(3),
+  .assets-table td:nth-child(3),
+  .assets-table th:nth-child(4),
+  .assets-table td:nth-child(4),
+  .assets-table th:nth-child(7),
+  .assets-table td:nth-child(7) {
+    display: none;
+  }
+  
+  .assets-table td {
+    padding: 1rem 0.5rem;
+    font-size: 0.85rem;
+  }
+  
+  .pnl-badge {
+    min-width: 60px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .summary-value {
+    font-size: 1.5rem;
+  }
+  
+  .asset-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+}

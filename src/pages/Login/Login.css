@@ -288,3 +288,47 @@
 .text-status-down { color: #ef4444; }
 .text-brand { color: #3b82f6; }
 .text-status-neutral { color: #64748b; }
+/* Login CSS - Deep Responsive Apple Breakpoints */
+@media (max-width: 900px) {
+  .login-wrapper {
+    flex-direction: column;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-card {
+    padding: 2rem;
+  }
+  
+  .login-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .security-panel h3 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 1.5rem;
+  }
+  
+  .login-submit {
+    font-size: 0.9rem;
+  }
+  
+  .security-item {
+    padding: 1rem;
+  }
+  
+  .security-item h4 {
+    font-size: 0.85rem;
+  }
+  
+  .security-item span {
+    font-size: 0.75rem;
+  }
+}
