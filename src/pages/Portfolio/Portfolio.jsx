@@ -40,6 +40,42 @@ const Portfolio = () => {
   const [isLive, setIsLive] = useState(true);
   const [systemLogs, setSystemLogs] = useState([]);
 
+  const handleExportCSV = () => {
+    try {
+        const headers = ['Symbol', 'Name', 'Sector', 'Shares', 'Avg Price', 'Current Price', 'Total Value', 'Beta', 'Unrealized PNL'];
+        const rows = portfolioAssets.map(asset => {
+            const pnlVal = asset.value - (asset.shares * asset.avgPrice);
+            return [
+                asset.symbol,
+                `"${asset.name}"`,
+                asset.sector,
+                asset.shares,
+                asset.avgPrice.toFixed(2),
+                asset.currentPrice.toFixed(2),
+                asset.value.toFixed(2),
+                asset.beta,
+                pnlVal.toFixed(2)
+            ].join(',');
+        });
+
+        const csvContent = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        
+        link.setAttribute('href', url);
+        link.setAttribute('download', `StockMind_Portfolio_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        toast.success('CSV Export generated and downloaded.', { icon: '📄' });
+    } catch(err) {
+        toast.error('Failed to generate export file.');
+    }
+  };
+
   // High Frequency Data Streams
   useEffect(() => {
     if (!isLive) return;
@@ -120,7 +156,7 @@ const Portfolio = () => {
             <div className="header-pro-actions flex gap-2">
                 <button 
                   className="btn-pro-outline" 
-                  onClick={() => toast.success('CSV Export securely downloaded.')}
+                  onClick={handleExportCSV}
                 >
                   <Download size={14} className="mr-1"/> EXPORT CSV
                 </button>
