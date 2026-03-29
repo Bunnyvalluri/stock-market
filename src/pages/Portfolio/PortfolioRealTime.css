@@ -1,0 +1,65 @@
+@keyframes flashUp {
+  0% { background-color: transparent; }
+  10% { background-color: rgba(16, 185, 129, 0.4); color: #fff; }
+  100% { background-color: transparent; }
+}
+
+@keyframes flashDown {
+  0% { background-color: transparent; }
+  10% { background-color: rgba(239, 68, 68, 0.4); color: #fff; }
+  100% { background-color: transparent; }
+}
+
+.flash-up {
+  animation: flashUp 1s ease-out;
+  border-radius: 4px;
+}
+
+.flash-down {
+  animation: flashDown 1s ease-out;
+  border-radius: 4px;
+}
+
+.price-cell {
+  transition: color 0.2s;
+}
+
+.live-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--text-muted);
+}
+
+.live-badge.active {
+  color: var(--status-up);
+  background: var(--status-up-bg);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.live-badge.active .pulse-dot {
+  background: var(--status-up);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
+  animation: pulse 1.5s infinite;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}

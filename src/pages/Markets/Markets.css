@@ -1,0 +1,159 @@
+.markets-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.markets-layout {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 1200px) {
+  .markets-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.market-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+}
+
+.section-heading {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 0.5rem;
+}
+
+.grid-feed {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+/* Specific Market Card CSS */
+.market-card {
+  padding: 1.25rem;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-medium);
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.market-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.mc-header {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.mc-symbol {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.mc-name {
+  font-size: 0.8rem;
+}
+
+.mc-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1rem;
+}
+
+.mc-price {
+  font-size: 1.8rem;
+  font-weight: 700;
+  font-family: 'Outfit', monospace;
+  letter-spacing: -0.5px;
+  padding: 0 0.5rem;
+  margin-left: -0.5rem;
+  border-radius: var(--radius-sm);
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.mc-change {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.mc-footer {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Order Book Log */
+.order-book {
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  max-height: 800px;
+  overflow: hidden;
+}
+
+.ob-header {
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ob-header h4 {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.ob-list {
+  padding: 0.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow-y: auto;
+}
+
+.ob-row {
+  display: grid;
+  grid-template-columns: 2fr 2fr 1.5fr 1fr;
+  align-items: center;
+  font-size: 0.8rem;
+  font-family: monospace;
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.02);
+  border-left: 2px solid transparent;
+}
+
+.ob-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.ob-time { color: var(--text-muted); }
+.ob-sym { font-weight: 600; color: var(--text-primary); }
+.ob-buy { color: var(--status-up); }
+.ob-sell { color: var(--status-down); }
+.ob-qty { text-align: right; color: var(--text-secondary); }
