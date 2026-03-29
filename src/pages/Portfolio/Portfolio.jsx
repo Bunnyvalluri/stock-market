@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as PieTooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as PieTooltip, LineChart, Line, YAxis } from 'recharts';
 import { 
   Briefcase, ArrowUpRight, ArrowDownRight, MoreHorizontal, 
   Plus, Download, Activity, Shield, TrendingUp, TrendingDown,
@@ -9,12 +9,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import './Portfolio.css';
 
+const generateHistory = (base) => Array.from({length: 15}, () => ({ val: base + (Math.random() - 0.5) * (base * 0.03) }));
+
 const initialAssets = [
-  { id: 1, symbol: 'NVDA', name: 'NVIDIA Corp.', shares: 450, avgPrice: 420.50, currentPrice: 890.10, value: 400545.00, sector: 'Technology', beta: 1.8 },
-  { id: 2, symbol: 'MSFT', name: 'Microsoft Corp.', shares: 1200, avgPrice: 310.20, currentPrice: 405.30, value: 486360.00, sector: 'Technology', beta: 1.1 },
-  { id: 3, symbol: 'TSLA', name: 'Tesla Inc.', shares: 850, avgPrice: 195.40, currentPrice: 212.45, value: 180582.50, sector: 'Automotive', beta: 2.1 },
-  { id: 4, symbol: 'AAPL', name: 'Apple Inc.', shares: 1000, avgPrice: 165.80, currentPrice: 173.50, value: 173500.00, sector: 'Technology', beta: 1.05 },
-  { id: 5, symbol: 'BTC/USD', name: 'Bitcoin', shares: 2.5, avgPrice: 45200.00, currentPrice: 65420.00, value: 163550.00, sector: 'Crypto', beta: 3.2 }
+  { id: 1, symbol: 'NVDA', name: 'NVIDIA Corp.', shares: 450, avgPrice: 420.50, currentPrice: 890.10, value: 400545.00, sector: 'Technology', beta: 1.8, history: generateHistory(890.10) },
+  { id: 2, symbol: 'MSFT', name: 'Microsoft Corp.', shares: 1200, avgPrice: 310.20, currentPrice: 405.30, value: 486360.00, sector: 'Technology', beta: 1.1, history: generateHistory(405.30) },
+  { id: 3, symbol: 'TSLA', name: 'Tesla Inc.', shares: 850, avgPrice: 195.40, currentPrice: 212.45, value: 180582.50, sector: 'Automotive', beta: 2.1, history: generateHistory(212.45) },
+  { id: 4, symbol: 'AAPL', name: 'Apple Inc.', shares: 1000, avgPrice: 165.80, currentPrice: 173.50, value: 173500.00, sector: 'Technology', beta: 1.05, history: generateHistory(173.50) },
+  { id: 5, symbol: 'BTC/USD', name: 'Bitcoin', shares: 2.5, avgPrice: 45200.00, currentPrice: 65420.00, value: 163550.00, sector: 'Crypto', beta: 3.2, history: generateHistory(65420.00) }
 ];
 
 const COLORS = ['#2563eb', '#06b6d4', '#10b981', '#f59e0b', '#8b5cf6'];
@@ -88,11 +90,13 @@ const Portfolio = () => {
           const volatility = asset.beta * 0.0008; // Higher beta = more jitter
           const shift = (Math.random() - 0.48) * (asset.currentPrice * volatility);
           const newPrice = asset.currentPrice + shift;
+          const newHistory = [...asset.history.slice(1), { val: newPrice }];
           return {
             ...asset,
             lastPrice: asset.currentPrice,
             currentPrice: newPrice,
             value: newPrice * asset.shares,
+            history: newHistory,
             tickDir: shift > 0 ? 'up' : 'down'
           };
         })
@@ -240,11 +244,12 @@ const Portfolio = () => {
             
             <div className="holdings-matrix-pro w-full overflow-hidden">
                <div className="matrix-head-pro grid text-xs font-bold text-muted uppercase tracking-wider py-3 px-4 border-b border-light">
-                  <div className="col-span-2">Instrument</div>
+                  <div className="col-span-1">Instrument</div>
+                  <div className="text-center pl-4">7D Trend</div>
                   <div className="text-right">Market Px</div>
                   <div className="text-right">Unrl PNL</div>
                   <div className="text-right">Position</div>
-                  <div className="text-right">Exposure %</div>
+                  <div className="text-right">Exposure</div>
                </div>
                
                <div className="matrix-body-pro flex flex-col">
@@ -256,10 +261,28 @@ const Portfolio = () => {
 
                      return (
                         <div key={asset.symbol} className="matrix-row-pro grid items-center py-3 px-4 border-b border-light hover:bg-white/5 transition-colors">
-                           <div className="matrix-id-pro col-span-2 flex flex-col">
-                              <span className="font-bold text-sm">{asset.symbol}</span>
-                              <span className="text-xs text-muted font-mono">{asset.sector.toUpperCase()}</span>
+                           <div className="matrix-id-pro col-span-1 flex flex-col">
+                              <span className="font-bold text-sm tracking-wide">{asset.symbol}</span>
+                              <span className="text-[10px] text-muted font-mono uppercase">{asset.sector}</span>
                            </div>
+                           
+                           {/* Live Sparkline */}
+                           <div className="h-10 w-full pl-4">
+                               <ResponsiveContainer width="100%" height="100%">
+                                   <LineChart data={asset.history}>
+                                       <YAxis domain={['auto', 'auto']} hide />
+                                       <Line 
+                                          type="monotone" 
+                                          dataKey="val" 
+                                          stroke={isUp ? 'var(--status-up)' : 'var(--status-down)'} 
+                                          strokeWidth={2} 
+                                          dot={false}
+                                          isAnimationActive={false}
+                                       />
+                                   </LineChart>
+                               </ResponsiveContainer>
+                           </div>
+
                            <div className={`matrix-price-pro text-right font-mono text-sm font-bold ${asset.tickDir ? `flash-${asset.tickDir}` : ''}`}>
                               ${asset.currentPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                            </div>
@@ -269,13 +292,10 @@ const Portfolio = () => {
                            </div>
                            <div className="matrix-holdings-pro text-right flex flex-col">
                               <span className="font-mono text-sm font-bold">{asset.shares.toLocaleString()}</span>
-                              <span className="text-xs text-muted font-mono">@ ${asset.avgPrice.toFixed(2)}</span>
+                              <span className="text-xs text-muted font-mono">@ ${(asset.avgPrice).toFixed(2)}</span>
                            </div>
                            <div className="matrix-exposure-pro text-right flex items-center justify-end gap-2">
-                              <div className="w-16 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                                  <div className="h-full bg-brand" style={{width: `${exposure}%`}}></div>
-                              </div>
-                              <span className="font-mono text-xs w-10">{exposure.toFixed(1)}%</span>
+                              <span className="font-mono text-xs w-10 font-bold">{exposure.toFixed(1)}%</span>
                            </div>
                         </div>
                      );
