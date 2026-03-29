@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BellRing, Plus, Settings2, BellOff, ArrowUpRight, ArrowDownRight, Activity, Zap, Terminal, ShieldAlert, Cpu, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import './Alerts.css';
 
 const INITIAL_ALERTS = [
@@ -44,7 +45,14 @@ const Alerts = () => {
   }, [isLive]);
 
   const toggleAlert = (id) => {
-    setAlertsList(prev => prev.map(a => a.id === id ? { ...a, active: !a.active } : a));
+    setAlertsList(prev => prev.map(a => {
+      if (a.id === id) {
+        if (!a.active) toast.success(`Alert rule engaged: ${a.target}`);
+        else toast(`Alert rule paused: ${a.target}`, { icon: '⏸️' });
+        return { ...a, active: !a.active };
+      }
+      return a;
+    }));
   };
 
   const routeToStock = (symbol) => {
@@ -66,11 +74,15 @@ const Alerts = () => {
            </div>
          </div>
          <div className="header-pro-actions flex-row">
-           <div className={`live-toggle-pro ${isLive ? 'active' : ''}`} onClick={() => setIsLive(!isLive)}>
+           <div className={`live-toggle-pro ${isLive ? 'active' : ''}`} onClick={() => {
+              setIsLive(!isLive);
+              if (!isLive) toast.success("Live Market Feed Stream Connected", { icon: '⚡' });
+              else toast.error("Live Feed Paused");
+           }}>
              <div className="pulse-dot-cyan"></div>
              {isLive ? 'LIVE CONNECTION: ON' : 'CONNECTION PAUSED'}
            </div>
-           <button className="btn-pro-primary"><Plus size={14} /> NEW ALERT</button>
+           <button className="btn-pro-primary" onClick={() => toast.loading('Opening Rule Builder...', {duration: 1500})}><Plus size={14} /> NEW ALERT</button>
          </div>
       </div>
 

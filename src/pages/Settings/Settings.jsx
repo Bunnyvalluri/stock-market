@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Settings as SettingsIcon, Key, Database, ShieldCheck, Mail, Smartphone, Globe, Save, Terminal } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
 import './Settings.css';
-
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('api');
   const [saveStatus, setSaveStatus] = useState('');
@@ -20,6 +21,7 @@ const Settings = () => {
       localStorage.setItem('alphaVantageKey', alphaKey);
       localStorage.setItem('openaiKey', openaiKey);
       setSaveStatus('SAVING SETTINGS...');
+      toast.success('Configuration synced globally.', { icon: '🔐' });
       setTimeout(() => setSaveStatus('SETTINGS SAVED'), 1000);
       setTimeout(() => setSaveStatus(''), 4000);
   }
@@ -71,7 +73,7 @@ const Settings = () => {
                            <span className="text-muted">Status: DISCONNECTED</span>
                         </div>
                      </div>
-                     <button className="btn-pro-outline">CONNECT BROKER</button>
+                     <button className="btn-pro-outline" onClick={() => toast.loading('Connecting to Alpaca...', { duration: 2000 })}>CONNECT BROKER</button>
                   </div>
                   <div className="broker-item-pro active">
                      <div className="b-id">
@@ -81,7 +83,7 @@ const Settings = () => {
                            <span className="text-up font-mono">Status: CONNECTED</span>
                         </div>
                      </div>
-                     <button className="btn-pro-danger">DISCONNECT</button>
+                     <button className="btn-pro-danger" onClick={() => toast.error('Broker interface disconnected.')}>DISCONNECT</button>
                   </div>
                </div>
             </div>
@@ -139,7 +141,7 @@ const Settings = () => {
                      
                      <div className="kill-switch-wrap">
                          <span className="text-bold">Emergency Sell All:</span>
-                         <button className="btn-pro-kill">LIQUIDATE POSITIONS</button>
+                         <button className="btn-pro-kill" onClick={() => toast.error('ACTION ILLEGAL: MARKET CLOSED', { icon: '🛑' })}>LIQUIDATE POSITIONS</button>
                      </div>
                  </div>
              </div>

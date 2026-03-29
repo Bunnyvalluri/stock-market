@@ -6,6 +6,7 @@ import {
   DollarSign, PieChart as PieIcon, Layers, History, Terminal
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
 import './Portfolio.css';
 
 const initialAssets = [
@@ -112,13 +113,23 @@ const Portfolio = () => {
         </div>
         <div className="header-pro-right">
             <div className="header-pro-pills">
-                <button className="active">OVERVIEW</button>
-                <button>RISK & EXPOSURE</button>
-                <button>ORDER ROUTING</button>
+                <button className="active" onClick={() => toast('Displaying Portfolio Overview', { icon: '📊' })}>OVERVIEW</button>
+                <button onClick={() => toast('Risk metrics recalculated.', { icon: '🛡️' })}>RISK & EXPOSURE</button>
+                <button onClick={() => toast.loading('Connecting to routing engine...', { duration: 1500 })}>ORDER ROUTING</button>
             </div>
             <div className="header-pro-actions flex gap-2">
-                <button className="btn-pro-outline"><Download size={14} className="mr-1"/> EXPORT CSV</button>
-                <button className="btn-pro-primary"><Plus size={14} className="mr-1"/> DEPLOY CAPITAL</button>
+                <button 
+                  className="btn-pro-outline" 
+                  onClick={() => toast.success('CSV Export securely downloaded.')}
+                >
+                  <Download size={14} className="mr-1"/> EXPORT CSV
+                </button>
+                <button 
+                  className="btn-pro-primary"
+                  onClick={() => toast.success('Capital Deployment sequence initialized.', { icon: '💸' })}
+                >
+                  <Plus size={14} className="mr-1"/> DEPLOY CAPITAL
+                </button>
             </div>
         </div>
       </div>

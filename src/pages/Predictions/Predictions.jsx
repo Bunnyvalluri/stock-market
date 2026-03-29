@@ -8,6 +8,7 @@ import {
   Shield, Zap, Layers, Server, Terminal, Gauge
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
 import './Predictions.css';
 
 const generatePredictionData = (model, seed = 850) => {
@@ -116,10 +117,20 @@ const Predictions = () => {
         <div className="header-pro-right">
             <div className="control-tabs-pro">
                 {['LSTM-v2', 'Transformer', 'XGBoost'].map(m => (
-                    <button key={m} className={m === 'LSTM-v2' ? 'active' : ''}>{m}</button>
+                    <button 
+                       key={m} 
+                       className={m === selectedModel || (m === 'LSTM-v2' && selectedModel === 'LSTM') ? 'active' : ''}
+                       onClick={() => {
+                          const newModel = m === 'LSTM-v2' ? 'LSTM' : m;
+                          setSelectedModel(newModel);
+                          toast(`Recompiling architecture: ${newModel}`, { icon: '🧠' });
+                       }}
+                    >
+                       {m}
+                    </button>
                 ))}
             </div>
-            <button className="settings-btn-pro"><Settings2 size={18} /></button>
+            <button className="settings-btn-pro" onClick={() => toast.loading('Loading Hyperparameters', {duration: 1500})}><Settings2 size={18} /></button>
         </div>
       </div>
 

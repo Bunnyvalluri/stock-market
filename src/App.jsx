@@ -164,10 +164,33 @@ const DashboardLayout = ({ children }) => {
 // ──────────────────────────────────────────────
 // App Router
 // ──────────────────────────────────────────────
+import { Toaster } from 'react-hot-toast';
+
 function App() {
   return (
     <Router>
       <ThemeToggle />
+      <Toaster 
+        position="bottom-right"
+        toastOptions={{
+          style: {
+            background: 'var(--bg-card)',
+            color: 'var(--text-primary)',
+            border: '1px solid var(--border-light)',
+            borderRadius: 'var(--radius-md)',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+            fontFamily: 'Inter, monospace',
+            fontSize: '0.8rem',
+            fontWeight: '600'
+          },
+          success: {
+            iconTheme: {
+              primary: 'var(--accent-brand)',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
       <Routes>
         {/* Public */}
         <Route path="/" element={<Landing />} />
