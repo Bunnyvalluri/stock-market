@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react
 import { LineChart, LayoutDashboard, Activity, Database, Settings as SettingsIcon, Bell, Search, Menu, X, TrendingUp, Zap } from 'lucide-react';
 import './App.css';
 
+import Landing from './pages/Landing/Landing';
 import Home from './pages/Home/Home';
 import Predictions from './pages/Predictions/Predictions';
 import Portfolio from './pages/Portfolio/Portfolio';
@@ -14,7 +15,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const location = useLocation();
   
   const navItems = [
-    { name: 'Dashboard', path: '/', icon: <LayoutDashboard size={20} /> },
+    { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
     { name: 'Markets', path: '/markets', icon: <Activity size={20} /> },
     { name: 'Predictions', path: '/predictions', icon: <Zap size={20} /> },
     { name: 'Portfolio', path: '/portfolio', icon: <Database size={20} /> },
@@ -92,31 +93,40 @@ const Navbar = ({ toggleSidebar }) => {
   );
 };
 
-function App() {
+const DashboardLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   return (
-    <Router>
-      <div className="app-container">
-        <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+    <div className="app-container">
+      <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+      
+      <main className="main-content">
+        <Navbar toggleSidebar={toggleSidebar} />
         
-        <main className="main-content">
-          <Navbar toggleSidebar={toggleSidebar} />
-          
-          <div className="page-wrapper animate-fade-in">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/markets" element={<Markets />} />
-              <Route path="/predictions" element={<Predictions />} />
-              <Route path="/portfolio" element={<Portfolio />} />
-              <Route path="/alerts" element={<Alerts />} />
-              <Route path="/settings" element={<Settings />} />
-            </Routes>
-          </div>
-        </main>
-      </div>
+        <div className="page-wrapper animate-fade-in">
+          {children}
+        </div>
+      </main>
+    </div>
+  );
+};
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        {/* Public Landing Page */}
+        <Route path="/" element={<Landing />} />
+        
+        {/* Protected Dashboard Routes */}
+        <Route path="/dashboard" element={<DashboardLayout><Home /></DashboardLayout>} />
+        <Route path="/markets" element={<DashboardLayout><Markets /></DashboardLayout>} />
+        <Route path="/predictions" element={<DashboardLayout><Predictions /></DashboardLayout>} />
+        <Route path="/portfolio" element={<DashboardLayout><Portfolio /></DashboardLayout>} />
+        <Route path="/alerts" element={<DashboardLayout><Alerts /></DashboardLayout>} />
+        <Route path="/settings" element={<DashboardLayout><Settings /></DashboardLayout>} />
+      </Routes>
     </Router>
   );
 }
