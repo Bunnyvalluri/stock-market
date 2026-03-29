@@ -1,29 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, Key, Database, ShieldCheck, Mail, Smartphone, Globe, Save } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Settings as SettingsIcon, Key, Database, ShieldCheck, Mail, Smartphone, Globe, Save, Terminal } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import './Settings.css';
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('api');
   const [saveStatus, setSaveStatus] = useState('');
-  
-  // API Keys state
   const [alphaKey, setAlphaKey] = useState('');
-  const [firecrawlKey, setFirecrawlKey] = useState('');
-  const [killSwitch, setKillSwitch] = useState(false);
+  const [openaiKey, setOpenaiKey] = useState('');
 
   useEffect(() => {
     const savedAlpha = localStorage.getItem('alphaVantageKey');
-    const savedFc = localStorage.getItem('firecrawlKey');
     if (savedAlpha) setAlphaKey(savedAlpha);
-    if (savedFc) setFirecrawlKey(savedFc);
+    const savedAI = localStorage.getItem('openaiKey');
+    if (savedAI) setOpenaiKey(savedAI);
   }, []);
 
   const handleSave = () => {
       localStorage.setItem('alphaVantageKey', alphaKey);
-      localStorage.setItem('firecrawlKey', firecrawlKey);
-      setSaveStatus('Syncing credentials to secure vault...');
-      setTimeout(() => setSaveStatus('Configuration Locked & Encrypted.'), 1200);
+      localStorage.setItem('openaiKey', openaiKey);
+      setSaveStatus('WRITING TO CLUSTER...');
+      setTimeout(() => setSaveStatus('CONFIGURATION PERSISTED [OK]'), 1000);
       setTimeout(() => setSaveStatus(''), 4000);
   }
 
@@ -31,62 +28,60 @@ const Settings = () => {
     switch(activeTab) {
       case 'api':
         return (
-          <div className="settings-section animate-fade-in">
-            <div className="section-header-block">
-               <h2>Data & Execution Infrastructure</h2>
-               <p className="text-muted mb-4">Manage your latency-sensitive API connections and brokerage WebSockets.</p>
+          <div className="settings-section-pro animate-fade-in">
+            <div className="section-head-term">
+                <Key size={18} className="text-brand" />
+                <h2>API / DATA VECTORS</h2>
             </div>
+            <p className="subtitle-term text-muted">Initialize high-frequency data pipelines and LLM inference endpoints.</p>
             
-            <div className="form-group grid-2">
-              <div className="input-block">
-                <div className="flex-between mb-2">
-                   <label>Alpha Vantage (Market Data)</label>
-                   <span className="status-badge connected"><span className="dot"></span> Online (42ms)</span>
-                </div>
+            <div className="form-grid-pro">
+              <div className="input-block-pro">
+                <label>ALPHA VANTAGE DATA STREAM (MANDATORY)</label>
                 <input 
                   type="password" 
                   placeholder="ALPHAV-XXXX-XXXX" 
                   value={alphaKey}
                   onChange={(e) => setAlphaKey(e.target.value)}
-                  className="custom-input mono-input" 
+                  className="input-pro" 
                 />
-                <span className="text-muted text-xs mt-1 block">Provides end-of-day and historical tick data.</span>
+                <span className="info-txt text-orange">Limits subject to AlphaVantage tier. Real-time websocket enabled on PRO.</span>
               </div>
-
-              <div className="input-block">
-                <div className="flex-between mb-2">
-                   <label>Firecrawl Scraping Engine</label>
-                   <span className="status-badge connected"><span className="dot"></span> Online (86ms)</span>
-                </div>
+              <div className="input-block-pro">
+                <label>OPENAI INFERENCE KEY (GPT-4O)</label>
                 <input 
                   type="password" 
-                  placeholder="fc-XXXX-XXXX-XXXX" 
-                  value={firecrawlKey}
-                  onChange={(e) => setFirecrawlKey(e.target.value)}
-                  className="custom-input mono-input" 
+                  placeholder="sk-proj-xxxxxxxxxxxx" 
+                  value={openaiKey}
+                  onChange={(e) => setOpenaiKey(e.target.value)}
+                  className="input-pro" 
                 />
-                <span className="text-muted text-xs mt-1 block">Powers LLM markdown ripping for the Sentiment Predictor.</span>
+                <span className="info-txt">Required for Firecrawl unstructured news sentiment extraction.</span>
               </div>
             </div>
             
-            <div className="form-group mt-4 border-top pt-4">
-               <label>Brokerage Integration (OAUTH / FIX API)</label>
-               <div className="broker-connect">
-                  <div className="broker-item">
-                     <div className="broker-logo ibkr">IB</div>
-                     <div className="broker-info">
-                        <h4>Interactive Brokers TWS</h4>
-                        <span className="text-up mono-text">CONNECTED [PRO TIER]</span>
+            <div className="broker-integration-pro mt-8">
+               <label className="section-label">OAUTH BROKERAGE TUNNELS</label>
+               <div className="broker-list-pro">
+                  <div className="broker-item-pro">
+                     <div className="b-id">
+                        <div className="b-logo" style={{background: '#facc15', color: '#000'}}>A</div>
+                        <div className="b-meta">
+                           <h4>Alpaca Trading</h4>
+                           <span className="text-muted">Status: DISCONNECTED</span>
+                        </div>
                      </div>
-                     <button className="secondary-btn text-down" style={{borderColor: 'var(--status-down)'}}>Disconnect</button>
+                     <button className="btn-pro-outline">CONNECT TUNNEL</button>
                   </div>
-                  <div className="broker-item opacity-70">
-                     <div className="broker-logo alpaca">A</div>
-                     <div className="broker-info">
-                        <h4>Alpaca Trading</h4>
-                        <span className="text-muted">Not Connected</span>
+                  <div className="broker-item-pro active">
+                     <div className="b-id">
+                        <div className="b-logo" style={{background: '#ef4444', color: '#fff'}}>I</div>
+                        <div className="b-meta">
+                           <h4>Interactive Brokers</h4>
+                           <span className="text-up font-mono">Status: ACTIVE_PRO</span>
+                        </div>
                      </div>
-                     <button className="secondary-btn">Authorize</button>
+                     <button className="btn-pro-danger">SEVER LINK</button>
                   </div>
                </div>
             </div>
@@ -94,88 +89,59 @@ const Settings = () => {
         );
       case 'models':
          return (
-             <div className="settings-section animate-fade-in">
-                <div className="section-header-block">
-                   <h2>Algorithmic & Risk Parameters</h2>
-                   <p className="text-muted mb-4">Hard-code limits for the autonomous machine learning predictive engine.</p>
+             <div className="settings-section-pro animate-fade-in">
+                <div className="section-head-term">
+                    <Database size={18} className="text-cyan" />
+                    <h2>ML INFERENCE PARAMETERS</h2>
+                </div>
+                <p className="subtitle-term text-muted">Adjust neural network hyper-parameters for the predictive core.</p>
+                
+                <div className="form-group-pro">
+                   <label>DEFAULT FORECAST HORIZON (LSTM)</label>
+                   <select className="select-pro w-full">
+                      <option>T+7 Days (Optimal Purity)</option>
+                      <option>T+14 Days (Medium Bias)</option>
+                      <option>T+30 Days (Experimental / High Variance)</option>
+                   </select>
                 </div>
                 
-                <div className="risk-zone mb-4">
-                   <div className="flex-between">
-                     <div className="rz-info">
-                       <h3 className="text-down mb-1">Emergency System Halt</h3>
-                       <p className="text-muted text-xs">Instantly severs all API connections and attempts to flatten all open neural-net positions.</p>
-                     </div>
-                     <button 
-                       className={`kill-btn ${killSwitch ? 'active' : ''}`} 
-                       onClick={() => setKillSwitch(!killSwitch)}
-                     >
-                       {killSwitch ? 'SYSTEM HALTED' : 'ENGAGE KILL SWITCH'}
-                     </button>
-                   </div>
-                </div>
-
-                <div className="form-group grid-2">
-                   <div>
-                       <label>Maximum Daily Drawdown (%)</label>
-                       <input type="number" defaultValue="2.5" className="custom-input mono-input" step="0.1" />
-                   </div>
-                   <div>
-                       <label>Max Capital Allocation per Trade</label>
-                       <select className="custom-select w-full">
-                          <option>5% (Strict Risk Margin)</option>
-                          <option>10% (Standard Margin)</option>
-                          <option>25% (Aggressive)</option>
-                       </select>
-                   </div>
-                </div>
-                
-                <div className="form-group mt-4 pt-4 border-top">
-                   <label>Neural Net Retraining Frequency</label>
-                   <div className="radio-group">
-                      <label className="radio-label">
-                         <input type="radio" name="retrain" /> 
-                         <span>HFT Intraday (Every 1 Hour) - <span className="text-up">High Compute Cost</span></span>
+                <div className="form-group-pro mt-6">
+                   <label>RETRAINING CRON JOB</label>
+                   <div className="radio-group-pro">
+                      <label className="radio-pro">
+                          <input type="radio" name="cron" /> 
+                          <span>HOURLY CLUSTER BUILD (Heavy Compute)</span>
                       </label>
-                      <label className="radio-label">
-                         <input type="radio" name="retrain" defaultChecked /> 
-                         <span>Daily Post-Market Scrub (4:15 PM EST)</span>
+                      <label className="radio-pro">
+                          <input type="radio" name="cron" defaultChecked /> 
+                          <span>DAILY MARKET CLOSE (Recommended)</span>
+                      </label>
+                      <label className="radio-pro">
+                          <input type="radio" name="cron" /> 
+                          <span>WEEKLY SKEW ADJUSTMENT</span>
                       </label>
                    </div>
                 </div>
              </div>
          );
-      case 'notifications':
+      case 'security':
          return (
-             <div className="settings-section animate-fade-in">
-                <div className="section-header-block">
-                   <h2>Alerts & Telemetry</h2>
-                   <p className="text-muted mb-4">Configure routing for automated trade confirmations and margin warnings.</p>
-                </div>
-                
-                <div className="toggle-block">
-                   <div className="tb-info">
-                      <h4>WebSocket Push Telemetry</h4>
-                      <p className="text-muted text-xs">Receive live on-screen toasts for individual order executions and fill prices.</p>
-                   </div>
-                   <input type="checkbox" defaultChecked className="toggle-checkbox" />
-                </div>
-                
-                <div className="toggle-block mt-4">
-                   <div className="tb-info">
-                      <h4>Daily P&L Reconciliation Email</h4>
-                      <p className="text-muted text-xs">Send cryptographically signed PDF summary of daily portfolio performance to registered email.</p>
-                   </div>
-                   <input type="checkbox" defaultChecked className="toggle-checkbox" />
-                </div>
-                
-                <div className="toggle-block mt-4 alert-block">
-                   <div className="tb-info">
-                      <h4 className="text-down">SMS Margin Call Alerts</h4>
-                      <p className="text-muted text-xs">Direct SMS routing for critical account liquidation risks or flash crashes.</p>
-                   </div>
-                   <input type="checkbox" defaultChecked className="toggle-checkbox" />
-                </div>
+             <div className="settings-section-pro animate-fade-in">
+                 <div className="section-head-term">
+                    <ShieldCheck size={18} className="text-orange" />
+                    <h2>INFRASTRUCTURE SECURITY</h2>
+                 </div>
+                 <p className="subtitle-term text-muted">Configure access controls and automated kill-switches.</p>
+
+                 <div className="risk-zone-pro mt-4">
+                     <h3 className="text-down mb-2">Automated Liquidation (Stop-Loss)</h3>
+                     <p className="text-muted text-sm mb-4">If the ML Engine detects an unrecoverable "Black Swan" event or severe portfolio drawdown, the system can automatically sever connections and liquidate all long positions.</p>
+                     
+                     <div className="kill-switch-wrap">
+                         <span className="text-bold">GLOBAL PORTFOLIO KILL-SWITCH:</span>
+                         <button className="btn-pro-kill">ACTIVATE PANIC LIQUIDATION</button>
+                     </div>
+                 </div>
              </div>
          );
       default:
@@ -184,40 +150,53 @@ const Settings = () => {
   };
 
   return (
-    <div className="settings-container animate-fade-in">
-      <div className="page-header flex-between">
-         <div className="header-title">
-           <SettingsIcon className="text-gradient" size={28} />
-           <h1>System Configuration</h1>
+    <div className="settings-pro-container animate-fade-in">
+      <div className="settings-pro-header flex-between mb-6">
+         <div className="header-pro-title">
+           <Terminal className="text-brand" size={24} />
+           <div>
+               <h1>System Infrastructure</h1>
+               <p className="text-muted text-sm">Cluster configuration and API integration</p>
+           </div>
          </div>
-         <div className="header-actions">
-           {saveStatus && <span className="save-status text-up">{saveStatus}</span>}
-           <button className="primary-btn" onClick={handleSave}><Save size={16} /> Apply Changes</button>
+         <div className="header-pro-actions flex-row">
+           <AnimatePresence>
+               {saveStatus && (
+                 <motion.span 
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="save-status-pro text-up font-mono"
+                 >
+                    {saveStatus}
+                 </motion.span>
+               )}
+           </AnimatePresence>
+           <button className="btn-pro-primary" onClick={handleSave}>
+               <Save size={14} /> PUSH CONFIG
+           </button>
          </div>
       </div>
 
-      <div className="settings-layout glass-card">
-         <div className="settings-sidebar">
-            <nav className="settings-nav">
-               <button className={`sn-item ${activeTab === 'api' ? 'active' : ''}`} onClick={() => setActiveTab('api')}>
-                 <Key size={18} /> API & Brokers
+      <div className="settings-pro-layout glass-card">
+         <div className="settings-pro-sidebar">
+            <nav className="settings-pro-nav">
+               <button className={`nav-pro-item ${activeTab === 'api' ? 'active' : ''}`} onClick={() => setActiveTab('api')}>
+                 <Key size={16} /> API TUNNELS
                </button>
-               <button className={`sn-item ${activeTab === 'models' ? 'active' : ''}`} onClick={() => setActiveTab('models')}>
-                 <Database size={18} /> ML Parameters
+               <button className={`nav-pro-item ${activeTab === 'models' ? 'active' : ''}`} onClick={() => setActiveTab('models')}>
+                 <Database size={16} /> CORE MODEL
                </button>
-               <button className={`sn-item ${activeTab === 'notifications' ? 'active' : ''}`} onClick={() => setActiveTab('notifications')}>
-                 <Mail size={18} /> Notifications
+               <button className={`nav-pro-item ${activeTab === 'security' ? 'active' : ''}`} onClick={() => setActiveTab('security')}>
+                 <ShieldCheck size={16} /> SECURITY
                </button>
-               <button className="sn-item">
-                 <ShieldCheck size={18} /> Security
-               </button>
-               <button className="sn-item">
-                 <Globe size={18} /> Preferences
+               <button className="nav-pro-item">
+                 <Globe size={16} /> UI OVERRIDE
                </button>
             </nav>
          </div>
          
-         <div className="settings-content">
+         <div className="settings-pro-content">
             {renderContent()}
          </div>
       </div>

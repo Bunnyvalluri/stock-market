@@ -11,17 +11,25 @@ import './Markets.css';
 const MOCK_TICKERS = [
   { symbol: 'AAPL', name: 'Apple Inc.', basePrice: 175.50, sector: 'Technology' },
   { symbol: 'MSFT', name: 'Microsoft', basePrice: 410.20, sector: 'Technology' },
-  { symbol: 'GOOGL', name: 'Alphabet', basePrice: 140.80, sector: 'Technology' },
+  { symbol: 'NVDA', name: 'NVIDIA', basePrice: 890.50, sector: 'Semiconductor' },
+  { symbol: 'TSLA', name: 'Tesla', basePrice: 215.30, sector: 'Automotive' },
   { symbol: 'AMZN', name: 'Amazon', basePrice: 145.20, sector: 'E-commerce' },
-  { symbol: 'META', name: 'Meta', basePrice: 480.10, sector: 'Social' },
-  { symbol: 'NVDA', name: 'NVIDIA', basePrice: 890.50, sector: 'Semi' },
-  { symbol: 'TSLA', name: 'Tesla', basePrice: 215.30, sector: 'Auto' },
-  { symbol: 'AMD', name: 'AMD', basePrice: 178.90, sector: 'Semi' },
+  { symbol: 'META', name: 'Meta', basePrice: 480.10, sector: 'Social Media' },
+  { symbol: 'AMD', name: 'AMD', basePrice: 178.90, sector: 'Semiconductor' },
+  { symbol: 'JPM', name: 'JPMorgan Chase', basePrice: 195.40, sector: 'Financials' },
+  { symbol: 'GS', name: 'Goldman Sachs', basePrice: 410.60, sector: 'Financials' },
+  { symbol: 'COIN', name: 'Coinbase', basePrice: 250.20, sector: 'Crypto' },
+  { symbol: 'BTC/USD', name: 'Bitcoin', basePrice: 65420.00, sector: 'Forex/Crypto' },
+  { symbol: 'ETH/USD', name: 'Ethereum', basePrice: 3450.10, sector: 'Forex/Crypto' },
+  { symbol: 'GLD', name: 'SPDR Gold Trust', basePrice: 215.80, sector: 'Commodities' },
+  { symbol: 'USO', name: 'US Oil Fund', basePrice: 78.40, sector: 'Commodities' },
+  { symbol: 'SPY', name: 'S&P 500 ETF', basePrice: 512.30, sector: 'Index ETF' }
 ];
 
 const INDICES = [
   { symbol: 'S&P 500', val: '5,123.45', change: '+0.85%', isUp: true },
   { symbol: 'NASDAQ', val: '16,234.10', change: '-0.32%', isUp: false },
+  { symbol: 'DOW JONES', val: '38,714.77', change: '+0.12%', isUp: true },
   { symbol: 'VIX', val: '14.22', change: '-5.20%', isUp: false },
   { symbol: 'US 10Y', val: '4.21%', change: '+0.01', isUp: true },
 ];
@@ -109,6 +117,31 @@ const Markets = () => {
   
   const [isLive, setIsLive] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [hftLogs, setHftLogs] = useState([]);
+
+  // Generate ultra-fast HFT order blocks
+  useEffect(() => {
+    if (!isLive) return;
+    const logInterval = setInterval(() => {
+       const asset = MOCK_TICKERS[Math.floor(Math.random() * MOCK_TICKERS.length)].symbol;
+       const isBuy = Math.random() > 0.5;
+       const price = (Math.random() * 500 + 50).toFixed(2);
+       const d = new Date();
+       const ms = d.getMilliseconds().toString().padStart(3, '0');
+       const newLog = {
+         id: Math.random().toString(36).substring(2, 10).toUpperCase(),
+         time: `${d.toLocaleTimeString(undefined, {hour12: false})}.${ms}`,
+         symbol: asset,
+         action: isBuy ? 'BUY' : 'SELL',
+         type: Math.random() > 0.85 ? 'BLOCK:DARK' : 'SWEEP:LIT',
+         shares: (Math.random() * 25000 + 100).toFixed(0),
+         price: price
+       };
+       setHftLogs(prev => [newLog, ...prev].slice(0, 16)); // Maintain latest 16 fills
+    }, 280); // Ultra-fast raw data stream rate
+
+    return () => clearInterval(logInterval);
+  }, [isLive]);
 
   useEffect(() => {
     if (!isLive) return;
@@ -209,15 +242,15 @@ const Markets = () => {
                     <Activity size={18} className="text-orange" />
                     <h4>HFT Event Log</h4>
                 </div>
-                <div className="log-list-pro">
-                    {filteredData.slice(0, 8).map((m, i) => (
-                        <div key={i} className="log-item-pro">
-                            <span className="time">{new Date().toLocaleTimeString(undefined, {hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit'})}</span>
-                            <span className="symbol">{m.symbol}</span>
-                            <span className={`action ${Math.random() > 0.5 ? 'buy' : 'sell'}`}>
-                                {Math.random() > 0.4 ? 'LIMIT' : 'MARKET'}
-                            </span>
-                            <span className="shares">{(Math.random()*1000).toFixed(0)}</span>
+                <div className="log-list-pro terminal-logs">
+                    {hftLogs.map((log, i) => (
+                        <div key={`${log.id}-${i}`} className={`log-item-term ${i === 0 ? 'flash-bg-term' : ''}`}>
+                            <span className="l-time">{log.time}</span>
+                            <span className="l-symb">{log.symbol.padEnd(8, ' ')}</span>
+                            <span className={`l-action ${log.action === 'BUY' ? 'text-up' : 'text-down'}`}>{log.action.padEnd(4, ' ')}</span>
+                            <span className="l-qty">{log.shares.padStart(6, ' ')} /</span>
+                            <span className="l-price">${log.price}</span>
+                            <span className="l-type text-muted opacity-50">{log.type}</span>
                         </div>
                     ))}
                 </div>

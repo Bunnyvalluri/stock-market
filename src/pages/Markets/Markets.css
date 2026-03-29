@@ -167,8 +167,8 @@
 
 .matrix-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
 }
 
 /* Market Card PRO - Professional Monolithic Design */
@@ -243,26 +243,46 @@
   border-bottom: 1px solid var(--border-light);
 }
 
-.int-header h4 { font-size: 0.9rem; font-weight: 800; letter-spacing: -0.2px; }
+.int-header h4 { font-size: 0.9rem; font-weight: 800; letter-spacing: -0.2px; text-transform: uppercase;}
 
-.log-list-pro {
+/* Raw Terminal Log Matrix */
+.terminal-logs {
+  background: #000;
+  border: 1px solid var(--border-medium);
+  border-radius: 4px;
+  padding: 8px;
+  height: 380px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 4px;
 }
 
-.log-item-pro {
+.log-item-term {
   display: flex;
-  justify-content: space-between;
-  font-family: 'Inter', monospace;
-  font-size: 0.75rem;
-  color: var(--text-muted);
+  gap: 8px;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0px;
+  white-space: pre;
+  color: var(--text-secondary);
+  line-height: 1.2;
 }
 
-.log-item-pro span.time { width: 70px; }
-.log-item-pro span.symbol { width: 50px; font-weight: 800; color: var(--text-secondary); }
-.log-item-pro .action.buy { color: var(--status-up); }
-.log-item-pro .action.sell { color: var(--status-down); }
+.log-item-term .l-time { color: var(--text-muted); opacity: 0.7; }
+.log-item-term .l-symb { color: #fff; font-weight: 700; width: 55px;}
+.log-item-term .l-qty { color: var(--accent-cyan); }
+.log-item-term .l-price { font-weight: 700; color: var(--text-primary); }
+.log-item-term .l-type { font-size: 0.6rem; margin-left: auto; }
+
+.flash-bg-term {
+  animation: rawFlash 0.3s ease-out;
+}
+
+@keyframes rawFlash {
+  0% { background: rgba(255, 255, 255, 0.2); color: #fff; }
+  100% { background: transparent; }
+}
 
 /* Volatility Heatmap Grid */
 .heatmap-pro {
