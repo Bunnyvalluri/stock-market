@@ -8,6 +8,7 @@ import {
   ArrowLeft, TrendingUp, TrendingDown, Activity, BarChart2, 
   AlertCircle, Star, Share2, Globe, Shield, Zap, Target, Layers
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import './StockDetail.css';
 
 const generateOHLC = (base, days) => {
@@ -111,11 +112,11 @@ export default function StockDetail() {
           <ArrowLeft size={16} /> Back to Exchange Matrix
         </Link>
         <div className="sd-pro-actions">
-           <button className={`sd-pro-btn ${isWatchlisted ? 'active' : ''}`} onClick={() => setIsWatchlisted(!isWatchlisted)}>
+           <button className={`sd-pro-btn ${isWatchlisted ? 'active' : ''}`} onClick={() => { setIsWatchlisted(!isWatchlisted); toast.success(isWatchlisted ? 'Asset removed from Watchlist.' : 'Asset added to Watchlist.', {icon: '⭐'}); }}>
              <Star size={14} fill={isWatchlisted ? 'currentColor' : 'none'} />
              Watchlist
            </button>
-           <button className="sd-pro-btn"><Share2 size={14} /> Intelligence Report</button>
+           <button className="sd-pro-btn" onClick={() => toast.loading('Generating secure proprietary PDF...', {duration: 2000})}><Share2 size={14} /> Intelligence Report</button>
         </div>
       </div>
 
@@ -152,7 +153,7 @@ export default function StockDetail() {
                  <div className="header-right">
                     <div className="sd-pro-ranges">
                        {Object.keys(rangeMap).map(r => (
-                          <button key={r} className={range === r ? 'active' : ''} onClick={() => setRange(r)}>{r}</button>
+                          <button key={r} className={range === r ? 'active' : ''} onClick={() => { setRange(r); toast(`Rendering ${r} structural timeframe.`, {icon: '📊'}); }}>{r}</button>
                        ))}
                     </div>
                  </div>

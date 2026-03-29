@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Settings as SettingsIcon, Key, Database, ShieldCheck, Mail, Smartphone, Globe, Save, Terminal } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import './Settings.css';
 const Settings = () => {

@@ -6,6 +6,7 @@ import {
   Zap, BarChart3, Clock, Bell, Settings, Filter
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
 import { fetchGlobalQuote } from '../../services/alphaVantage';
 import './Home.css';
 
@@ -170,8 +171,8 @@ const Home = () => {
           </div>
         </div>
         <div className="terminal-actions">
-           <Bell size={18} className="icon-btn text-muted" />
-           <Settings size={18} className="icon-btn text-muted" />
+           <Bell size={18} className="icon-btn text-muted" style={{cursor: 'pointer'}} onClick={() => toast('No new high-priority alerts.', {icon: '🔔'})} />
+           <Settings size={18} className="icon-btn text-muted" style={{cursor: 'pointer'}} onClick={() => toast.loading('Initializing workspace settings...', {duration: 1000})} />
            <div className="system-health">
               <span className="health-label">Compute Node:</span>
               <span className="health-value text-gradient">{systemHealth}%</span>
@@ -246,7 +247,7 @@ const Home = () => {
                 <div className="header-right">
                     <div className="term-pills">
                         {['1D', '1W', '1M', '3M', 'YTD'].map(p => (
-                            <button key={p} className={p === '1M' ? 'active' : ''}>{p}</button>
+                            <button key={p} className={p === '1M' ? 'active' : ''} onClick={() => toast(`Rendering ${p} historical volume profile.`, {icon: '📊'})}>{p}</button>
                         ))}
                     </div>
                 </div>

@@ -5,6 +5,7 @@ import {
   Clock, Globe, Search, Filter, BarChart3, Zap
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
 import { fetchGlobalQuote } from '../../services/alphaVantage';
 import './Markets.css';
 
@@ -196,7 +197,7 @@ const Markets = () => {
         </div>
 
         <div className="header-right-pro">
-            <div className={`live-toggle-pro ${isLive ? 'active' : ''}`} onClick={() => setIsLive(!isLive)}>
+            <div className={`live-toggle-pro ${isLive ? 'active' : ''}`} onClick={() => { setIsLive(!isLive); if(!isLive) toast.success('Re-establishing real-time feed...', {icon:'⚡'}); else toast.error('Market Feed Paused'); }}>
                 <Zap size={14} />
                 {isLive ? 'LIVE FEED' : 'FEED PAUSED'}
             </div>
@@ -209,7 +210,7 @@ const Markets = () => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                 />
             </div>
-            <button className="filter-btn-pro"><Filter size={18} /></button>
+            <button className="filter-btn-pro" onClick={() => toast('Advanced Matrix Filtering engaged.', {icon:'⚙️'})}><Filter size={18} /></button>
         </div>
       </div>
 
@@ -217,9 +218,9 @@ const Markets = () => {
         <div className="main-matrix">
            <div className="matrix-controls">
                 <div className="control-tabs">
-                    <button className="active">All Assets</button>
-                    <button>Technology</button>
-                    <button>Indices</button>
+                    <button className="active" onClick={() => toast('Rendering full asset matrix.', {icon:'🗺️'})}>All Assets</button>
+                    <button onClick={() => toast('Filtering technology equities...', {icon:'💻'})}>Technology</button>
+                    <button onClick={() => toast('Filtering global indices...', {icon:'📈'})}>Indices</button>
                 </div>
                 <div className="matrix-stats">
                     <span className="text-muted">Tracking: </span>

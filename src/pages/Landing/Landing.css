@@ -282,6 +282,49 @@
   margin-bottom: 3rem;
 }
 
+/* Custom Liquidity Routing Button */
+.liquidity-routing-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  font-weight: 800;
+  margin-bottom: 3rem;
+  padding: 10px 24px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+}
+
+/* Target element specifically in Dark Mode */
+:root[data-theme='dark'] .liquidity-routing-btn {
+  color: #22C55E; /* Neon Green */
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+:root[data-theme='dark'] .liquidity-routing-btn:hover {
+  background: rgba(34, 197, 94, 0.2);
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Target element specifically in Light Mode */
+:root[data-theme='light'] .liquidity-routing-btn {
+  color: #4F46E5; /* Bold Indigo */
+  background: rgba(79, 70, 229, 0.1);
+  border: 1px solid rgba(79, 70, 229, 0.3);
+}
+
+:root[data-theme='light'] .liquidity-routing-btn:hover {
+  background: rgba(79, 70, 229, 0.15);
+  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.2);
+  transform: translateY(-2px);
+}
+
 .ticker-scroll-pro {
   display: flex;
   justify-content: center;

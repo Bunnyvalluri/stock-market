@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } f
 import { LineChart, LayoutDashboard, Activity, Database, Settings as SettingsIcon, Bell, Search, Menu, X, TrendingUp, Zap, LogOut } from 'lucide-react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './firebase';
+import { Toaster } from 'react-hot-toast';
 import './App.css';
 
 import Landing from './pages/Landing/Landing';
@@ -164,7 +165,6 @@ const DashboardLayout = ({ children }) => {
 // ──────────────────────────────────────────────
 // App Router
 // ──────────────────────────────────────────────
-import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (

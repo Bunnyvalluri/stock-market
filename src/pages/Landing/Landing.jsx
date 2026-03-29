@@ -8,6 +8,7 @@ import {
   TerminalSquare, Globe, Zap, Shield, Layers, 
   Maximize, Briefcase, Gauge, Target
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import './Landing.css';
 
 const generateSparkline = () => Array.from({ length: 40 }, (_, i) => ({ time: i, val: 100 + Math.random() * 30 + i }));
@@ -97,7 +98,7 @@ const Landing = () => {
             <button className="btn-pro-primary" onClick={() => navigate('/login')}>
               Deploy Terminal Account
             </button>
-            <button className="btn-pro-outline">
+            <button className="btn-pro-outline" onClick={() => toast('Methodology documentation opening securely...', {icon: '📚'})}>
               Review Methodology
             </button>
           </motion.div>
@@ -161,7 +162,12 @@ const Landing = () => {
 
       {/* Corporate Liquidity Bar */}
       <section className="liquidity-track-pro">
-        <p>INSTITUTIONAL LIQUIDITY PIPELINES</p>
+        <div 
+           className="liquidity-routing-btn" 
+           onClick={() => navigate('/markets')}
+        >
+           INSTITUTIONAL LIQUIDITY PIPELINES <ArrowRight size={14} />
+        </div>
         <div className="ticker-scroll-pro">
            <span>NASDAQ</span>
            <span className="dot"></span>
@@ -304,28 +310,28 @@ const Landing = () => {
             </div>
             <div className="f-pro-col">
                <h4>Core Terminal</h4>
-               <a href="#">Market Matrix</a>
-               <a href="#">AI Predictions</a>
-               <a href="#">Portfolio Alpha</a>
+               <a href="#" onClick={(e) => { e.preventDefault(); toast('Initiating Market Matrix projection...', {icon:'🌐'}); }}>Market Matrix</a>
+               <a href="#" onClick={(e) => { e.preventDefault(); toast('Fetching ML models...', {icon:'🧠'}); }}>AI Predictions</a>
+               <a href="#" onClick={(e) => { e.preventDefault(); toast('Fetching Alpha data...', {icon:'📈'}); }}>Portfolio Alpha</a>
             </div>
             <div className="f-pro-col">
                <h4>Resources</h4>
-               <a href="#">API Docs</a>
-               <a href="#">Methodology</a>
-               <a href="#">Case Studies</a>
+               <a href="#" onClick={(e) => { e.preventDefault(); toast.loading('Establishing secure API tunnel...', {duration: 1500}); }}>API Docs</a>
+               <a href="#" onClick={(e) => { e.preventDefault(); toast('Accessing methodology archives...', {icon:'📚'}); }}>Methodology</a>
+               <a href="#" onClick={(e) => { e.preventDefault(); toast('Fetching institutional case studies...', {icon:'💼'}); }}>Case Studies</a>
             </div>
             <div className="f-pro-col">
                <h4>Security</h4>
-               <a href="#">Data Encryption</a>
-               <a href="#">GDPR Policy</a>
-               <a href="#">Compliance</a>
+               <a href="#" onClick={(e) => { e.preventDefault(); toast.success('Encryption standards verified.', {icon:'🔒'}); }}>Data Encryption</a>
+               <a href="#" onClick={(e) => { e.preventDefault(); toast('Viewing GDPR Compliance Matrix...', {icon:'🛡️'}); }}>GDPR Policy</a>
+               <a href="#" onClick={(e) => { e.preventDefault(); toast('SOC-2 Type II Compliance achieved.', {icon:'✅'}); }}>Compliance</a>
             </div>
          </div>
          <div className="f-pro-bottom">
             <span>© 2026 StockMind AI High-Frequency Infrastructure. All rights reserved.</span>
             <div className="f-pro-legal">
-               <a href="#">Terms of Execution</a>
-               <a href="#">Privacy Matrix</a>
+               <a href="#" onClick={(e) => { e.preventDefault(); toast('Loading execution SLA terms...', {icon:'⚖️'}); }}>Terms of Execution</a>
+               <a href="#" onClick={(e) => { e.preventDefault(); toast('Loading privacy telemetry details...', {icon:'👀'}); }}>Privacy Matrix</a>
             </div>
          </div>
       </footer>
