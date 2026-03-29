@@ -313,13 +313,13 @@
 
 .perf-card-pro {
   padding: 2.5rem;
-  border-radius: var(--radius-sm) !important;
+  border-radius: var(--radius-md) !important;
   border: 1px solid var(--border-light) !important;
-  background: #121212 !important;
+  background: var(--bg-card) !important;
 }
 
 .perf-card-pro h4 { font-size: 0.8rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; margin-bottom: 12px; }
-.perf-card-pro h3 { font-size: 2.5rem; font-weight: 800; font-family: 'Inter', monospace; margin-bottom: 1rem; color: #fff; }
+.perf-card-pro h3 { font-size: 2.5rem; font-weight: 800; font-family: 'Inter', monospace; margin-bottom: 1rem; color: var(--text-primary); }
 .perf-card-pro p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; font-weight: 500; }
 
 /* Bento Pro Architecture Section */
@@ -336,9 +336,9 @@
 }
 
 .bento-pro-card {
-  background: #121212 !important;
+  background: var(--bg-card) !important;
   border: 1px solid var(--border-light) !important;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -416,12 +416,43 @@
 .f-pro-legal a { color: var(--text-muted); text-decoration: none; }
 .f-pro-legal a:hover { color: #fff; }
 
-/* Responsive Adjustments */
+/* Responsive Adjustments (SaaS & Apple Grade) */
+@media (max-width: 1200px) {
+  .perf-grid-pro { grid-template-columns: repeat(2, 1fr); }
+  .bento-pro-grid { grid-template-columns: 1fr; }
+  .col-span-2 { grid-column: span 1; }
+  .f-pro-grid { grid-template-columns: 1fr 1fr; gap: 3rem; }
+}
+
+@media (max-width: 900px) {
+  .viewport-body { flex-direction: column; gap: 2rem; }
+  .viewport-sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-light); padding-right: 0; padding-bottom: 2rem; }
+  .v-stat { flex-direction: row; justify-content: space-between; align-items: center; }
+  .v-graph-skeleton { margin-top: 1rem; }
+}
+
 @media (max-width: 768px) {
-  .hero-pro-title { font-size: 3rem; letter-spacing: -1.5px; }
-  .nav-institutional { padding: 1rem 2rem; }
-  .performance-pro-section { padding: 4rem 2rem; }
-  .perf-grid-pro { grid-template-columns: 1fr 1fr; }
+  .hero-pro-title { font-size: 2.8rem; letter-spacing: -1.5px; }
+  .hero-pro-desc { font-size: 1.1rem; }
+  .nav-institutional { padding: 1rem 1.5rem; }
+  .performance-pro-section, .engine-pro-section { padding: 4rem 1.5rem; }
+  .perf-grid-pro { grid-template-columns: 1fr; }
+  .b-pro-content { padding: 2rem; }
+  .hero-pro-ctas { flex-direction: column; width: 100%; padding: 0 2rem; }
+  .btn-pro-primary, .btn-pro-outline { width: 100%; text-align: center; justify-content: center; }
+  .connection-nodes-wrap { flex-direction: column; gap: 2rem; }
+  .footer-institutional { padding: 4rem 1.5rem 2rem; }
+  .f-pro-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .f-pro-bottom { flex-direction: column; gap: 1rem; align-items: flex-start; }
+}
+
+@media (max-width: 480px) {
+  .hero-pro-title { font-size: 2.2rem; }
+  .pro-badge-wrap { flex-direction: column; gap: 4px; padding: 10px; }
+  .hero-pro-viewport { margin-top: 3rem; width: 95%; }
+  .viewport-body { padding: 1.5rem; }
+  .section-head-pro h2 { font-size: 2.5rem; }
+  .ticker-scroll-pro { gap: 1.5rem; font-size: 1.1rem; flex-wrap: wrap; }
 }
 
 @keyframes pulse {

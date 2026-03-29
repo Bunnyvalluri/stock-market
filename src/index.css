@@ -1,82 +1,130 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Institutional Wall-Street Dark Theme (Monolithic & Secure) */
-  --bg-primary: #0a0a0a;       /* Deep Charcoal Black */
-  --bg-secondary: #000000;     /* Pure Pitch Black */
-  --bg-card: #121212;          /* Elevated Monolithic Grey */
-  --bg-card-hover: #1c1c1c;    /* Subtle Lift */
+  /* Customer Requested Premium Dark Theme (Fintech + AI) */
+  --bg-primary: #0B0F19;       /* Deep Indigo Black */
+  --bg-secondary: #0B0F19;     
+  --bg-card: #121826;          /* Soft Card Background */
+  --bg-card-hover: #1f2937;    
   
-  --text-primary: #f3f4f6;     /* Pristine White */
-  --text-secondary: #9ca3af;   /* Muted Grey */
-  --text-muted: #6b7280;       /* Deep Grey */
+  --text-primary: #E5E7EB;     
+  --text-secondary: #9CA3AF;   
+  --text-muted: #6b7280;       
   
-  /* Corporate Institutional Accents */
-  --accent-brand: #2563eb;      /* Trustworthy Corporate Blue */
-  --accent-cyan: #0e7490;       /* Sophisticated Deep Cyan */
-  --accent-magenta: #1d4ed8;    /* Professional Royal Blue (Replacing Purple) */
-  --accent-lime: #047857;       /* Conservative Emerald */
-  --accent-orange: #b45309;     /* Burnished Amber */
-  --accent-purple: #312e81;     /* Executive Navy */
+  /* Core Brand Colors */
+  --accent-brand: #4F46E5;      /* Primary Indigo */
+  --accent-cyan: #4F46E5;       
+  --accent-magenta: #4F46E5;    
+  --accent-lime: #22C55E;       /* Success Green */
+  --accent-orange: #f59e0b;     
+  --accent-purple: #4F46E5;     
   
-  /* Strict Market Action Colors */
-  --status-up: #10b981;         /* Institutional Green */
-  --status-up-bg: rgba(16, 185, 129, 0.1);
-  --status-down: #ef4444;       /* Alert Red */
+  /* Market Action / Danger Colors */
+  --status-up: #22C55E;         /* Green Accent */
+  --status-up-bg: rgba(34, 197, 94, 0.1);
+  --status-down: #EF4444;       /* Danger Red */
   --status-down-bg: rgba(239, 68, 68, 0.1);
-  --status-neutral: #64748b;    /* Unchanged State */
+  --status-neutral: #9CA3AF;    
   
-  --border-light: rgba(255, 255, 255, 0.1);
-  --border-medium: rgba(255, 255, 255, 0.2);
-  --border-vibrant: rgba(37, 99, 235, 0.5); /* Corporate Blue border */
+  --border-light: #1F2937;
+  --border-medium: #374151;
+  --border-vibrant: rgba(79, 70, 229, 0.5); 
   
-  /* Controlled, Elegant Shadows (No wild neon glows) */
-  --glow-cyan: 0 4px 12px rgba(14, 116, 144, 0.2);
-  --glow-magenta: 0 4px 12px rgba(29, 78, 216, 0.2);
-  --glow-brand: 0 8px 30px rgba(37, 99, 235, 0.15);
-  --glow-up: 0 4px 15px rgba(16, 185, 129, 0.15);
-  --glow-down: 0 4px 15px rgba(239, 68, 68, 0.15);
+  /* Glow Effects */
+  --glow-cyan: 0 0 20px rgba(79, 70, 229, 0.4);
+  --glow-magenta: 0 0 20px rgba(79, 70, 229, 0.4);
+  --glow-brand: 0 0 20px rgba(79, 70, 229, 0.4);
+  --glow-up: 0 0 20px rgba(34, 197, 94, 0.4);
+  --glow-down: 0 0 20px rgba(239, 68, 68, 0.4);
+
+  /* New Radius Requirement */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+}
+
+:root[data-theme='light'] .flash-bg-term {
+  animation: rawFlashLight 0.3s ease-out !important;
+}
+@keyframes rawFlashLight {
+  0% { background: rgba(137, 212, 255, 0.5); }
+  100% { background: transparent; }
 }
 
 :root[data-theme='light'] {
-  /* Ultra-Clean Corporate Light Theme */
-  --bg-primary: #ffffff;       /* Pure White */
-  --bg-secondary: #f9fafb;     /* Very Soft Grey */
-  --bg-card: #ffffff;          /* Flat White */
-  --bg-card-hover: #f3f4f6;    /* Soft Grey Lift */
+  /* Customer Requested Light Theme */
+  --bg-primary: #FFFDF6;       /* Warm Cream White */
+  --bg-secondary: #f2f0e6;     /* Slightly darker cream for depth */
+  --bg-card: #ffffff;          /* Pure White for cards */
+  --bg-card-hover: #faf9f2;    
   
   --text-primary: #111827;     /* Stark Black-Grey */
   --text-secondary: #4b5563;   /* Professional Charcoal */
-  --text-muted: #6b7280;       /* Muted Grey */
+  --text-muted: #6b7280;       
   
-  --accent-brand: #1d4ed8;      /* Executive Dark Blue */
-  --accent-cyan: #0369a1;       /* Deep Sea Blue */
-  --accent-magenta: #1e3a8a;    /* Navy Blue */
-  --accent-lime: #065f46;       /* Deep Green */
-  --accent-orange: #9a3412;     /* Burnt Orange */
-  --accent-purple: #1e3a8a;     /* Navy Blue */
+  --accent-brand: #89D4FF;      /* Requested Sky Blue */
+  --accent-cyan: #60a5fa;       /* Complementary Blue */
+  --accent-magenta: #89D4FF;    /* Requested Sky Blue */
+  --accent-lime: #059669;       
+  --accent-orange: #f59e0b;     
+  --accent-purple: #89D4FF;     
   
-  --status-up: #059669;         /* High Contrast Green */
+  --status-up: #059669;         
   --status-up-bg: rgba(5, 150, 105, 0.1);
-  --status-down: #dc2626;       /* High Contrast Red */
+  --status-down: #dc2626;       
   --status-down-bg: rgba(220, 38, 38, 0.1);
   --status-neutral: #6b7280;    
-  
+
+  /* Overrides for hard-coded dark terminal components */
   --border-light: rgba(0, 0, 0, 0.1);
   --border-medium: rgba(0, 0, 0, 0.2);
-  --border-vibrant: rgba(29, 78, 216, 0.3); /* Navy border */
-  
-  --glow-cyan: none;            /* Removed neon glow for professional look */
-  --glow-magenta: none;
-  --glow-brand: 0 4px 20px rgba(29, 78, 216, 0.1);
-  --glow-up: none;
-  --glow-down: none;
-  
-  --radius-lg: 24px;
-  --radius-md: 16px;
-  --radius-sm: 8px;
-  
-  --transition-vibrant: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Force light mode on all specific terminal panels that might have hardcoded #121212 / #000 / #080808 */
+[data-theme='light'] .terminal-card,
+[data-theme='light'] .portfolio-summary-card-pro,
+[data-theme='light'] .portfolio-holdings-grid-pro,
+[data-theme='light'] .settings-pro-layout,
+[data-theme='light'] .perf-card-pro,
+[data-theme='light'] .bento-pro-card,
+[data-theme='light'] .login-pro-card,
+[data-theme='light'] .glass-card,
+[data-theme='light'] .b-pro-visual {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-light) !important;
+}
+
+[data-theme='light'] .quant-metrics-bar,
+[data-theme='light'] .login-pro-side-log,
+[data-theme='light'] .terminal-logs,
+[data-theme='light'] .terminal-logs-pro,
+[data-theme='light'] .viewport-body,
+[data-theme='light'] .hero-pro-viewport {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-medium) !important;
+}
+
+[data-theme='light'] .l-symb,
+[data-theme='light'] .qm-val,
+[data-theme='light'] .log-item-term .l-price,
+[data-theme='light'] .matrix-price-pro,
+[data-theme='light'] .visual-code-term {
+  color: var(--text-primary) !important;
+}
+
+[data-theme='light'] .btn-pro-primary,
+[data-theme='light'] .btn-terminal-launch,
+[data-theme='light'] .action-btn-pro,
+[data-theme='light'] .login-submit {
+  background: var(--accent-brand);
+  color: #111827;
+}
+
+[data-theme='light'] .nav-institutional {
+  background: rgba(255, 253, 246, 0.8) !important;
 }
 
 * {

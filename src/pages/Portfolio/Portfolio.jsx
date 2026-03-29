@@ -3,30 +3,31 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as PieTooltip } from 
 import { 
   Briefcase, ArrowUpRight, ArrowDownRight, MoreHorizontal, 
   Plus, Download, Activity, Shield, TrendingUp, TrendingDown,
-  DollarSign, PieChart as PieIcon, Layers, History
+  DollarSign, PieChart as PieIcon, Layers, History, Terminal
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './Portfolio.css';
 
 const initialAssets = [
-  { id: 1, symbol: 'NVDA', name: 'NVIDIA Corp.', shares: 45, avgPrice: 420.50, currentPrice: 890.10, value: 40054.50, sector: 'Technology' },
-  { id: 2, symbol: 'MSFT', name: 'Microsoft Corp.', shares: 120, avgPrice: 310.20, currentPrice: 405.30, value: 48636.00, sector: 'Technology' },
-  { id: 3, symbol: 'TSLA', name: 'Tesla Inc.', shares: 85, avgPrice: 195.40, currentPrice: 212.45, value: 18058.25, sector: 'Automotive' },
-  { id: 4, symbol: 'AAPL', name: 'Apple Inc.', shares: 100, avgPrice: 165.80, currentPrice: 173.50, value: 17350.00, sector: 'Technology' }
+  { id: 1, symbol: 'NVDA', name: 'NVIDIA Corp.', shares: 450, avgPrice: 420.50, currentPrice: 890.10, value: 400545.00, sector: 'Technology', beta: 1.8 },
+  { id: 2, symbol: 'MSFT', name: 'Microsoft Corp.', shares: 1200, avgPrice: 310.20, currentPrice: 405.30, value: 486360.00, sector: 'Technology', beta: 1.1 },
+  { id: 3, symbol: 'TSLA', name: 'Tesla Inc.', shares: 850, avgPrice: 195.40, currentPrice: 212.45, value: 180582.50, sector: 'Automotive', beta: 2.1 },
+  { id: 4, symbol: 'AAPL', name: 'Apple Inc.', shares: 1000, avgPrice: 165.80, currentPrice: 173.50, value: 173500.00, sector: 'Technology', beta: 1.05 },
+  { id: 5, symbol: 'BTC/USD', name: 'Bitcoin', shares: 2.5, avgPrice: 45200.00, currentPrice: 65420.00, value: 163550.00, sector: 'Crypto', beta: 3.2 }
 ];
 
 const COLORS = ['#2563eb', '#06b6d4', '#10b981', '#f59e0b', '#8b5cf6'];
 
 const SummaryStat = ({ label, value, subValue, isUp, icon }) => (
-  <div className="portfolio-summary-card-pro glass-card">
-    <div className="summary-pro-header">
-       <div className="summary-pro-icon">{icon}</div>
-       <span className="summary-pro-label">{label}</span>
+  <div className="portfolio-summary-card-pro glass-card text-left">
+    <div className="summary-pro-header flex-between">
+       <span className="summary-pro-label text-muted font-bold text-xs uppercase tracking-wider">{label}</span>
+       <div className="summary-pro-icon opacity-70">{icon}</div>
     </div>
-    <div className="summary-pro-body">
-       <h2 className="summary-pro-val">{value}</h2>
-       <div className={`summary-pro-sub ${isUp ? 'up' : 'down'}`}>
-          {isUp ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
+    <div className="summary-pro-body mt-2">
+       <h2 className="summary-pro-val font-mono text-2xl font-bold">{value}</h2>
+       <div className={`summary-pro-sub mt-1 text-xs font-mono flex items-center gap-1 ${isUp ? 'text-up' : 'text-down'}`}>
+          {isUp ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
           <span>{subValue}</span>
        </div>
     </div>
@@ -36,13 +37,18 @@ const SummaryStat = ({ label, value, subValue, isUp, icon }) => (
 const Portfolio = () => {
   const [portfolioAssets, setPortfolioAssets] = useState(initialAssets);
   const [isLive, setIsLive] = useState(true);
+  const [systemLogs, setSystemLogs] = useState([]);
 
+  // High Frequency Data Streams
   useEffect(() => {
     if (!isLive) return;
-    const interval = setInterval(() => {
+    
+    // 1. Jitter Portfolio Prices
+    const priceInterval = setInterval(() => {
       setPortfolioAssets(currentAssets => 
         currentAssets.map(asset => {
-          const shift = (Math.random() - 0.48) * (asset.currentPrice * 0.001);
+          const volatility = asset.beta * 0.0008; // Higher beta = more jitter
+          const shift = (Math.random() - 0.48) * (asset.currentPrice * volatility);
           const newPrice = asset.currentPrice + shift;
           return {
             ...asset,
@@ -53,8 +59,32 @@ const Portfolio = () => {
           };
         })
       );
-    }, 1800);
-    return () => clearInterval(interval);
+    }, 800);
+
+    // 2. Generate Real-time Sync Logs
+    const logInterval = setInterval(() => {
+      if (Math.random() > 0.6) {
+         const asset = initialAssets[Math.random() * initialAssets.length | 0].symbol;
+         const d = new Date();
+         const ms = d.getMilliseconds().toString().padStart(3, '0');
+         const type = Math.random() > 0.5 ? 'SYNC_PRICE' : 'MARGIN_CHK';
+         const status = Math.random() > 0.95 ? 'WARN' : 'OK';
+         
+         const newLog = {
+           id: Math.random().toString(36).substring(2, 10).toUpperCase(),
+           time: `${d.toLocaleTimeString(undefined, {hour12: false})}.${ms}`,
+           module: type,
+           asset: asset,
+           status: status
+         };
+         setSystemLogs(prev => [newLog, ...prev].slice(0, 12));
+      }
+    }, 450);
+
+    return () => {
+      clearInterval(priceInterval);
+      clearInterval(logInterval);
+    };
   }, [isLive]);
 
   const totalValue = portfolioAssets.reduce((sum, asset) => sum + asset.value, 0);
@@ -72,66 +102,158 @@ const Portfolio = () => {
       {/* Institutional Navigation Actions */}
       <div className="portfolio-header-pro">
         <div className="header-pro-left">
-            <Layers className="text-brand" size={24} />
+            <div className="brand-icon-box" style={{ width: '40px', height: '40px', background: 'rgba(37,99,235,0.1)', color: 'var(--accent-brand)' }}>
+                <Layers size={22} />
+            </div>
             <div>
-                <h1>Global Equities Alpha</h1>
-                <p className="text-muted">Managed Institutional Portfolio (Live Feed)</p>
+                <h1 className="font-outfit text-2xl font-bold tracking-tight">GLOBAL MACRO FUND I</h1>
+                <p className="text-muted text-xs font-mono mt-1">UUID: 8F92-A14B • INSTITUTIONAL OMNIBUS • LIVE STREAM</p>
             </div>
         </div>
         <div className="header-pro-right">
             <div className="header-pro-pills">
-                <button className="active">Live Dashboard</button>
-                <button>Tax Analytics</button>
-                <button>Rebalancing</button>
+                <button className="active">OVERVIEW</button>
+                <button>RISK & EXPOSURE</button>
+                <button>ORDER ROUTING</button>
             </div>
-            <div className="header-pro-actions">
-                <button className="action-btn-pro"><Download size={18} /></button>
-                <button className="add-btn-pro"><Plus size={18} /> Deploy Capital</button>
+            <div className="header-pro-actions flex gap-2">
+                <button className="btn-pro-outline"><Download size={14} className="mr-1"/> EXPORT CSV</button>
+                <button className="btn-pro-primary"><Plus size={14} className="mr-1"/> DEPLOY CAPITAL</button>
             </div>
         </div>
       </div>
 
+      {/* Advanced Quant Metrics Bar */}
+      <div className="quant-metrics-bar glass-card">
+          <div className="qm-item">
+              <span className="qm-label">SHARPE RATIO (1Y)</span>
+              <span className="qm-val text-brand">3.42</span>
+          </div>
+          <div className="qm-divider"></div>
+          <div className="qm-item">
+              <span className="qm-label">PORTFOLIO BETA</span>
+              <span className="qm-val">1.24</span>
+          </div>
+          <div className="qm-divider"></div>
+          <div className="qm-item">
+              <span className="qm-label">ALPHA (VS SPY)</span>
+              <span className="qm-val text-up">+4.12%</span>
+          </div>
+          <div className="qm-divider"></div>
+          <div className="qm-item">
+              <span className="qm-label">MAX DRAWDOWN</span>
+              <span className="qm-val text-down">-12.4%</span>
+          </div>
+          <div className="qm-divider"></div>
+          <div className="qm-item">
+              <span className="qm-label">MARGIN USAGE</span>
+              <span className="qm-val text-orange">24.5%</span>
+          </div>
+      </div>
+
       {/* Modern Financial Summary Grid */}
-      <div className="portfolio-stats-grid-pro">
+      <div className="portfolio-stats-grid-pro mt-4">
          <SummaryStat 
-            label="Total Equity Value" 
-            value={`$${totalValue.toLocaleString(undefined, {maximumFractionDigits: 0})}`} 
+            label="Gross Asset Value (GAV)" 
+            value={`$${(totalValue / 1000).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}k`} 
             subValue={`+$4,120.45 (1.4%) Today`} 
             isUp={true} 
-            icon={<DollarSign size={20} className="text-brand" />}
+            icon={<DollarSign size={18} />}
          />
          <SummaryStat 
-            label="Net Profit / Loss" 
-            value={`${totalPNL >= 0 ? '+' : '-'}$${Math.abs(totalPNL).toLocaleString(undefined, {maximumFractionDigits: 0})}`} 
-            subValue={`${pnlPercent.toFixed(2)}% All Time`} 
+            label="Unrealized PNL" 
+            value={`${totalPNL >= 0 ? '+' : '-'}$${(Math.abs(totalPNL) / 1000).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}k`} 
+            subValue={`${pnlPercent.toFixed(2)}% Cumulative Return`} 
             isUp={totalPNL >= 0} 
-            icon={<Activity size={20} className="text-cyan" />}
+            icon={<Activity size={18} />}
          />
          <SummaryStat 
-            label="Buying Power (USD)" 
-            value="$42,840.45" 
-            subValue="Level 2 Margin Enabled" 
+            label="Available Liquidity" 
+            value="$424,840.45" 
+            subValue="Immediate Settlement Available" 
             isUp={true} 
-            icon={<Shield size={20} className="text-orange" />}
+            icon={<Shield size={18} />}
          />
       </div>
 
-      <div className="portfolio-main-layout-pro">
-         {/* Allocation & Intelligence Segment */}
-         <div className="portfolio-side-pro">
-            <div className="allocation-card-pro glass-card">
-               <div className="card-header-pro">
-                  <PieIcon size={18} className="text-brand" />
-                  <h4>Global Weightage</h4>
+      <div className="portfolio-main-layout-pro mt-4">
+         
+         {/* Holdings Matrix (Main View - 70% width) */}
+         <div className="portfolio-holdings-grid-pro glass-card">
+            <div className="card-header-term flex-between border-b border-light p-4">
+               <div className="flex items-center gap-2">
+                   <Briefcase size={16} className="text-cyan" />
+                   <h4 className="font-bold text-sm tracking-wide uppercase">Asset Allocation Matrix</h4>
                </div>
-               <div className="allocation-content-pro">
-                  <ResponsiveContainer width="100%" height={200}>
+               <div className="live-status-pro text-xs font-mono flex items-center gap-2">
+                   <div className={`status-dot ${isLive ? 'active bg-up' : 'bg-muted'}`} style={{width: 8, height: 8, borderRadius: '50%'}}></div>
+                   <span>ENGINE: {isLive ? 'SYNCED' : 'OFFLINE'}</span>
+               </div>
+            </div>
+            
+            <div className="holdings-matrix-pro w-full overflow-hidden">
+               <div className="matrix-head-pro grid text-xs font-bold text-muted uppercase tracking-wider py-3 px-4 border-b border-light">
+                  <div className="col-span-2">Instrument</div>
+                  <div className="text-right">Market Px</div>
+                  <div className="text-right">Unrl PNL</div>
+                  <div className="text-right">Position</div>
+                  <div className="text-right">Exposure %</div>
+               </div>
+               
+               <div className="matrix-body-pro flex flex-col">
+                  {portfolioAssets.map(asset => {
+                     const pnlVal = asset.value - (asset.shares * asset.avgPrice);
+                     const pnlPct = (pnlVal / (asset.shares * asset.avgPrice)) * 100;
+                     const isUp = pnlVal >= 0;
+                     const exposure = (asset.value / totalValue) * 100;
+
+                     return (
+                        <div key={asset.symbol} className="matrix-row-pro grid items-center py-3 px-4 border-b border-light hover:bg-white/5 transition-colors">
+                           <div className="matrix-id-pro col-span-2 flex flex-col">
+                              <span className="font-bold text-sm">{asset.symbol}</span>
+                              <span className="text-xs text-muted font-mono">{asset.sector.toUpperCase()}</span>
+                           </div>
+                           <div className={`matrix-price-pro text-right font-mono text-sm font-bold ${asset.tickDir ? `flash-${asset.tickDir}` : ''}`}>
+                              ${asset.currentPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                           </div>
+                           <div className={`matrix-pnl-pro text-right flex flex-col ${isUp ? 'text-up' : 'text-down'}`}>
+                              <span className="font-mono text-sm font-bold">${(Math.abs(pnlVal)/1000).toFixed(1)}k</span>
+                              <span className="text-xs font-mono">{isUp ? '+' : ''}{pnlPct.toFixed(2)}%</span>
+                           </div>
+                           <div className="matrix-holdings-pro text-right flex flex-col">
+                              <span className="font-mono text-sm font-bold">{asset.shares.toLocaleString()}</span>
+                              <span className="text-xs text-muted font-mono">@ ${asset.avgPrice.toFixed(2)}</span>
+                           </div>
+                           <div className="matrix-exposure-pro text-right flex items-center justify-end gap-2">
+                              <div className="w-16 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                  <div className="h-full bg-brand" style={{width: `${exposure}%`}}></div>
+                              </div>
+                              <span className="font-mono text-xs w-10">{exposure.toFixed(1)}%</span>
+                           </div>
+                        </div>
+                     );
+                  })}
+               </div>
+            </div>
+         </div>
+
+         {/* Right Sidebar: Intelligence & Logs (30% width) */}
+         <div className="portfolio-side-pro flex flex-col gap-4">
+            
+            {/* Sector Weightage Chart */}
+            <div className="allocation-card-pro glass-card">
+               <div className="card-header-term border-b border-light p-4 flex items-center gap-2">
+                  <PieIcon size={16} className="text-orange" />
+                  <h4 className="font-bold text-sm tracking-wide uppercase">Capital Distribution</h4>
+               </div>
+               <div className="allocation-content-pro p-4">
+                  <ResponsiveContainer width="100%" height={160}>
                     <PieChart>
                       <Pie 
                         data={allocationData} 
-                        innerRadius={55} 
-                        outerRadius={75} 
-                        paddingAngle={10} 
+                        innerRadius={50} 
+                        outerRadius={70} 
+                        paddingAngle={5} 
                         dataKey="value" 
                         stroke="none"
                         isAnimationActive={false}
@@ -139,90 +261,40 @@ const Portfolio = () => {
                         {allocationData.map((e, i) => <Cell key={`c-${i}`} fill={COLORS[i % COLORS.length]} />)}
                       </Pie>
                       <PieTooltip 
-                        contentStyle={{ background: '#121212', border: '1px solid #333', borderRadius: '8px', color: '#fff' }}
+                        contentStyle={{ background: '#000', border: '1px solid #333', borderRadius: '4px', color: '#fff', fontFamily: 'monospace', fontSize: '12px' }}
                         itemStyle={{ color: '#fff' }}
+                        formatter={(value) => [`$${(value/1000).toFixed(1)}k`, 'Exposure']}
                       />
                     </PieChart>
                   </ResponsiveContainer>
-                  <div className="allocation-legend-pro">
-                     {portfolioAssets.map((asset, i) => (
-                        <div key={asset.symbol} className="legend-item-pro">
-                           <span className="dot" style={{ backgroundColor: COLORS[i % COLORS.length] }}></span>
-                           <span className="sym">{asset.symbol}</span>
-                           <span className="pct text-muted">{((asset.value/totalValue)*100).toFixed(1)}%</span>
-                        </div>
-                     ))}
-                  </div>
                </div>
             </div>
 
-            <div className="allocation-card-pro glass-card mt-5">
-                <div className="card-header-pro">
-                    <History size={18} className="text-cyan" />
-                    <h4>Market Pulse Alerts</h4>
-                </div>
-                <div className="portfolio-alerts-pro">
-                    <div className="alert-item-pro">
-                        <span className="alert-tag up">BULLISH</span>
-                        <p>MSFT support levels respected at $405. Neural bias positive.</p>
+            {/* Terminal System Trace */}
+            <div className="allocation-card-pro glass-card flex-1 flex flex-col">
+                <div className="card-header-term border-b border-light p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                       <Terminal size={16} className="text-brand" />
+                       <h4 className="font-bold text-sm tracking-wide uppercase">System Trace</h4>
                     </div>
-                    <div className="alert-item-pro">
-                        <span className="alert-tag up">VOLATILE</span>
-                        <p>NVDA approaching overhead Resistance Zone (920).</p>
-                    </div>
+                    <span className="text-xs font-mono text-muted">PORT_SYNC_DAEMON</span>
+                </div>
+                
+                {/* Raw Terminal Data Feed */}
+                <div className="terminal-logs-pro p-2">
+                    {systemLogs.map((log, i) => (
+                        <div key={`${log.id}-${i}`} className={`log-item-term ${i === 0 ? 'flash-bg-term' : ''}`}>
+                            <span className="l-time">{log.time}</span>
+                            <span className="l-symb">{log.module.padEnd(10, ' ')}</span>
+                            <span className="l-qty text-brand">{log.asset.padEnd(6, ' ')}</span>
+                            <span className={`l-status font-bold ${log.status === 'OK' ? 'text-up' : 'text-orange'}`}>
+                                [{log.status}]
+                            </span>
+                        </div>
+                    ))}
                 </div>
             </div>
-         </div>
 
-         {/* Holdings Matrix (Main View) */}
-         <div className="portfolio-holdings-grid-pro glass-card">
-            <div className="card-header-pro flex-between mb-4">
-               <h4>Asset Holdings Matrix</h4>
-               <div className="live-status-pro">
-                   <div className={`status-dot ${isLive ? 'active' : ''}`}></div>
-                   <span>ENGINE {isLive ? 'ACTIVE' : 'IDLE'}</span>
-               </div>
-            </div>
-            
-            <div className="holdings-matrix-pro">
-               <div className="matrix-head-pro">
-                  <span>Instrument</span>
-                  <span>Price</span>
-                  <span>Profit/Loss</span>
-                  <span>Holdings</span>
-                  <span>Sector</span>
-               </div>
-               <div className="matrix-body-pro">
-                  {portfolioAssets.map(asset => {
-                     const pnlVal = asset.value - (asset.shares * asset.avgPrice);
-                     const pnlPct = (pnlVal / (asset.shares * asset.avgPrice)) * 100;
-                     const isUp = pnlVal >= 0;
-
-                     return (
-                        <div key={asset.symbol} className="matrix-row-pro">
-                           <div className="matrix-id-pro">
-                              <span className="font-bold">{asset.symbol}</span>
-                              <span className="text-xs text-muted">{asset.name}</span>
-                           </div>
-                           <div className={`matrix-price-pro font-mono ${asset.tickDir ? `flash-${asset.tickDir}` : ''}`}>
-                              ${asset.currentPrice.toFixed(2)}
-                           </div>
-                           <div className={`matrix-pnl-pro ${isUp ? 'text-up' : 'text-down'}`}>
-                              <span className="font-bold">${Math.abs(pnlVal).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-                              <span className="text-xs">({isUp ? '+' : ''}{pnlPct.toFixed(2)}%)</span>
-                           </div>
-                           <div className="matrix-holdings-pro">
-                              <span className="font-bold">{asset.shares} Units</span>
-                              <span className="text-xs text-muted">Cost: ${asset.avgPrice.toFixed(1)}</span>
-                           </div>
-                           <div className="matrix-sector-pro">
-                              <span className="sector-tag">{asset.sector}</span>
-                           </div>
-                        </div>
-                     );
-                  })}
-               </div>
-            </div>
          </div>
 
       </div>
