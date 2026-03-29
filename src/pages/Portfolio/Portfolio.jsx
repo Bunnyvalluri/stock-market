@@ -3,7 +3,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as PieTooltip } from 
 import { 
   Briefcase, ArrowUpRight, ArrowDownRight, MoreHorizontal, 
   Plus, Download, Activity, Shield, TrendingUp, TrendingDown,
-  DollarSign, PieChart as PieIcon, Layers, History, Terminal
+  DollarSign, PieChart as PieIcon, Layers, History, Terminal, Zap
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -39,6 +39,7 @@ const Portfolio = () => {
   const [portfolioAssets, setPortfolioAssets] = useState(initialAssets);
   const [isLive, setIsLive] = useState(true);
   const [systemLogs, setSystemLogs] = useState([]);
+  const [activeTab, setActiveTab] = useState('OVERVIEW');
 
   const handleExportCSV = () => {
     try {
@@ -149,9 +150,9 @@ const Portfolio = () => {
         </div>
         <div className="header-pro-right">
             <div className="header-pro-pills">
-                <button className="active" onClick={() => toast('Displaying Portfolio Overview', { icon: '📊' })}>OVERVIEW</button>
-                <button onClick={() => toast('Risk metrics recalculated.', { icon: '🛡️' })}>RISK & EXPOSURE</button>
-                <button onClick={() => toast.loading('Connecting to routing engine...', { duration: 1500 })}>ORDER ROUTING</button>
+                <button className={activeTab === 'OVERVIEW' ? 'active' : ''} onClick={() => { setActiveTab('OVERVIEW'); toast('Displaying Portfolio Overview', { icon: '📊' }); }}>OVERVIEW</button>
+                <button className={activeTab === 'RISK' ? 'active' : ''} onClick={() => { setActiveTab('RISK'); toast('Risk metrics recalculated.', { icon: '🛡️' }); }}>RISK & EXPOSURE</button>
+                <button className={activeTab === 'ROUTING' ? 'active' : ''} onClick={() => { setActiveTab('ROUTING'); toast.loading('Connecting to routing engine...', { duration: 1000 }); }}>ORDER ROUTING</button>
             </div>
             <div className="header-pro-actions flex gap-2">
                 <button 
@@ -162,7 +163,7 @@ const Portfolio = () => {
                 </button>
                 <button 
                   className="btn-pro-primary"
-                  onClick={() => toast.success('Capital Deployment sequence initialized.', { icon: '💸' })}
+                  onClick={() => { setActiveTab('ROUTING'); toast.success('Capital Deployment sequence initialized.', { icon: '💸' }); }}
                 >
                   <Plus size={14} className="mr-1"/> DEPLOY CAPITAL
                 </button>
@@ -225,7 +226,7 @@ const Portfolio = () => {
 
       <div className="portfolio-main-layout-pro mt-4">
          
-         {/* Holdings Matrix (Main View - 70% width) */}
+         {activeTab === 'OVERVIEW' && (
          <div className="portfolio-holdings-grid-pro glass-card">
             <div className="card-header-term flex-between border-b border-light p-4">
                <div className="flex items-center gap-2">
@@ -283,6 +284,75 @@ const Portfolio = () => {
                </div>
             </div>
          </div>
+         )}
+
+         {activeTab === 'RISK' && (
+         <div className="portfolio-holdings-grid-pro glass-card p-6">
+            <div className="flex items-center gap-2 mb-6">
+               <Shield size={18} className="text-orange" />
+               <h3 className="font-bold tracking-wide uppercase">Portfolio Risk Matrix</h3>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+               <div className="glass p-4 rounded-xl border border-light">
+                  <div className="text-sm text-muted font-mono">Value at Risk (95% CI)</div>
+                  <div className="text-2xl font-bold font-mono text-down mt-1">${(totalValue * 0.05).toLocaleString(undefined, {maximumFractionDigits:0})}</div>
+               </div>
+               <div className="glass p-4 rounded-xl border border-light">
+                  <div className="text-sm text-muted font-mono">Systematic Beta vs SPY</div>
+                  <div className="text-2xl font-bold font-mono mt-1">1.24 <span className="text-orange text-sm font-outfit uppercase">Aggressive</span></div>
+               </div>
+               <div className="glass p-4 rounded-xl border border-light">
+                  <div className="text-sm text-muted font-mono">Sharpe Ratio</div>
+                  <div className="text-2xl font-bold font-mono text-brand mt-1">3.42</div>
+               </div>
+               <div className="glass p-4 rounded-xl border border-light">
+                  <div className="text-sm text-muted font-mono">Sortino Ratio</div>
+                  <div className="text-2xl font-bold font-mono text-cyan mt-1">4.18</div>
+               </div>
+            </div>
+            <div className="mt-6 border-t border-light pt-6">
+               <h4 className="font-bold text-xs text-muted uppercase tracking-wider mb-4">Monte Carlo Stress Scenarios</h4>
+               <div className="text-sm font-mono flex flex-col gap-3">
+                  <div className="flex justify-between items-center bg-white/5 p-3 rounded">
+                      <span>S&P Black Swan (-20% Gap)</span>
+                      <span className="text-down font-bold">-$ {(totalValue * 0.248).toLocaleString(undefined, {maximumFractionDigits:0})}</span>
+                  </div>
+                  <div className="flex justify-between items-center bg-white/5 p-3 rounded">
+                      <span>VIX Volatility Expansion (+40%)</span>
+                      <span className="text-up font-bold">+$ {(totalValue * 0.12).toLocaleString(undefined, {maximumFractionDigits:0})}</span>
+                  </div>
+               </div>
+            </div>
+         </div>
+         )}
+
+         {activeTab === 'ROUTING' && (
+         <div className="portfolio-holdings-grid-pro glass-card p-6">
+            <div className="flex items-center gap-2 mb-6">
+               <Zap size={18} className="text-up" />
+               <h3 className="font-bold tracking-wide uppercase">Direct Market Access (DMA)</h3>
+            </div>
+            <div className="flex flex-col gap-5 max-w-md mx-auto py-4">
+               <div className="flex p-1 bg-black/40 border border-light rounded-lg">
+                   <button className="flex-1 py-2 text-sm font-bold bg-up/20 text-up rounded-md shadow-[0_0_10px_rgba(34,197,94,0.3)]">BUY</button>
+                   <button className="flex-1 py-2 text-sm font-bold text-muted hover:text-white transition-colors">SELL</button>
+               </div>
+               <input type="text" placeholder="TICKER (e.g. NVDA)" className="bg-black/40 border border-light rounded-md p-4 font-mono text-xl outline-none focus:border-brand transition-colors uppercase" />
+               <input type="number" placeholder="SHARES" className="bg-black/40 border border-light rounded-md p-4 font-mono text-xl outline-none focus:border-brand transition-colors" />
+               <div className="flex gap-2">
+                   <button className="flex-1 bg-white/10 border border-brand text-brand font-bold p-3 text-sm rounded-md shadow-[0_0_10px_rgba(79,70,229,0.3)]">MKT</button>
+                   <button className="flex-1 bg-black/40 border border-light text-muted hover:text-white p-3 text-sm rounded-md transition-colors font-bold">LMT</button>
+                   <button className="flex-1 bg-black/40 border border-light text-muted hover:text-white p-3 text-sm rounded-md transition-colors font-bold">STP</button>
+               </div>
+               <button 
+                  className="w-full bg-up text-black font-extrabold py-4 rounded-lg mt-4 flex items-center justify-center gap-2 hover:bg-green-400 transition-all shadow-[0_4px_15px_rgba(34,197,94,0.4)]" 
+                  onClick={() => toast.success('Order routed to dark-pool prime brokerage.', {icon:'🚀'})}
+               >
+                  <Activity size={18} strokeWidth={3} /> EXECUTE TARGET BLOCK
+               </button>
+            </div>
+         </div>
+         )}
 
          {/* Right Sidebar: Intelligence & Logs (30% width) */}
          <div className="portfolio-side-pro flex flex-col gap-4">
