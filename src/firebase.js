@@ -1,8 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
-// Aggressive sanitization function to strip common terminal artifacts (\n, \r, \t, etc)
-const clean = (val) => String(val || "").replace(/[\n\r\t]/g, "").trim();
+// Surgical sanitization: Strips all whitespace, newlines, and non-printable characters ONLY
+const clean = (val) => String(val || "").replace(/[\s\r\n\t]/g, "").trim();
 
 const firebaseConfig = {
   apiKey: clean(import.meta.env.VITE_FIREBASE_API_KEY),
@@ -13,7 +13,7 @@ const firebaseConfig = {
   appId: clean(import.meta.env.VITE_FIREBASE_APP_ID)
 };
 
-console.log("Firebase initialized with sanitized keys. Key ends with:", firebaseConfig.apiKey.slice(-5));
+console.log("Firebase initialized with sanitized keys. Key ends with (encoded):", encodeURIComponent(firebaseConfig.apiKey.slice(-5)));
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
