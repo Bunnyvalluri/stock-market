@@ -1,75 +1,76 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Hyper-Premium OLED Trading Theme (Dark Mode Default) */
-  --bg-primary: #000000;
-  --bg-secondary: #0a0a0c;
-  --bg-card: rgba(20, 20, 22, 0.6);
-  --bg-card-hover: rgba(30, 30, 34, 0.8);
+  /* Institutional Wall-Street Dark Theme (Monolithic & Secure) */
+  --bg-primary: #0a0a0a;       /* Deep Charcoal Black */
+  --bg-secondary: #000000;     /* Pure Pitch Black */
+  --bg-card: #121212;          /* Elevated Monolithic Grey */
+  --bg-card-hover: #1c1c1c;    /* Subtle Lift */
   
-  --text-primary: #ffffff;
-  --text-secondary: #a1a1aa;
-  --text-muted: #71717a;
+  --text-primary: #f3f4f6;     /* Pristine White */
+  --text-secondary: #9ca3af;   /* Muted Grey */
+  --text-muted: #6b7280;       /* Deep Grey */
   
-  /* Modern Trading Accents */
-  --accent-brand: #00e572;      /* Neon Profit Green */
-  --accent-cyan: #00b4d8;       /* Futuristic Data Blue */
-  --accent-magenta: #7b2cbf;    /* Deep Ambient Purple */
-  --accent-lime: #a3e635;
-  --accent-orange: #f59e0b;
-  --accent-purple: #8b5cf6;
+  /* Corporate Institutional Accents */
+  --accent-brand: #2563eb;      /* Trustworthy Corporate Blue */
+  --accent-cyan: #0e7490;       /* Sophisticated Deep Cyan */
+  --accent-magenta: #1d4ed8;    /* Professional Royal Blue (Replacing Purple) */
+  --accent-lime: #047857;       /* Conservative Emerald */
+  --accent-orange: #b45309;     /* Burnished Amber */
+  --accent-purple: #312e81;     /* Executive Navy */
   
-  /* Market Action Colors */
-  --status-up: #00e572;
-  --status-up-bg: rgba(0, 229, 114, 0.12);
-  --status-down: #ff3366;
-  --status-down-bg: rgba(255, 51, 102, 0.12);
-  --status-neutral: #52525b;
+  /* Strict Market Action Colors */
+  --status-up: #10b981;         /* Institutional Green */
+  --status-up-bg: rgba(16, 185, 129, 0.1);
+  --status-down: #ef4444;       /* Alert Red */
+  --status-down-bg: rgba(239, 68, 68, 0.1);
+  --status-neutral: #64748b;    /* Unchanged State */
   
-  --border-light: rgba(255, 255, 255, 0.06);
-  --border-medium: rgba(255, 255, 255, 0.12);
-  --border-vibrant: rgba(0, 229, 114, 0.3);
+  --border-light: rgba(255, 255, 255, 0.1);
+  --border-medium: rgba(255, 255, 255, 0.2);
+  --border-vibrant: rgba(37, 99, 235, 0.5); /* Corporate Blue border */
   
-  --glow-cyan: 0 0 25px rgba(0, 180, 216, 0.25);
-  --glow-magenta: 0 0 25px rgba(123, 44, 191, 0.2);
-  --glow-brand: 0 0 30px rgba(0, 229, 114, 0.35);
-  --glow-up: 0 0 20px rgba(0, 229, 114, 0.4);
-  --glow-down: 0 0 20px rgba(255, 51, 102, 0.4);
+  /* Controlled, Elegant Shadows (No wild neon glows) */
+  --glow-cyan: 0 4px 12px rgba(14, 116, 144, 0.2);
+  --glow-magenta: 0 4px 12px rgba(29, 78, 216, 0.2);
+  --glow-brand: 0 8px 30px rgba(37, 99, 235, 0.15);
+  --glow-up: 0 4px 15px rgba(16, 185, 129, 0.15);
+  --glow-down: 0 4px 15px rgba(239, 68, 68, 0.15);
 }
 
 :root[data-theme='light'] {
-  /* Institutional Light Mode (Robinhood/E*Trade Style) */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f4f4f5;
-  --bg-card: rgba(255, 255, 255, 0.8);
-  --bg-card-hover: rgba(244, 244, 245, 0.9);
+  /* Ultra-Clean Corporate Light Theme */
+  --bg-primary: #ffffff;       /* Pure White */
+  --bg-secondary: #f9fafb;     /* Very Soft Grey */
+  --bg-card: #ffffff;          /* Flat White */
+  --bg-card-hover: #f3f4f6;    /* Soft Grey Lift */
   
-  --text-primary: #09090b;
-  --text-secondary: #3f3f46;
-  --text-muted: #71717a;
+  --text-primary: #111827;     /* Stark Black-Grey */
+  --text-secondary: #4b5563;   /* Professional Charcoal */
+  --text-muted: #6b7280;       /* Muted Grey */
   
-  --accent-brand: #059669; /* Darker, high-contrast green */
-  --accent-cyan: #0284c7;  /* High-contrast blue */
-  --accent-magenta: #7c3aed; 
-  --accent-lime: #65a30d;
-  --accent-orange: #d97706;
-  --accent-purple: #7c3aed;
+  --accent-brand: #1d4ed8;      /* Executive Dark Blue */
+  --accent-cyan: #0369a1;       /* Deep Sea Blue */
+  --accent-magenta: #1e3a8a;    /* Navy Blue */
+  --accent-lime: #065f46;       /* Deep Green */
+  --accent-orange: #9a3412;     /* Burnt Orange */
+  --accent-purple: #1e3a8a;     /* Navy Blue */
   
-  --status-up: #059669;
-  --status-up-bg: rgba(16, 185, 129, 0.1);
-  --status-down: #e11d48;
-  --status-down-bg: rgba(225, 29, 72, 0.1);
-  --status-neutral: #52525b;
+  --status-up: #059669;         /* High Contrast Green */
+  --status-up-bg: rgba(5, 150, 105, 0.1);
+  --status-down: #dc2626;       /* High Contrast Red */
+  --status-down-bg: rgba(220, 38, 38, 0.1);
+  --status-neutral: #6b7280;    
   
-  --border-light: rgba(0, 0, 0, 0.08);
-  --border-medium: rgba(0, 0, 0, 0.15);
-  --border-vibrant: rgba(5, 150, 105, 0.3);
+  --border-light: rgba(0, 0, 0, 0.1);
+  --border-medium: rgba(0, 0, 0, 0.2);
+  --border-vibrant: rgba(29, 78, 216, 0.3); /* Navy border */
   
-  --glow-cyan: 0 0 25px rgba(2, 132, 199, 0.15);
-  --glow-magenta: 0 0 25px rgba(124, 58, 237, 0.15);
-  --glow-brand: 0 0 30px rgba(5, 150, 105, 0.15);
-  --glow-up: 0 0 20px rgba(16, 185, 129, 0.2);
-  --glow-down: 0 0 20px rgba(225, 29, 72, 0.2);
+  --glow-cyan: none;            /* Removed neon glow for professional look */
+  --glow-magenta: none;
+  --glow-brand: 0 4px 20px rgba(29, 78, 216, 0.1);
+  --glow-up: none;
+  --glow-down: none;
   
   --radius-lg: 24px;
   --radius-md: 16px;
