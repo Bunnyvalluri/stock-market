@@ -19,8 +19,8 @@ const Settings = () => {
   const handleSave = () => {
       localStorage.setItem('alphaVantageKey', alphaKey);
       localStorage.setItem('openaiKey', openaiKey);
-      setSaveStatus('WRITING TO CLUSTER...');
-      setTimeout(() => setSaveStatus('CONFIGURATION PERSISTED [OK]'), 1000);
+      setSaveStatus('SAVING SETTINGS...');
+      setTimeout(() => setSaveStatus('SETTINGS SAVED'), 1000);
       setTimeout(() => setSaveStatus(''), 4000);
   }
 
@@ -31,13 +31,13 @@ const Settings = () => {
           <div className="settings-section-pro animate-fade-in">
             <div className="section-head-term">
                 <Key size={18} className="text-brand" />
-                <h2>API / DATA VECTORS</h2>
+                <h2>API Connections</h2>
             </div>
-            <p className="subtitle-term text-muted">Initialize high-frequency data pipelines and LLM inference endpoints.</p>
+            <p className="subtitle-term text-muted">Manage your external data and AI capabilities.</p>
             
             <div className="form-grid-pro">
               <div className="input-block-pro">
-                <label>ALPHA VANTAGE DATA STREAM (MANDATORY)</label>
+                <label>ALPHA VANTAGE KEY</label>
                 <input 
                   type="password" 
                   placeholder="ALPHAV-XXXX-XXXX" 
@@ -48,7 +48,7 @@ const Settings = () => {
                 <span className="info-txt text-orange">Limits subject to AlphaVantage tier. Real-time websocket enabled on PRO.</span>
               </div>
               <div className="input-block-pro">
-                <label>OPENAI INFERENCE KEY (GPT-4O)</label>
+                <label>OPENAI API KEY</label>
                 <input 
                   type="password" 
                   placeholder="sk-proj-xxxxxxxxxxxx" 
@@ -56,12 +56,12 @@ const Settings = () => {
                   onChange={(e) => setOpenaiKey(e.target.value)}
                   className="input-pro" 
                 />
-                <span className="info-txt">Required for Firecrawl unstructured news sentiment extraction.</span>
+                <span className="info-txt">Required for Firecrawl AI content extraction.</span>
               </div>
             </div>
             
             <div className="broker-integration-pro mt-8">
-               <label className="section-label">OAUTH BROKERAGE TUNNELS</label>
+               <label className="section-label">Broker Connections</label>
                <div className="broker-list-pro">
                   <div className="broker-item-pro">
                      <div className="b-id">
@@ -71,17 +71,17 @@ const Settings = () => {
                            <span className="text-muted">Status: DISCONNECTED</span>
                         </div>
                      </div>
-                     <button className="btn-pro-outline">CONNECT TUNNEL</button>
+                     <button className="btn-pro-outline">CONNECT BROKER</button>
                   </div>
                   <div className="broker-item-pro active">
                      <div className="b-id">
                         <div className="b-logo" style={{background: '#ef4444', color: '#fff'}}>I</div>
                         <div className="b-meta">
                            <h4>Interactive Brokers</h4>
-                           <span className="text-up font-mono">Status: ACTIVE_PRO</span>
+                           <span className="text-up font-mono">Status: CONNECTED</span>
                         </div>
                      </div>
-                     <button className="btn-pro-danger">SEVER LINK</button>
+                     <button className="btn-pro-danger">DISCONNECT</button>
                   </div>
                </div>
             </div>
@@ -92,33 +92,33 @@ const Settings = () => {
              <div className="settings-section-pro animate-fade-in">
                 <div className="section-head-term">
                     <Database size={18} className="text-cyan" />
-                    <h2>ML INFERENCE PARAMETERS</h2>
+                    <h2>AI Prediction Settings</h2>
                 </div>
-                <p className="subtitle-term text-muted">Adjust neural network hyper-parameters for the predictive core.</p>
+                <p className="subtitle-term text-muted">Adjust settings for AI-driven market predictions.</p>
                 
                 <div className="form-group-pro">
-                   <label>DEFAULT FORECAST HORIZON (LSTM)</label>
+                   <label>Prediction Timeframe</label>
                    <select className="select-pro w-full">
-                      <option>T+7 Days (Optimal Purity)</option>
-                      <option>T+14 Days (Medium Bias)</option>
-                      <option>T+30 Days (Experimental / High Variance)</option>
+                      <option>7 Days (High Accuracy)</option>
+                      <option>14 Days (Medium Accuracy)</option>
+                      <option>30 Days (Lower Accuracy)</option>
                    </select>
                 </div>
                 
                 <div className="form-group-pro mt-6">
-                   <label>RETRAINING CRON JOB</label>
+                   <label>AI Learning Frequency</label>
                    <div className="radio-group-pro">
                       <label className="radio-pro">
                           <input type="radio" name="cron" /> 
-                          <span>HOURLY CLUSTER BUILD (Heavy Compute)</span>
+                          <span>Hourly Update</span>
                       </label>
                       <label className="radio-pro">
                           <input type="radio" name="cron" defaultChecked /> 
-                          <span>DAILY MARKET CLOSE (Recommended)</span>
+                          <span>Daily Update (Recommended)</span>
                       </label>
                       <label className="radio-pro">
                           <input type="radio" name="cron" /> 
-                          <span>WEEKLY SKEW ADJUSTMENT</span>
+                          <span>Weekly Update</span>
                       </label>
                    </div>
                 </div>
@@ -129,17 +129,17 @@ const Settings = () => {
              <div className="settings-section-pro animate-fade-in">
                  <div className="section-head-term">
                     <ShieldCheck size={18} className="text-orange" />
-                    <h2>INFRASTRUCTURE SECURITY</h2>
+                    <h2>Security & Risk Control</h2>
                  </div>
-                 <p className="subtitle-term text-muted">Configure access controls and automated kill-switches.</p>
+                 <p className="subtitle-term text-muted">Manage automated protections for your portfolio.</p>
 
                  <div className="risk-zone-pro mt-4">
                      <h3 className="text-down mb-2">Automated Liquidation (Stop-Loss)</h3>
-                     <p className="text-muted text-sm mb-4">If the ML Engine detects an unrecoverable "Black Swan" event or severe portfolio drawdown, the system can automatically sever connections and liquidate all long positions.</p>
+                     <p className="text-muted text-sm mb-4">If a major market crash is detected, the system can automatically sell all positions to protect your capital.</p>
                      
                      <div className="kill-switch-wrap">
-                         <span className="text-bold">GLOBAL PORTFOLIO KILL-SWITCH:</span>
-                         <button className="btn-pro-kill">ACTIVATE PANIC LIQUIDATION</button>
+                         <span className="text-bold">Emergency Sell All:</span>
+                         <button className="btn-pro-kill">LIQUIDATE POSITIONS</button>
                      </div>
                  </div>
              </div>
@@ -155,8 +155,8 @@ const Settings = () => {
          <div className="header-pro-title">
            <Terminal className="text-brand" size={24} />
            <div>
-               <h1>System Infrastructure</h1>
-               <p className="text-muted text-sm">Cluster configuration and API integration</p>
+               <h1>System Settings</h1>
+               <p className="text-muted text-sm">Manage your account, connections, and security</p>
            </div>
          </div>
          <div className="header-pro-actions flex-row">
@@ -173,7 +173,7 @@ const Settings = () => {
                )}
            </AnimatePresence>
            <button className="btn-pro-primary" onClick={handleSave}>
-               <Save size={14} /> PUSH CONFIG
+               <Save size={14} /> SAVE CHANGES
            </button>
          </div>
       </div>
@@ -182,16 +182,16 @@ const Settings = () => {
          <div className="settings-pro-sidebar">
             <nav className="settings-pro-nav">
                <button className={`nav-pro-item ${activeTab === 'api' ? 'active' : ''}`} onClick={() => setActiveTab('api')}>
-                 <Key size={16} /> API TUNNELS
+                 <Key size={16} /> API Integrations
                </button>
                <button className={`nav-pro-item ${activeTab === 'models' ? 'active' : ''}`} onClick={() => setActiveTab('models')}>
-                 <Database size={16} /> CORE MODEL
+                 <Database size={16} /> AI Models
                </button>
                <button className={`nav-pro-item ${activeTab === 'security' ? 'active' : ''}`} onClick={() => setActiveTab('security')}>
                  <ShieldCheck size={16} /> SECURITY
                </button>
                <button className="nav-pro-item">
-                 <Globe size={16} /> UI OVERRIDE
+                 <Globe size={16} /> Appearance
                </button>
             </nav>
          </div>

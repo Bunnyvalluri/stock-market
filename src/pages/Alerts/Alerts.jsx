@@ -23,7 +23,7 @@ const Alerts = () => {
 
     const interval = setInterval(() => {
       if (Math.random() > 0.6) {
-        const types = ['NEURAL NET', 'PRICE ACTION', 'DARK POOL', 'MARGIN CALL'];
+        const types = ['AI ALERT', 'PRICE ACTION', 'BLOCK TRADE', 'RISK ALERT'];
         const targets = ['NVDA', 'TSLA', 'BTC', 'AAPL', 'AMD', 'SPY', 'JPM'];
         const pType = types[Math.floor(Math.random() * types.length)];
         
@@ -32,8 +32,8 @@ const Alerts = () => {
           time: new Date().toLocaleTimeString('en-US', { hour12: false, fractionalSecondDigits: 2 }),
           type: pType,
           target: targets[Math.floor(Math.random() * targets.length)],
-          msg: pType === 'MARGIN CALL' ? 'CRITICAL RISK EXPOSURE DETECTED. SEVER LINK INITIATED.' : 'Threshold divergence detected. AI model recalibrating positions.',
-          isCritical: pType === 'MARGIN CALL'
+          msg: pType === 'RISK ALERT' ? 'CRITICAL RISK DETECTED. PORTFOLIO PROTECTION ACTIVE.' : 'Significant momentum detected. AI model suggests review.',
+          isCritical: pType === 'RISK ALERT'
         };
 
         setIncomingLog(prev => [newLog, ...prev].slice(0, 20)); // Keep last 20
@@ -61,16 +61,16 @@ const Alerts = () => {
          <div className="header-pro-title">
            <Cpu className="text-cyan" size={24} />
            <div>
-               <h1>Algorithmic Telemetry Engine</h1>
-               <p className="text-muted text-sm font-mono">Real-time socket notifications & predictive trigger limits</p>
+               <h1>Smart Alerts Engine</h1>
+               <p className="text-muted text-sm font-mono">Real-time market notifications & AI-driven price triggers</p>
            </div>
          </div>
          <div className="header-pro-actions flex-row">
            <div className={`live-toggle-pro ${isLive ? 'active' : ''}`} onClick={() => setIsLive(!isLive)}>
              <div className="pulse-dot-cyan"></div>
-             {isLive ? 'WEBSOCKET INTERCEPT: ACTIVE' : 'CONNECTION SEVERED'}
+             {isLive ? 'LIVE CONNECTION: ON' : 'CONNECTION PAUSED'}
            </div>
-           <button className="btn-pro-primary"><Plus size={14} /> NEW ALGORITHM</button>
+           <button className="btn-pro-primary"><Plus size={14} /> NEW ALERT</button>
          </div>
       </div>
 
@@ -80,10 +80,10 @@ const Alerts = () => {
         <div className="active-rules-pro glass-card">
            <div className="section-head-term">
              <Activity size={18} className="text-orange" />
-             <h2>HARD-CODED EXECUTION PARAMETERS</h2>
+             <h2>ACTIVE PRICE RULES</h2>
              <button className="icon-btn-pro ms-auto"><Settings2 size={16}/></button>
            </div>
-           <p className="subtitle-term text-muted">Fixed threshold nodes explicitly overriding Neural Net predictions.</p>
+           <p className="subtitle-term text-muted">Your custom rules that trigger automatic notifications or trades.</p>
            
            <div className="rules-list-pro mt-4">
              {alertsList.map(alert => (
@@ -120,15 +120,15 @@ const Alerts = () => {
         <div className="live-logs-pro glass-card">
           <div className="section-head-term">
             <Terminal size={18} className="text-brand" />
-            <h2>GLOBAL EVENT STREAM</h2>
-            <span className="text-up text-xs font-mono ms-auto tracking-widest">[ENCRYPTED SSL]</span>
+            <h2>LIVE MARKET EVENTS</h2>
+            <span className="text-up text-xs font-mono ms-auto tracking-widest">[LIVE FEED]</span>
           </div>
-          <p className="subtitle-term text-muted mb-4">Raw institutional order flow and ML prediction inferences.</p>
+          <p className="subtitle-term text-muted mb-4">Real-time institutional trades and AI market predictions.</p>
           
           <div className="log-feed-pro terminal-bg">
              <AnimatePresence>
                 {incomingLog.length === 0 && (
-                  <div className="empty-log text-muted font-mono">Listening on port 8443...<span className="blink-cursor">_</span></div>
+                  <div className="empty-log text-muted font-mono">Listening for market events...<span className="blink-cursor">_</span></div>
                 )}
                 {incomingLog.map((log, i) => (
                   <motion.div 
@@ -140,7 +140,7 @@ const Alerts = () => {
                   >
                      <div className="log-timestamp-pro">{log.time}</div>
                      <div className="log-content-pro">
-                       <span className={`log-badge-pro ${log.isCritical ? 'badge-danger' : log.type === 'NEURAL NET' ? 'badge-ai' : 'badge-standard'}`}>
+                       <span className={`log-badge-pro ${log.isCritical ? 'badge-danger' : log.type === 'AI ALERT' ? 'badge-ai' : 'badge-standard'}`}>
                          [{log.type}]
                        </span>
                        <span 

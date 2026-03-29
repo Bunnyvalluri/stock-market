@@ -6,6 +6,7 @@
   --bg-secondary: #0B0F19;     
   --bg-card: #121826;          /* Soft Card Background */
   --bg-card-hover: #1f2937;    
+  --glass-bg: linear-gradient(145deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.4) 100%);
   
   --text-primary: #E5E7EB;     
   --text-secondary: #9CA3AF;   
@@ -79,53 +80,24 @@
   --border-light: #E2E8F0;
   --border-medium: #CBD5E1;
   --border-vibrant: rgba(79, 70, 229, 0.2); 
+  
+  --glass-bg: var(--bg-card);
+  --terminal-bg: #FFFFFF;
 }
 
-/* Force light mode on all specific terminal panels that might have hardcoded dark colors */
-[data-theme='light'] .terminal-card,
-[data-theme='light'] .portfolio-summary-card-pro,
-[data-theme='light'] .portfolio-holdings-grid-pro,
-[data-theme='light'] .settings-pro-layout,
-[data-theme='light'] .perf-card-pro,
-[data-theme='light'] .bento-pro-card,
-[data-theme='light'] .login-pro-card,
+/* Base Shadow and Hover behaviors for cards, irrespective of theme logic class chaining */
 [data-theme='light'] .glass-card,
-[data-theme='light'] .side-intelligence,
-[data-theme='light'] .intelligence-card,
-[data-theme='light'] .b-pro-visual {
-  background: var(--bg-card) !important;
-  color: var(--text-primary) !important;
-  border-color: var(--border-light) !important;
+[data-theme='light'] .bento-pro-card,
+[data-theme='light'] .portfolio-summary-card-pro {
   box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important;
-  border-radius: 16px !important;
   transition: all 0.3s ease !important;
 }
 
-[data-theme='light'] .terminal-card:hover,
-[data-theme='light'] .portfolio-summary-card-pro:hover,
-[data-theme='light'] .bento-pro-card:hover {
+[data-theme='light'] .glass-card:hover,
+[data-theme='light'] .bento-pro-card:hover,
+[data-theme='light'] .portfolio-summary-card-pro:hover {
   transform: translateY(-3px) !important;
   box-shadow: 0 15px 35px rgba(0,0,0,0.08) !important;
-}
-
-[data-theme='light'] .quant-metrics-bar,
-[data-theme='light'] .login-pro-side-log,
-[data-theme='light'] .terminal-logs,
-[data-theme='light'] .terminal-logs-pro,
-[data-theme='light'] .viewport-body,
-[data-theme='light'] .hero-pro-viewport {
-  background: #FFFFFF !important;
-  color: var(--text-primary) !important;
-  border-color: var(--border-light) !important;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important;
-}
-
-[data-theme='light'] .l-symb,
-[data-theme='light'] .qm-val,
-[data-theme='light'] .log-item-term .l-price,
-[data-theme='light'] .matrix-price-pro,
-[data-theme='light'] .visual-code-term {
-  color: var(--text-primary) !important;
 }
 
 /* Gradients for Premium Touch on Buttons */
@@ -225,16 +197,16 @@ ul {
 
 /* Glassmorphism utility */
 .glass {
-  background: rgba(22, 29, 45, 0.6);
+  background: var(--bg-card);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border-light);
 }
 
 .glass-card {
-  background: linear-gradient(145deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.4) 100%);
+  background: var(--glass-bg, var(--bg-card));
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-light);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 

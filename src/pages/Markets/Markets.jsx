@@ -190,15 +190,15 @@ const Markets = () => {
         <div className="header-left">
             <Globe className="text-brand" size={24} />
             <div>
-                <h1>Global Equities Dashboard</h1>
-                <p className="text-muted">Real-time institutional liquidity & pricing matrix</p>
+                <h1>Markets Dashboard</h1>
+                <p className="text-muted">Live market pricing and volume</p>
             </div>
         </div>
 
         <div className="header-right-pro">
             <div className={`live-toggle-pro ${isLive ? 'active' : ''}`} onClick={() => setIsLive(!isLive)}>
                 <Zap size={14} />
-                {isLive ? 'TERMINAL LIVE' : 'STREAM PAUSED'}
+                {isLive ? 'LIVE FEED' : 'FEED PAUSED'}
             </div>
             <div className="search-wrap-pro">
                 <Search size={16} />
@@ -223,7 +223,7 @@ const Markets = () => {
                 </div>
                 <div className="matrix-stats">
                     <span className="text-muted">Tracking: </span>
-                    <span className="font-bold">2,482 Instruments</span>
+                    <span className="font-bold">2,482 Assets</span>
                 </div>
            </div>
 
@@ -240,7 +240,7 @@ const Markets = () => {
             <div className="intelligence-card glass-card">
                 <div className="int-header">
                     <Activity size={18} className="text-orange" />
-                    <h4>HFT Event Log</h4>
+                    <h4>Live Orders</h4>
                 </div>
                 <div className="log-list-pro terminal-logs">
                     {hftLogs.map((log, i) => (
@@ -274,7 +274,7 @@ const Markets = () => {
                         ></div>
                     ))}
                 </div>
-                <p className="text-xs text-muted mt-3">Calculated real-time via VIX & Skew metrics.</p>
+                <p className="text-xs text-muted mt-3">Market volatility and momentum.</p>
             </div>
         </div>
       </div>
