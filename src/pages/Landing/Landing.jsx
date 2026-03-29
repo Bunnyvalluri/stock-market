@@ -32,7 +32,7 @@ const Landing = () => {
     <div className="landing-premium-container">
       {/* Institutional Top Navigation */}
       <nav className="nav-institutional glass">
-        <div className="nav-brand-wrap">
+        <div className="nav-brand-wrap cursor-pointer" onClick={() => navigate('/dashboard')}>
           <div className="brand-icon-box">
             <TrendingUp size={18} strokeWidth={3} />
           </div>
@@ -192,19 +192,19 @@ const Landing = () => {
           </div>
           
           <div className="perf-grid-pro">
-              <div className="perf-card-pro glass-card">
+              <div className="perf-card-pro glass-card cursor-pointer pb-hover" onClick={() => navigate('/predictions')}>
                   <Gauge size={24} className="text-brand mb-4" />
                   <h4>Sharpe Ratio</h4>
                   <h3>3.42</h3>
                   <p>Weighted risk-adjusted return parameters.</p>
               </div>
-              <div className="perf-card-pro glass-card">
+              <div className="perf-card-pro glass-card cursor-pointer pb-hover" onClick={() => navigate('/predictions')}>
                   <Target size={24} className="text-cyan mb-4" />
                   <h4>Directional Win Rate</h4>
                   <h3>91.2%</h3>
                   <p>Binary forecast accuracy over 7-day horizons.</p>
               </div>
-              <div className="perf-card-pro glass-card">
+              <div className="perf-card-pro glass-card cursor-pointer pb-hover" onClick={() => navigate('/predictions')}>
                   <Activity size={24} className="text-orange mb-4" />
                   <h4>Model Convergence</h4>
                   <h3>&lt; 40ms</h3>
@@ -227,7 +227,7 @@ const Landing = () => {
          </div>
          
          <div className="bento-pro-grid">
-            <div className="bento-pro-card col-span-2 horizontal-pro">
+            <div className="bento-pro-card col-span-2 horizontal-pro cursor-pointer transition-transform hover:-translate-y-1" onClick={() => navigate('/predictions')}>
                <div className="b-pro-content">
                   <div className="b-pro-icon"><Cpu size={28} /></div>
                   <h3>Multi-Layer LSTM Architectures</h3>
@@ -251,7 +251,7 @@ const Landing = () => {
                </div>
             </div>
             
-            <div className="bento-pro-card">
+            <div className="bento-pro-card cursor-pointer transition-transform hover:-translate-y-1" onClick={() => navigate('/markets')}>
                <div className="b-pro-content">
                   <div className="b-pro-icon icon-cyan"><Zap size={28} /></div>
                   <h3>WebSocket Pulse</h3>
@@ -259,7 +259,7 @@ const Landing = () => {
                </div>
             </div>
 
-            <div className="bento-pro-card">
+            <div className="bento-pro-card cursor-pointer transition-transform hover:-translate-y-1" onClick={() => navigate('/predictions')}>
                <div className="b-pro-content">
                   <div className="b-pro-icon icon-orange"><Database size={28} /></div>
                   <h3>Firecrawl Dataset</h3>
@@ -267,7 +267,7 @@ const Landing = () => {
                </div>
             </div>
             
-            <div className="bento-pro-card col-span-2 h-pro-v2">
+            <div className="bento-pro-card col-span-2 h-pro-v2 cursor-pointer transition-transform hover:-translate-y-1" onClick={() => navigate('/portfolio')}>
                <div className="b-pro-content">
                   <div className="b-pro-icon"><Briefcase size={28} /></div>
                   <h3>Total Capital Control</h3>
@@ -310,9 +310,9 @@ const Landing = () => {
             </div>
             <div className="f-pro-col">
                <h4>Core Terminal</h4>
-               <a href="#" onClick={(e) => { e.preventDefault(); toast('Initiating Market Matrix projection...', {icon:'🌐'}); }}>Market Matrix</a>
-               <a href="#" onClick={(e) => { e.preventDefault(); toast('Fetching ML models...', {icon:'🧠'}); }}>AI Predictions</a>
-               <a href="#" onClick={(e) => { e.preventDefault(); toast('Fetching Alpha data...', {icon:'📈'}); }}>Portfolio Alpha</a>
+               <a href="#" onClick={(e) => { e.preventDefault(); navigate('/markets'); }}>Market Matrix</a>
+               <a href="#" onClick={(e) => { e.preventDefault(); navigate('/predictions'); }}>AI Insights</a>
+               <a href="#" onClick={(e) => { e.preventDefault(); navigate('/portfolio'); }}>Portfolio Alpha</a>
             </div>
             <div className="f-pro-col">
                <h4>Resources</h4>

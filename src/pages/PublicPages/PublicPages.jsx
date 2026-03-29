@@ -10,7 +10,7 @@ const PageLayout = ({ children, title, subtitle, icon: Icon }) => (
         <div className="brand-logo">
           <Activity size={20} strokeWidth={2.5} />
         </div>
-        <span className="brand-text text-white">NeuralTrade</span>
+        <span className="brand-text text-white">StockMind AI</span>
       </Link>
       <Link to="/" className="text-muted" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
         <ArrowLeft size={16} /> Back to Home
@@ -27,7 +27,7 @@ const PageLayout = ({ children, title, subtitle, icon: Icon }) => (
       </div>
     </main>
     <footer className="footer-premium" style={{ marginTop: 'auto', padding: '2rem', textAlign: 'center', borderColor: 'rgba(255,255,255,0.05)' }}>
-      <span className="text-muted text-sm">© 2026 NeuralTrade. All rights reserved.</span>
+      <span className="text-muted text-sm">© 2026 StockMind AI. All rights reserved.</span>
     </footer>
   </div>
 );
@@ -39,7 +39,7 @@ export const TerminalInfo = () => (
     icon={TerminalSquare}
   >
     <p>
-      The NeuralTrade Terminal isn't a traditional web dashboard that requires refreshing. It operates entirely on persistent <strong>WebSocket connections</strong>, rendering live ticking data seamlessly without ever touching a REST polling interval.
+      The StockMind AI Terminal isn't a traditional web dashboard that requires refreshing. It operates entirely on persistent <strong>WebSocket connections</strong>, rendering live ticking data seamlessly without ever touching a REST polling interval.
     </p>
     <div className="bento-card" style={{ padding: '2rem', marginTop: '1rem', background: 'rgba(15, 23, 42, 0.4)' }}>
       <h3 className="text-cyan mb-2" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Zap size={20}/> Hardware Acceleration</h3>
@@ -78,7 +78,7 @@ export const APIAccessInfo = () => (
     icon={Code}
   >
     <p>
-      Integrate NeuralTrade into any algorithmic trading bot instantly. Do not rely on REST. Establish a WSS (WebSocket Secure) pipe to our <code>market:anomaly</code> nodes, and trigger long/short executions automatically when the model’s confidence exceeds your threshold.
+      Integrate StockMind AI into any algorithmic trading bot instantly. Do not rely on REST. Establish a WSS (WebSocket Secure) pipe to our <code>market:anomaly</code> nodes, and trigger long/short executions automatically when the model’s confidence exceeds your threshold.
     </p>
     <p>
       Our real-time APIs use ultra-low overhead binary transmission schemas to ensure payload sizes are practically zero, fitting within maximum TCP packet efficiencies window size.
@@ -88,12 +88,12 @@ export const APIAccessInfo = () => (
 
 export const AboutInfo = () => (
   <PageLayout 
-    title="About NeuralTrade" 
+    title="About StockMind AI" 
     subtitle="Building the fastest latency-first retail architecture."
     icon={Activity}
   >
     <p>
-      NeuralTrade was founded with one strict premise: batch processing is dead. In the modern market, if your data is a second old, you are already the product. We built this platform by applying <strong>real-time game server network topologies</strong> to global financial data pipelines.
+      StockMind AI was founded with one strict premise: batch processing is dead. In the modern market, if your data is a second old, you are already the product. We built this platform by applying <strong>real-time game server network topologies</strong> to global financial data pipelines.
     </p>
   </PageLayout>
 );

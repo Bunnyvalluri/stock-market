@@ -116,8 +116,8 @@ const Predictions = () => {
         <div className="header-pro-left">
             <Cpu className="text-brand" size={28} />
             <div>
-                <h1>Neural Forecasting Core</h1>
-                <p className="text-muted">Deep learning architecture for multi-horizon price prediction</p>
+                <h1>AI Market Analysis</h1>
+                <p className="text-muted">Advanced AI modeling for future market trends</p>
             </div>
         </div>
         <div className="header-pro-right">
@@ -147,7 +147,7 @@ const Predictions = () => {
                 <div className="flex-row gap-4 items-center">
                     <div className="flex-row items-center gap-2">
                         <Target size={18} className="text-brand" />
-                        <h4 className="font-bold tracking-wide uppercase">Asset Forecast:</h4>
+                        <h4 className="font-bold tracking-wide uppercase">Asset Projection:</h4>
                     </div>
                     {/* Interactive Ticker Selection */}
                     <div className="flex gap-2">
@@ -169,7 +169,7 @@ const Predictions = () => {
                 </div>
                 <div className="viewport-legend">
                     <div className="leg-item"><span className="dot historical"></span> Actual</div>
-                    <div className="leg-item"><span className="dot forecast"></span> Prediction</div>
+                    <div className="leg-item"><span className="dot forecast"></span> AI Projection</div>
                 </div>
             </div>
 
@@ -220,23 +220,23 @@ const Predictions = () => {
          {/* Model Intelligence Sidebar */}
          <div className="predictions-intelligence-pro">
             <MetricPro 
-                label="Directional Accuracy" 
+                label="Historical Accuracy" 
                 value="91.42%" 
-                sub="+2.1% against Benchmarking" 
+                sub="+2.1% against Benchmarks" 
                 icon={<Target size={20} className="text-brand" />}
                 trend="up"
             />
             <MetricPro 
-                label="Inference Latency" 
+                label="Analysis Speed" 
                 value="42ms" 
-                sub="Sub-millisecond Tensor Scaling" 
+                sub="Real-time AI processing" 
                 icon={<Activity size={20} className="text-cyan" />}
                 trend="up"
             />
             <MetricPro 
-                label="Risk Tolerance Index" 
+                label="Market Volatility" 
                 value="0.12" 
-                sub="Statistically Insignificant Skew" 
+                sub="Stable operating conditions" 
                 icon={<Shield size={20} className="text-orange" />}
                 trend="down"
             />
@@ -244,7 +244,7 @@ const Predictions = () => {
             <div className="terminal-logs-pro glass-card mt-5">
                 <div className="card-header-pro">
                     <Terminal size={18} className="text-brand" />
-                    <h4>Model Inference Logs</h4>
+                    <h4>Live AI Processing</h4>
                 </div>
                 <div className="logs-stream-pro">
                     <AnimatePresence mode="popLayout">

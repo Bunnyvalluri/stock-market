@@ -2,23 +2,23 @@
 
 :root {
   /* Customer Requested Premium Dark Theme (Fintech + AI) */
-  --bg-primary: #050505;       /* True OLED Black */
-  --bg-secondary: #0a0a0a;     
-  --bg-card: #0f0f11;          /* Sharper Card Background */
-  --bg-card-hover: #1a1a1f;    
-  --glass-bg: linear-gradient(145deg, rgba(24, 24, 27, 0.6) 0%, rgba(9, 9, 11, 0.6) 100%);
+  --bg-primary: #0B0F19;       /* Deep Indigo Black */
+  --bg-secondary: #0B0F19;     
+  --bg-card: #121826;          /* Soft Card Background */
+  --bg-card-hover: #1f2937;    
+  --glass-bg: linear-gradient(145deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.4) 100%);
   
-  --text-primary: #f8fafc;     
-  --text-secondary: #a1a1aa;   
-  --text-muted: #71717a;       
+  --text-primary: #E5E7EB;     
+  --text-secondary: #9CA3AF;   
+  --text-muted: #6b7280;       
   
   /* Core Brand Colors */
   --accent-brand: #4F46E5;      /* Primary Indigo */
-  --accent-cyan: #4F46E5;       
-  --accent-magenta: #4F46E5;    
+  --accent-cyan: #06B6D4;       /* Neon Cyan */
+  --accent-magenta: #D946EF;    /* Neon Magenta */
   --accent-lime: #22C55E;       /* Success Green */
-  --accent-orange: #f59e0b;     
-  --accent-purple: #4F46E5;     
+  --accent-orange: #F59E0B;     /* Alert Orange */
+  --accent-purple: #8B5CF6;     /* Deep Purple */
   
   /* Market Action / Danger Colors */
   --status-up: #22C55E;         /* Green Accent */
@@ -32,8 +32,8 @@
   --border-vibrant: rgba(79, 70, 229, 0.5); 
   
   /* Glow Effects */
-  --glow-cyan: 0 0 20px rgba(79, 70, 229, 0.4);
-  --glow-magenta: 0 0 20px rgba(79, 70, 229, 0.4);
+  --glow-cyan: 0 0 20px rgba(6, 182, 212, 0.4);
+  --glow-magenta: 0 0 20px rgba(217, 70, 239, 0.4);
   --glow-brand: 0 0 20px rgba(79, 70, 229, 0.4);
   --glow-up: 0 0 20px rgba(34, 197, 94, 0.4);
   --glow-down: 0 0 20px rgba(239, 68, 68, 0.4);
@@ -65,11 +65,11 @@
   --text-muted: #94A3B8;       /* Slate 400 */
   
   --accent-brand: #4F46E5;      /* Primary Indigo */
-  --accent-cyan: #3B82F6;       
-  --accent-magenta: #8B5CF6;    
-  --accent-lime: #22C55E;       /* Success Green */
-  --accent-orange: #F59E0B;     
-  --accent-purple: #4F46E5;     
+  --accent-cyan: #0284C7;       /* Darker Cyan for Light Mode */
+  --accent-magenta: #C026D3;    /* Darker Magenta for Light Mode */
+  --accent-lime: #16A34A;       /* Success Green */
+  --accent-orange: #D97706;     /* Darker Orange for Light Mode */
+  --accent-purple: #7C3AED;     /* Deep Purple */
   
   --status-up: #16A34A;         
   --status-up-bg: #DCFCE7;
