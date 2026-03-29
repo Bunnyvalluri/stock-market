@@ -105,8 +105,8 @@
 /* Forecasting Viewport */
 .predictions-viewport-pro {
   padding: 1.5rem;
-  border-radius: var(--radius-sm) !important;
-  background: #121212 !important;
+  border-radius: var(--radius-md) !important;
+  background: var(--bg-card) !important;
   border: 1px solid var(--border-light) !important;
 }
 
@@ -125,8 +125,8 @@
 /* Metric Pro Cards */
 .metric-pro-card {
   padding: 1.25rem;
-  border-radius: var(--radius-sm) !important;
-  background: #121212 !important;
+  border-radius: var(--radius-md) !important;
+  background: var(--bg-card) !important;
   border: 1px solid var(--border-light) !important;
   margin-bottom: 1rem;
 }
@@ -152,8 +152,8 @@
 /* Inference Logs Terminal */
 .terminal-logs-pro {
   padding: 1.25rem;
-  border-radius: var(--radius-sm) !important;
-  background: #121212 !important;
+  border-radius: var(--radius-md) !important;
+  background: var(--bg-card) !important;
   border: 1px solid var(--border-light) !important;
 }
 
@@ -178,7 +178,14 @@
 .log-entry-pro .entry { color: var(--text-secondary); }
 
 /* shared component fixes */
-.glass { background: #121212 !important; }
+.glass { background: var(--bg-card) !important; }
 .text-cyan { color: var(--accent-cyan) !important; }
 .text-brand { color: var(--accent-brand) !important; }
 .text-orange { color: var(--accent-orange) !important; }
+
+@media (max-width: 768px) {
+  .engine-status-pro { flex-wrap: wrap; gap: 1rem; padding: 1rem; }
+  .engine-item { border: none; padding: 0; }
+  .header-pro-left h1 { font-size: 1.4rem; }
+  .predictions-viewport-pro, .metric-pro-card, .terminal-logs-pro { padding: 1rem; }
+}

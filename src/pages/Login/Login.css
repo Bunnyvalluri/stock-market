@@ -328,11 +328,14 @@
 }
 
 @media (max-width: 900px) {
-  .login-pro-wrapper { flex-direction: column; align-items: center; max-width: 500px; padding: 4rem 0; }
+  .login-pro-wrapper { flex-direction: column; align-items: center; max-width: 500px; padding: 4rem 2rem; }
   .login-pro-side-log { display: none; }
-  .login-pro-card { padding: 2rem; width: 100%; }
+  .login-pro-card { padding: 2.5rem; width: 100%; }
 }
 
 @media (max-width: 480px) {
+  .login-pro-wrapper { padding: 2rem 1rem; width: 100%; }
+  .login-pro-card { padding: 1.5rem; border-radius: var(--radius-sm); }
   .social-auth-pro { grid-template-columns: 1fr; }
+  .login-pro-brand h2 { font-size: 1.5rem; }
 }

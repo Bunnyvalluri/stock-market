@@ -54,9 +54,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 2rem !important;
-  border-radius: var(--radius-sm) !important;
+  border-radius: var(--radius-md) !important;
   border: 1px solid var(--border-light) !important;
-  background: #121212 !important;
+  background: var(--bg-card) !important;
 }
 
 .sd-pro-id-main { display: flex; align-items: center; gap: 1.5rem; }
@@ -107,8 +107,8 @@
 /* Primary Analysis Chart Panel */
 .sd-pro-chart-panel {
   padding: 1.5rem;
-  border-radius: var(--radius-sm) !important;
-  background: #121212 !important;
+  border-radius: var(--radius-md) !important;
+  background: var(--bg-card) !important;
   border: 1px solid var(--border-light) !important;
 }
 
@@ -147,8 +147,8 @@
 .sd-pro-stats-panel {
   margin-top: 1.5rem;
   padding: 1.5rem;
-  border-radius: var(--radius-sm) !important;
-  background: #121212 !important;
+  border-radius: var(--radius-md) !important;
+  background: var(--bg-card) !important;
   border: 1px solid var(--border-light) !important;
 }
 
@@ -176,8 +176,8 @@
 /* Proprietary AI Inference Card */
 .sd-pro-insight-card {
   padding: 1.5rem;
-  border-radius: var(--radius-sm) !important;
-  background: #121212 !important;
+  border-radius: var(--radius-md) !important;
+  background: var(--bg-card) !important;
   border: 1px solid var(--border-light) !important;
 }
 
@@ -204,8 +204,8 @@
 /* Liquidity Matrix Side Intelligence */
 .sd-pro-intelligence {
   padding: 1.25rem;
-  border-radius: var(--radius-sm) !important;
-  background: #121212 !important;
+  border-radius: var(--radius-md) !important;
+  background: var(--bg-card) !important;
   border: 1px solid var(--border-light) !important;
 }
 
@@ -214,7 +214,15 @@
 .liq-item span:first-child { color: var(--text-secondary); font-weight: 600; }
 
 /* Tooltip */
-.sd-tooltip-pro { padding: 12px; border: 1px solid var(--border-light) !important; border-radius: 8px !important; background: #000 !important; }
+.sd-tooltip-pro { padding: 12px; border: 1px solid var(--border-light) !important; border-radius: 8px !important; background: var(--bg-card) !important; color: var(--text-primary) !important; }
 .sd-tt-date { font-weight: 800; font-size: 0.75rem; margin-bottom: 8px; color: var(--text-muted); }
 .sd-tt-row { display: flex; justify-content: space-between; gap: 20px; font-size: 0.8rem; margin-bottom: 4px; }
 .sd-tt-row span:last-child { font-family: 'Inter', monospace; }
+
+@media (max-width: 480px) {
+  .sd-pro-identity-grid { padding: 1.5rem !important; }
+  .sd-pro-meta h1 { font-size: 1.6rem; }
+  .sd-pro-price-group .price { font-size: 2rem; }
+  .sd-pro-stats-panel, .sd-pro-chart-panel, .sd-pro-insight-card { padding: 1rem; }
+  .sd-pro-stats-grid { grid-template-columns: 1fr; }
+}

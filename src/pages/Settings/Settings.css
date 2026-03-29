@@ -68,9 +68,9 @@
   display: grid;
   grid-template-columns: 240px 1fr;
   min-height: 60vh;
-  border-radius: var(--radius-sm) !important;
+  border-radius: var(--radius-md) !important;
   border: 1px solid var(--border-light) !important;
-  background: #121212 !important;
+  background: var(--bg-card) !important;
   overflow: hidden;
 }
 
@@ -81,7 +81,7 @@
 .settings-pro-sidebar {
   border-right: 1px solid var(--border-light);
   padding: 1.5rem 1rem;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 @media (max-width: 900px) {
@@ -92,6 +92,7 @@
     overflow-x: auto;
     padding: 1rem;
   }
+  .settings-pro-sidebar::-webkit-scrollbar { display: none; }
   .settings-pro-nav { flex-direction: row; gap: 8px; }
 }
 
@@ -106,7 +107,7 @@
   align-items: center;
   gap: 12px;
   padding: 10px 1rem;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   border: 1px solid transparent;
   background: transparent;
   color: var(--text-secondary);
@@ -116,6 +117,7 @@
   transition: all 0.2s;
   text-align: left;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .nav-pro-item:hover {
@@ -133,7 +135,7 @@
 /* Settings Hub Content */
 .settings-pro-content {
   padding: 3rem;
-  background: #121212;
+  background: var(--bg-card);
 }
 
 @media (max-width: 768px) {
