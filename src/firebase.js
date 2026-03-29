@@ -5,12 +5,12 @@ import { getAuth, GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
 const clean = (val) => String(val || "").replace(/\\r/g, "").replace(/\\n/g, "").replace(/[\s\r\n\t]/g, "").trim();
 
 const firebaseConfig = {
-  apiKey: clean(import.meta.env.VITE_FIREBASE_API_KEY),
-  authDomain: clean(import.meta.env.VITE_FIREBASE_AUTH_DOMAIN),
-  projectId: clean(import.meta.env.VITE_FIREBASE_PROJECT_ID),
-  storageBucket: clean(import.meta.env.VITE_FIREBASE_STORAGE_BUCKET),
-  messagingSenderId: clean(import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID),
-  appId: clean(import.meta.env.VITE_FIREBASE_APP_ID)
+  apiKey: "AIzaSyCJZZaikCRCSdkDKd7M8IB0V-dQlRNaiGM",
+  authDomain: "stock-market-9f99e.firebaseapp.com",
+  projectId: "stock-market-9f99e",
+  storageBucket: "stock-market-9f99e.firebasestorage.app",
+  messagingSenderId: "913684856590",
+  appId: "1:913684856590:web:032abbfc415dc45d4ee15f"
 };
 
 // Initialize Firebase
