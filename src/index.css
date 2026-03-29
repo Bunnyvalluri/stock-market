@@ -53,35 +53,35 @@
 }
 
 :root[data-theme='light'] {
-  /* Customer Requested Light Theme */
-  --bg-primary: #FFFDF6;       /* Warm Cream White */
-  --bg-secondary: #f2f0e6;     /* Slightly darker cream for depth */
-  --bg-card: #ffffff;          /* Pure White for cards */
-  --bg-card-hover: #faf9f2;    
+  /* Customer Requested Premium Light Theme (Clean Fintech) */
+  --bg-primary: #F8FAFC;       /* Soft Gray Background */
+  --bg-secondary: #F1F5F9;     
+  --bg-card: #FFFFFF;          /* Clean White Cards */
+  --bg-card-hover: #F8FAFC;    
   
-  --text-primary: #111827;     /* Stark Black-Grey */
-  --text-secondary: #4b5563;   /* Professional Charcoal */
-  --text-muted: #6b7280;       
+  --text-primary: #0F172A;     /* Slate 900 */
+  --text-secondary: #64748B;   /* Slate 500 */
+  --text-muted: #94A3B8;       /* Slate 400 */
   
-  --accent-brand: #89D4FF;      /* Requested Sky Blue */
-  --accent-cyan: #60a5fa;       /* Complementary Blue */
-  --accent-magenta: #89D4FF;    /* Requested Sky Blue */
-  --accent-lime: #059669;       
-  --accent-orange: #f59e0b;     
-  --accent-purple: #89D4FF;     
+  --accent-brand: #4F46E5;      /* Primary Indigo */
+  --accent-cyan: #3B82F6;       
+  --accent-magenta: #8B5CF6;    
+  --accent-lime: #22C55E;       /* Success Green */
+  --accent-orange: #F59E0B;     
+  --accent-purple: #4F46E5;     
   
-  --status-up: #059669;         
-  --status-up-bg: rgba(5, 150, 105, 0.1);
-  --status-down: #dc2626;       
-  --status-down-bg: rgba(220, 38, 38, 0.1);
-  --status-neutral: #6b7280;    
-
-  /* Overrides for hard-coded dark terminal components */
-  --border-light: rgba(0, 0, 0, 0.1);
-  --border-medium: rgba(0, 0, 0, 0.2);
+  --status-up: #16A34A;         
+  --status-up-bg: #DCFCE7;
+  --status-down: #DC2626;       
+  --status-down-bg: #FEE2E2;
+  --status-neutral: #94A3B8;    
+  
+  --border-light: #E2E8F0;
+  --border-medium: #CBD5E1;
+  --border-vibrant: rgba(79, 70, 229, 0.2); 
 }
 
-/* Force light mode on all specific terminal panels that might have hardcoded #121212 / #000 / #080808 */
+/* Force light mode on all specific terminal panels that might have hardcoded dark colors */
 [data-theme='light'] .terminal-card,
 [data-theme='light'] .portfolio-summary-card-pro,
 [data-theme='light'] .portfolio-holdings-grid-pro,
@@ -90,10 +90,22 @@
 [data-theme='light'] .bento-pro-card,
 [data-theme='light'] .login-pro-card,
 [data-theme='light'] .glass-card,
+[data-theme='light'] .side-intelligence,
+[data-theme='light'] .intelligence-card,
 [data-theme='light'] .b-pro-visual {
   background: var(--bg-card) !important;
   color: var(--text-primary) !important;
   border-color: var(--border-light) !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important;
+  border-radius: 16px !important;
+  transition: all 0.3s ease !important;
+}
+
+[data-theme='light'] .terminal-card:hover,
+[data-theme='light'] .portfolio-summary-card-pro:hover,
+[data-theme='light'] .bento-pro-card:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.08) !important;
 }
 
 [data-theme='light'] .quant-metrics-bar,
@@ -102,9 +114,10 @@
 [data-theme='light'] .terminal-logs-pro,
 [data-theme='light'] .viewport-body,
 [data-theme='light'] .hero-pro-viewport {
-  background: var(--bg-secondary) !important;
+  background: #FFFFFF !important;
   color: var(--text-primary) !important;
-  border-color: var(--border-medium) !important;
+  border-color: var(--border-light) !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important;
 }
 
 [data-theme='light'] .l-symb,
@@ -115,16 +128,27 @@
   color: var(--text-primary) !important;
 }
 
+/* Gradients for Premium Touch on Buttons */
 [data-theme='light'] .btn-pro-primary,
 [data-theme='light'] .btn-terminal-launch,
-[data-theme='light'] .action-btn-pro,
 [data-theme='light'] .login-submit {
-  background: var(--accent-brand);
-  color: #111827;
+  background: linear-gradient(135deg, #4F46E5, #6366F1) !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  border-radius: 12px !important;
+}
+
+[data-theme='light'] .btn-pro-outline,
+[data-theme='light'] .action-btn-pro {
+  background: #EEF2FF !important;
+  color: #4F46E5 !important;
+  border: none !important;
+  font-weight: 600 !important;
 }
 
 [data-theme='light'] .nav-institutional {
-  background: rgba(255, 253, 246, 0.8) !important;
+  background: rgba(248, 250, 252, 0.85) !important;
+  border-bottom: 1px solid var(--border-light) !important;
 }
 
 * {
