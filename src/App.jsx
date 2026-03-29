@@ -99,7 +99,7 @@ const Sidebar = ({ isOpen, toggleSidebar, user }) => {
             )}
             <div className="user-info">
               <p className="user-name">{displayName}</p>
-              <p className="user-tier text-gradient-purple">Pro Member</p>
+              <p className="user-tier text-gradient">Institutional Access</p>
             </div>
             <button className="logout-btn" onClick={handleLogout} title="Sign out">
               <LogOut size={16} />

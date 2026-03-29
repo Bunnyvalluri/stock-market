@@ -253,6 +253,92 @@
   transform: translateX(22px);
   background: #fff;
 }
+
+/* Institutional Upgrades */
+.mb-2 { margin-bottom: 0.5rem; }
+.pt-4 { padding-top: 1.5rem; }
+.border-top { border-top: 1px dashed var(--border-medium); }
+.opacity-70 { opacity: 0.7; }
+.mono-text { font-family: 'Outfit', monospace; font-size: 0.8rem; letter-spacing: 0.5px; }
+
+.section-header-block {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 1rem;
+}
+
+.mono-input {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  letter-spacing: 1px;
+  font-size: 0.95rem;
+}
+.mono-input::placeholder {
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0;
+}
+
+.status-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.status-badge.connected {
+  color: var(--status-up);
+  background: var(--status-up-bg);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+.status-badge .dot {
+  width: 6px;
+  height: 6px;
+  background: currentColor;
+  border-radius: 50%;
+  animation: pulseOpacity 2s infinite;
+}
+
+.risk-zone {
+  padding: 1.5rem;
+  background: rgba(239, 68, 68, 0.03); /* Faint red tint */
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--status-down);
+}
+
+.kill-btn {
+  padding: 0.8rem 1.5rem;
+  background: transparent;
+  color: var(--status-down);
+  border: 2px solid var(--status-down);
+  border-radius: var(--radius-sm);
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.kill-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+}
+.kill-btn.active {
+  background: var(--status-down);
+  color: white;
+  animation: pulseRedBg 1s infinite alternate;
+}
+
+@keyframes pulseRedBg {
+  0% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
+  100% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.8); }
+}
+
+.alert-block {
+  border-left: 3px solid var(--status-down);
+}
+
 /* Settings CSS - Deep Responsive Apple Breakpoints */
 @media (max-width: 1024px) {
   .settings-layout {

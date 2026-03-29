@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import predictions, health
+from app.routes import predictions, health, sentiment
 
 app = FastAPI(
     title="NeuralTrade ML Service",
@@ -8,10 +8,9 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# CORS — allow only the Node.js backend to call this service
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5000", "https://stock-market-backend.onrender.com"],
+    allow_origins=["http://localhost:5000", "http://localhost:5173", "https://stock-market-backend.onrender.com"],
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
@@ -19,6 +18,7 @@ app.add_middleware(
 # Register routers
 app.include_router(health.router)
 app.include_router(predictions.router, prefix="/predict")
+app.include_router(sentiment.router, prefix="/sentiment")
 
 if __name__ == "__main__":
     import uvicorn

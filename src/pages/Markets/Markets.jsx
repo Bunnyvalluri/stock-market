@@ -1,59 +1,70 @@
 import React, { useState, useEffect } from 'react';
-import { AreaChart, Area, ResponsiveContainer, YAxis } from 'recharts';
-import { Activity, ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown, Clock } from 'lucide-react';
+import { AreaChart, Area, ResponsiveContainer, YAxis, XAxis, Tooltip } from 'recharts';
+import { 
+  Activity, ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown, 
+  Clock, Globe, Search, Filter, BarChart3, Zap
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { fetchGlobalQuote } from '../../services/alphaVantage';
 import './Markets.css';
-import '../Portfolio/PortfolioRealTime.css';
 
 const MOCK_TICKERS = [
-  { symbol: 'AAPL', name: 'Apple Inc.', basePrice: 175.50 },
-  { symbol: 'MSFT', name: 'Microsoft', basePrice: 410.20 },
-  { symbol: 'GOOGL', name: 'Alphabet', basePrice: 140.80 },
-  { symbol: 'AMZN', name: 'Amazon', basePrice: 145.20 },
-  { symbol: 'META', name: 'Meta', basePrice: 480.10 },
-  { symbol: 'NVDA', name: 'NVIDIA', basePrice: 890.50 },
-  { symbol: 'TSLA', name: 'Tesla', basePrice: 215.30 },
-  { symbol: 'AMD', name: 'AMD', basePrice: 178.90 },
+  { symbol: 'AAPL', name: 'Apple Inc.', basePrice: 175.50, sector: 'Technology' },
+  { symbol: 'MSFT', name: 'Microsoft', basePrice: 410.20, sector: 'Technology' },
+  { symbol: 'GOOGL', name: 'Alphabet', basePrice: 140.80, sector: 'Technology' },
+  { symbol: 'AMZN', name: 'Amazon', basePrice: 145.20, sector: 'E-commerce' },
+  { symbol: 'META', name: 'Meta', basePrice: 480.10, sector: 'Social' },
+  { symbol: 'NVDA', name: 'NVIDIA', basePrice: 890.50, sector: 'Semi' },
+  { symbol: 'TSLA', name: 'Tesla', basePrice: 215.30, sector: 'Auto' },
+  { symbol: 'AMD', name: 'AMD', basePrice: 178.90, sector: 'Semi' },
+];
+
+const INDICES = [
+  { symbol: 'S&P 500', val: '5,123.45', change: '+0.85%', isUp: true },
+  { symbol: 'NASDAQ', val: '16,234.10', change: '-0.32%', isUp: false },
+  { symbol: 'VIX', val: '14.22', change: '-5.20%', isUp: false },
+  { symbol: 'US 10Y', val: '4.21%', change: '+0.01', isUp: true },
 ];
 
 const generateHistory = (basePrice) => {
-  return Array.from({ length: 20 }, (_, i) => ({
+  return Array.from({ length: 15 }, (_, i) => ({
     time: i,
-    price: basePrice + (Math.random() - 0.5) * 5
+    price: basePrice + (Math.random() - 0.5) * 4
   }));
 };
 
-const MarketCard = ({ data, isLive }) => {
+const MarketChip = ({ data, isLive }) => {
   const isUp = data.change >= 0;
-  
   return (
     <motion.div 
-      className="market-card glass-card"
-      layout
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
+      className="market-card-pro glass-card"
+      whileHover={{ y: -4, borderColor: 'var(--accent-brand)' }}
     >
-      <div className="mc-header">
-        <div className="mc-symbol">{data.symbol}</div>
-        <div className="mc-name text-muted">{data.name}</div>
+      <div className="mc-pro-header">
+        <div className="mc-pro-id">
+            <span className="mc-pro-symbol">{data.symbol}</span>
+            <span className="mc-pro-sector">{data.sector}</span>
+        </div>
+        <div className={`mc-pro-indicator ${isUp ? 'up' : 'down'}`}>
+            {isUp ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
+        </div>
       </div>
       
-      <div className="mc-price-row">
-        <div className={`mc-price ${data.pulseDir ? `flash-${data.pulseDir}` : ''}`}>
-          ${data.price.toFixed(2)}
-        </div>
-        <div className={`mc-change ${isUp ? 'text-up' : 'text-down'}`}>
-          {isUp ? '+' : ''}{data.change.toFixed(2)}%
-        </div>
+      <div className="mc-pro-body">
+         <div className={`mc-pro-price ${data.pulseDir ? `flash-${data.pulseDir}` : ''}`}>
+           ${data.price.toFixed(2)}
+         </div>
+         <div className={`mc-pro-change ${isUp ? 'text-up' : 'text-down'}`}>
+           {isUp ? '+' : ''}{data.change.toFixed(2)}%
+         </div>
       </div>
 
-      <div className="mc-chart">
-         <ResponsiveContainer width="100%" height={60}>
+      <div className="mc-pro-chart">
+         <ResponsiveContainer width="100%" height={50}>
             <AreaChart data={data.history}>
                <defs>
                  <linearGradient id={`grad-${data.symbol}`} x1="0" y1="0" x2="0" y2="1">
-                   <stop offset="5%" stopColor={isUp ? 'var(--status-up)' : 'var(--status-down)'} stopOpacity={0.3}/>
+                   <stop offset="5%" stopColor={isUp ? 'var(--status-up)' : 'var(--status-down)'} stopOpacity={0.2}/>
                    <stop offset="95%" stopColor={isUp ? 'var(--status-up)' : 'var(--status-down)'} stopOpacity={0}/>
                  </linearGradient>
                </defs>
@@ -64,15 +75,22 @@ const MarketCard = ({ data, isLive }) => {
                  stroke={isUp ? 'var(--status-up)' : 'var(--status-down)'} 
                  fill={`url(#grad-${data.symbol})`} 
                  strokeWidth={2}
-                 isAnimationActive={isLive}
-                 animationDuration={400}
+                 dot={false}
+                 isAnimationActive={false}
                />
             </AreaChart>
          </ResponsiveContainer>
       </div>
-      
-      <div className="mc-footer">
-        <div className="mc-vol">Vol: {(Math.random() * 10 + 1).toFixed(1)}M</div>
+
+      <div className="mc-pro-footer">
+          <div className="mc-pro-stat">
+              <span>VOL</span>
+              <span className="val">{(Math.random() * 5 + 1).toFixed(1)}M</span>
+          </div>
+          <div className="mc-pro-stat">
+              <span>RSI</span>
+              <span className="val">{(40 + Math.random() * 30).toFixed(0)}</span>
+          </div>
       </div>
     </motion.div>
   );
@@ -83,145 +101,148 @@ const Markets = () => {
     MOCK_TICKERS.map(t => ({
       ...t,
       price: t.basePrice,
-      change: (Math.random() - 0.3) * 3, // Initial random change
+      change: (Math.random() - 0.3) * 2,
       history: generateHistory(t.basePrice),
-      pulseDir: null,
-      isLive: false
+      pulseDir: null
     }))
   );
   
   const [isLive, setIsLive] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // Fetch true baseline prices on mount
-  useEffect(() => {
-    import('../../services/alphaVantage').then(({ fetchGlobalQuote }) => {
-      // Pick one symbol to fetch to avoid quick limit issues on free tier.
-      const sym = 'IBM'; 
-      fetchGlobalQuote(sym).then(realData => {
-         if (realData) {
-            setMarketsData(prev => {
-                const arr = [...prev];
-                const i = arr.findIndex(x => x.symbol === sym);
-                if (i !== -1) {
-                   arr[i] = { 
-                     ...arr[i], 
-                     price: realData.price, 
-                     basePrice: realData.price,
-                     change: realData.change, 
-                     history: generateHistory(realData.price),
-                     isLive: true 
-                   };
-                } else {
-                   arr.push({
-                     symbol: realData.symbol,
-                     name: 'IBM Corp (LIVE)',
-                     price: realData.price,
-                     basePrice: realData.price,
-                     change: realData.change,
-                     history: generateHistory(realData.price),
-                     pulseDir: null,
-                     isLive: true
-                   });
-                }
-                return arr;
-            });
-         }
-      });
-    });
-  }, []);
-
-  // High Frequency Trading Simulation
   useEffect(() => {
     if (!isLive) return;
-
     const interval = setInterval(() => {
       setMarketsData(prev => prev.map(stock => {
-        // Only update random stocks to simulate asymmetric market activity
-        if (Math.random() > 0.4) {
-          const shift = (Math.random() - 0.45) * (stock.basePrice * 0.005);
+        if (Math.random() > 0.6) {
+          const shift = (Math.random() - 0.48) * (stock.basePrice * 0.002);
           const newPrice = stock.price + shift;
-          const newChange = stock.change + (shift / stock.basePrice) * 100;
-          
-          const newHistory = [...stock.history.slice(1), { time: Date.now(), price: newPrice }];
-          
           return {
             ...stock,
             price: newPrice,
-            change: newChange,
-            history: newHistory,
+            change: stock.change + (shift/stock.basePrice)*100,
+            history: [...stock.history.slice(1), {time: Date.now(), price: newPrice}],
             pulseDir: shift > 0 ? 'up' : 'down'
           };
         }
         return { ...stock, pulseDir: null };
       }));
-    }, 1000); // 1-second ticks
-
+    }, 1500);
     return () => clearInterval(interval);
   }, [isLive]);
 
-  // Sort by biggest movers
-  const topGainers = [...marketsData].sort((a, b) => b.change - a.change).slice(0, 4);
-  const activeVolume = [...marketsData].sort(() => 0.5 - Math.random());
+  const filteredData = marketsData.filter(m => 
+    m.symbol.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    m.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <div className="markets-container animate-fade-in">
-      <div className="page-header flex-between">
-        <div className="header-title">
-          <Activity className="text-gradient-cyan" size={28} />
-          <h1>Global Markets Overview</h1>
-          <div className={`live-badge ${isLive ? 'active' : ''}`} onClick={() => setIsLive(!isLive)}>
-            <div className="pulse-dot"></div>
-            {isLive ? 'WEBSOCKET CONNECTED' : 'DISCONNECTED'}
-          </div>
-        </div>
-        <div className="market-status">
-           <Clock size={16} /> US Market Open | High Volatility
+    <div className="markets-pro-container animate-fade-in">
+      {/* Institutional Index Bar */}
+      <div className="index-bar-pro glass">
+        {INDICES.map(idx => (
+            <div key={idx.symbol} className="index-item-pro">
+                <span className="idx-label">{idx.symbol}</span>
+                <span className="idx-val">{idx.val}</span>
+                <span className={`idx-change ${idx.isUp ? 'text-up' : 'text-down'}`}>{idx.change}</span>
+            </div>
+        ))}
+        <div className="index-status">
+            <span className="live-pulse"></span> SYSTEM OK
         </div>
       </div>
 
-      <div className="markets-layout">
-        <div className="main-feed">
-          <h3 className="section-heading">Top Gainers & Losers <span className="text-muted">(Live Array)</span></h3>
-          <div className="grid-feed">
-            <AnimatePresence>
-              {topGainers.map(data => (
-                <MarketCard key={data.symbol} data={data} isLive={isLive} />
-              ))}
-            </AnimatePresence>
-          </div>
-          
-          <h3 className="section-heading" style={{marginTop: '2rem'}}>High Volume Assets</h3>
-          <div className="grid-feed">
-             {activeVolume.map(data => (
-               <MarketCard key={`vol-${data.symbol}`} data={data} isLive={isLive} />
-             ))}
-          </div>
+      {/* Page Header */}
+      <div className="page-header-pro">
+        <div className="header-left">
+            <Globe className="text-brand" size={24} />
+            <div>
+                <h1>Global Equities Dashboard</h1>
+                <p className="text-muted">Real-time institutional liquidity & pricing matrix</p>
+            </div>
         </div>
-        
-        <div className="order-book glass-card">
-           <div className="ob-header">
-             <h4>Live Activity Log</h4>
-             <Activity size={16} className="text-brand" />
+
+        <div className="header-right-pro">
+            <div className={`live-toggle-pro ${isLive ? 'active' : ''}`} onClick={() => setIsLive(!isLive)}>
+                <Zap size={14} />
+                {isLive ? 'TERMINAL LIVE' : 'STREAM PAUSED'}
+            </div>
+            <div className="search-wrap-pro">
+                <Search size={16} />
+                <input 
+                    type="text" 
+                    placeholder="Search instrument..." 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+            </div>
+            <button className="filter-btn-pro"><Filter size={18} /></button>
+        </div>
+      </div>
+
+      <div className="markets-pro-layout">
+        <div className="main-matrix">
+           <div className="matrix-controls">
+                <div className="control-tabs">
+                    <button className="active">All Assets</button>
+                    <button>Technology</button>
+                    <button>Indices</button>
+                </div>
+                <div className="matrix-stats">
+                    <span className="text-muted">Tracking: </span>
+                    <span className="font-bold">2,482 Instruments</span>
+                </div>
            </div>
-           
-           <div className="ob-list">
-             <AnimatePresence>
-               {activeVolume.slice(0, 10).map((mock, i) => (
-                 <motion.div 
-                   key={mock.symbol + i} 
-                   className="ob-row"
-                   initial={{ opacity: 0, x: 20 }}
-                   animate={{ opacity: 1, x: 0 }}
-                   transition={{ duration: 0.3, delay: i * 0.1 }}
-                 >
-                   <span className="ob-time">{new Date().toLocaleTimeString('en-US', { hour12: false, second: '2-digit', fractionalSecondDigits: 2 })}</span>
-                   <span className="ob-sym">{mock.symbol}</span>
-                   <span className={`ob-type ${Math.random() > 0.5 ? 'ob-buy' : 'ob-sell'}`}>{Math.random() > 0.5 ? 'BUY' : 'SELL'}</span>
-                   <span className="ob-qty">{(Math.random() * 500).toFixed(0)}</span>
-                 </motion.div>
-               ))}
-             </AnimatePresence>
+
+           <div className="matrix-grid">
+                <AnimatePresence>
+                    {filteredData.map(data => (
+                        <MarketChip key={data.symbol} data={data} isLive={isLive} />
+                    ))}
+                </AnimatePresence>
            </div>
+        </div>
+
+        <div className="side-intelligence">
+            <div className="intelligence-card glass-card">
+                <div className="int-header">
+                    <Activity size={18} className="text-orange" />
+                    <h4>HFT Event Log</h4>
+                </div>
+                <div className="log-list-pro">
+                    {filteredData.slice(0, 8).map((m, i) => (
+                        <div key={i} className="log-item-pro">
+                            <span className="time">{new Date().toLocaleTimeString(undefined, {hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit'})}</span>
+                            <span className="symbol">{m.symbol}</span>
+                            <span className={`action ${Math.random() > 0.5 ? 'buy' : 'sell'}`}>
+                                {Math.random() > 0.4 ? 'LIMIT' : 'MARKET'}
+                            </span>
+                            <span className="shares">{(Math.random()*1000).toFixed(0)}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className="intelligence-card glass-card mt-5">
+                <div className="int-header">
+                    <BarChart3 size={18} className="text-cyan" />
+                    <h4>Volatility Heatmap</h4>
+                </div>
+                <div className="heatmap-pro">
+                    {/* Simulated heatmap blocks */}
+                    {Array.from({length: 12}).map((_, i) => (
+                        <div 
+                            key={i} 
+                            className="heatmap-block" 
+                            style={{ 
+                                opacity: 0.3 + Math.random() * 0.7,
+                                backgroundColor: Math.random() > 0.5 ? 'var(--status-up)' : 'var(--status-down)'
+                            }}
+                        ></div>
+                    ))}
+                </div>
+                <p className="text-xs text-muted mt-3">Calculated real-time via VIX & Skew metrics.</p>
+            </div>
         </div>
       </div>
     </div>

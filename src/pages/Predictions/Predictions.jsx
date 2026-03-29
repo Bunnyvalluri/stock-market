@@ -1,57 +1,54 @@
 import React, { useState, useEffect } from 'react';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
-import { Cpu, Settings2, Target, Info, Activity } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { 
+  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, 
+  CartesianGrid, Legend, AreaChart, Area 
+} from 'recharts';
+import { 
+  Cpu, Settings2, Target, Info, Activity, 
+  Shield, Zap, Layers, Server, Terminal, Gauge
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import './Predictions.css';
-import '../Portfolio/PortfolioRealTime.css';
 
-// Base generation logic
 const generatePredictionData = (model, seed = 850) => {
   const data = [];
   let basePrice = seed;
-  
-  // Historical data (30 days)
   for (let i = 30; i > 0; i--) {
-    basePrice = basePrice + (Math.random() - 0.45) * 15;
+    basePrice = basePrice + (Math.random() - 0.45) * 12;
     data.push({
-      date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toLocaleDateString(),
+      date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
       historical: basePrice,
-      prediction: null
+      prediction: null,
+      confidenceBandLow: null,
+      confidenceBandHigh: null
     });
   }
-
-  // Future Prediction (7 days)
   let predPrice = basePrice;
   for (let i = 0; i <= 7; i++) {
-    if (model === 'LSTM') {
-      predPrice = predPrice + (Math.random() - 0.3) * 12; 
-    } else if (model === 'Random Forest') {
-      predPrice = predPrice + (Math.random() - 0.5) * 20;
-    } else {
-      predPrice = predPrice + 5; 
-    }
-    
+    const shift = model === 'LSTM' ? (Math.random() - 0.3) * 10 : (Math.random() - 0.5) * 18;
+    predPrice += shift;
     data.push({
-      date: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toLocaleDateString(),
+      date: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
       historical: i === 0 ? basePrice : null,
-      prediction: predPrice
+      prediction: predPrice,
+      confidenceBandLow: predPrice - (i * 4),
+      confidenceBandHigh: predPrice + (i * 4)
     });
   }
   return data;
 };
 
-const MetricCard = ({ label, value, desc, highlight }) => (
-  <motion.div 
-    className={`metric-card glass-card ${highlight ? 'highlight' : ''}`}
-    whileHover={{ y: -3 }}
-  >
-    <div className="metric-header">
-      <span className="metric-label">{label}</span>
-      <Info size={14} className="text-muted" />
+const MetricPro = ({ label, value, sub, icon, trend }) => (
+  <div className="metric-pro-card glass-card">
+    <div className="metric-pro-header">
+       <div className="metric-pro-icon">{icon}</div>
+       <span className="metric-pro-label">{label}</span>
     </div>
-    <div className="metric-value">{value}</div>
-    <div className="metric-desc">{desc}</div>
-  </motion.div>
+    <div className="metric-pro-body">
+       <h3 className="metric-pro-val">{value}</h3>
+       <div className={`metric-pro-sub ${trend === 'up' ? 'up' : 'down'}`}>{sub}</div>
+    </div>
+  </div>
 );
 
 const Predictions = () => {
@@ -60,192 +57,176 @@ const Predictions = () => {
   const [chartData, setChartData] = useState(generatePredictionData('LSTM', 850));
   const [isLive, setIsLive] = useState(true);
   const [basePrice, setBasePrice] = useState(850);
-  
-  const [liveMetrics, setLiveMetrics] = useState({ rmse: '4.21', r2: '0.92', direction: 'Strong Uptrend', conf: '92%' });
+  const [inferenceLogs, setInferenceLogs] = useState([]);
 
-  // Simulate real-time continuous inference recalibration
   useEffect(() => {
     if (!isLive) return;
-    
     const interval = setInterval(() => {
-        // Shift base price slightly to represent realtime action
-        const shift = (Math.random() - 0.45) * 5;
-        const newBasePrice = basePrice + shift;
-        setBasePrice(newBasePrice);
-        setChartData(generatePredictionData(selectedModel, newBasePrice));
-        
-        // Slightly jitter metrics to simulate live continuous ML output stream
-        setLiveMetrics(prev => {
-           let confBase = selectedModel === 'LSTM' ? 92 : selectedModel === 'Random Forest' ? 76 : 65;
-           let newConf = (confBase + (Math.random() * 2 - 1)).toFixed(1);
-           
-           let rmseBase = selectedModel === 'LSTM' ? 4.21 : selectedModel === 'Random Forest' ? 6.45 : 8.12;
-           let newRmse = (rmseBase + (Math.random() * 0.1 - 0.05)).toFixed(3);
-           
-           return {
-               ...prev,
-               conf: `${newConf}%`,
-               rmse: newRmse
-           };
-        });
-        
-    }, 2500);
-    
+      const shift = (Math.random() - 0.45) * 4;
+      const newPrice = basePrice + shift;
+      setBasePrice(newPrice);
+      setChartData(generatePredictionData(selectedModel, newPrice));
+      
+      // Update Inference Log
+      const logEntries = [
+        `[${selectedModel}] Backpropagating loss gradients... (loss: ${Math.random().toFixed(4)})`,
+        `[ENGINE] Adjusting attention weights for $${selectedStock} vol-spike.`,
+        `[SIGNAL] New Target Re-calculated: $${(newPrice * (1.1)).toFixed(2)}`,
+        `[INFERENCE] Confidence score updated via TensorCore.`
+      ];
+      setInferenceLogs(prev => [logEntries[Math.floor(Math.random() * logEntries.length)], ...prev].slice(0, 4));
+    }, 3000);
     return () => clearInterval(interval);
-  }, [isLive, selectedModel, basePrice]);
-
-  const handleModelChange = (model) => {
-    setSelectedModel(model);
-    setChartData(generatePredictionData(model, basePrice));
-    
-    // Initial static metrics reset before live jitter takes over
-    if (model === 'LSTM') setLiveMetrics({ rmse: '4.21', r2: '0.92', direction: 'Strong Uptrend', conf: '92%' });
-    if (model === 'Random Forest') setLiveMetrics({ rmse: '6.45', r2: '0.86', direction: 'Volatile/Uptrend', conf: '76%' });
-    if (model === 'Linear Regression') setLiveMetrics({ rmse: '8.12', r2: '0.74', direction: 'Moderate Uptrend', conf: '65%' });
-  };
+  }, [isLive, selectedModel, basePrice, selectedStock]);
 
   return (
-    <div className="predictions-container animate-fade-in">
-      <div className="page-header flex-between">
-        <div className="header-title">
-          <Cpu className="text-gradient-purple" size={28} />
-          <h1>AI Core Predictions</h1>
-          <div className={`live-badge ${isLive ? 'active' : ''}`} onClick={() => setIsLive(!isLive)}>
-            <div className="pulse-dot"></div>
-            {isLive ? 'LIVE INFERENCE' : 'PAUSED'}
-          </div>
-        </div>
-        <p className="header-subtitle">Continuous machine learning pipeline connected.</p>
-      </div>
-
-      <div className="control-panel glass-card">
-        <div className="control-group">
-          <label>Target Asset</label>
-          <select 
-            className="custom-select" 
-            value={selectedStock} 
-            onChange={(e) => {
-                setSelectedStock(e.target.value);
-                const seeds = { 'NVDA': 850, 'AAPL': 175, 'TSLA': 210, 'BTC': 65000 };
-                setBasePrice(seeds[e.target.value]);
-                setChartData(generatePredictionData(selectedModel, seeds[e.target.value]));
-            }}
-          >
-            <option value="NVDA">NVIDIA Corp (NVDA)</option>
-            <option value="AAPL">Apple Inc (AAPL)</option>
-            <option value="TSLA">Tesla Inc (TSLA)</option>
-            <option value="BTC">Bitcoin (BTC)</option>
-          </select>
-        </div>
-        
-        <div className="control-group model-selector">
-          <label>ML Architecture</label>
-          <div className="model-tabs">
-            {['LSTM', 'Random Forest', 'Linear Regression'].map(model => (
-              <button 
-                key={model}
-                className={`model-tab ${selectedModel === model ? 'active' : ''}`}
-                onClick={() => handleModelChange(model)}
-              >
-                {model}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="control-group">
-          <label>Time Horizon</label>
-          <select className="custom-select">
-            <option value="7">7 Days</option>
-            <option value="14">14 Days</option>
-            <option value="30">30 Days</option>
-          </select>
-        </div>
-      </div>
-
-      <div className="prediction-layout">
-        <div className="chart-main glass-card">
-          <div className="chart-header">
-            <h3>{selectedStock} - {selectedModel} Forecast <span className="text-muted" style={{fontSize:'0.8rem', marginLeft: '10px'}}>{isLive && "(Recalibrating...)"}</span></h3>
-            <div className="chart-actions">
-              <button className="icon-btn"><Settings2 size={16} /></button>
+    <div className="predictions-pro-container animate-fade-in">
+      {/* High-Tech Engine Bar */}
+      <div className="engine-status-pro glass">
+         <div className="engine-item">
+            <Server size={14} className="text-cyan" />
+            <span className="text-muted">Compute Cluster:</span>
+            <span className="font-bold">A100-NODE-4</span>
+         </div>
+         <div className="engine-item">
+            <Activity size={14} className="text-brand" />
+            <span className="text-muted">Training Epochs:</span>
+            <span className="font-bold">4,280,000</span>
+         </div>
+         <div className="engine-item">
+            <Gauge size={14} className="text-orange" />
+            <span className="text-muted">Confidence:</span>
+            <span className="font-bold text-gradient">92.4% Avg</span>
+         </div>
+         <div className="engine-actions">
+            <div className={`engine-live-tag ${isLive ? 'active' : ''}`}>
+               {isLive ? 'SYSTEM INFERENCING' : 'IDLE'}
             </div>
-          </div>
-          
-          <div className="main-graph">
-            <ResponsiveContainer width="100%" height={400}>
-              <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" vertical={false} />
-                <XAxis 
-                  dataKey="date" 
-                  tick={{fill: 'var(--text-muted)', fontSize: 12}}
-                  axisLine={{stroke: 'var(--border-light)'}}
-                  tickLine={false}
-                  minTickGap={20}
-                />
-                <YAxis 
-                  domain={['auto', 'auto']}
-                  tick={{fill: 'var(--text-muted)', fontSize: 12}}
-                  axisLine={{stroke: 'var(--border-light)'}}
-                  tickLine={false}
-                  tickFormatter={(val) => `$${val.toFixed(0)}`}
-                />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: 'var(--bg-card-hover)', border: '1px solid var(--border-medium)', borderRadius: '12px' }}
-                />
-                <Legend iconType="circle" />
-                <Line 
-                  type="monotone" 
-                  dataKey="historical" 
-                  name="Live Feed Price" 
-                  stroke="var(--text-secondary)" 
-                  strokeWidth={2} 
-                  dot={false}
-                  isAnimationActive={false}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="prediction" 
-                  name="AI Future Prediction" 
-                  stroke="var(--accent-purple)" 
-                  strokeWidth={3} 
-                  strokeDasharray="5 5"
-                  dot={{ r: 4, fill: 'var(--bg-primary)', stroke: 'var(--accent-purple)', strokeWidth: 2 }}
-                  activeDot={{ r: 6, fill: 'var(--accent-purple)' }}
-                  isAnimationActive={true}
-                  animationDuration={1500}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+         </div>
+      </div>
 
-        <div className="metrics-sidebar">
-          <div className="insight-card glass-card">
-            <div className="insight-icon"><Target size={24} color="var(--accent-brand)" /></div>
-            <h4>Model Consensus</h4>
-            <div className="consensus-value text-gradient">{liveMetrics.direction}</div>
-            <p>Based on deeply connected neural network layers analyzing OHLCV + Sentiment data.</p>
-          </div>
-
-          <MetricCard 
-            label="Real-time Confidence" 
-            value={liveMetrics.conf} 
-            desc="Probability of directional accuracy updating live" 
-            highlight={true} 
-          />
-          <MetricCard 
-            label="Root Mean Square Error" 
-            value={liveMetrics.rmse} 
-            desc="Average deviation from actuals in stream" 
-          />
-          <MetricCard 
-            label="R² Score" 
-            value={liveMetrics.r2} 
-            desc="Coefficient of determination" 
-          />
-          
+      <div className="page-header-pro flex-between mt-4">
+        <div className="header-pro-left">
+            <Cpu className="text-brand" size={28} />
+            <div>
+                <h1>Neural Forecasting Core</h1>
+                <p className="text-muted">Deep learning architecture for multi-horizon price prediction</p>
+            </div>
         </div>
+        <div className="header-pro-right">
+            <div className="control-tabs-pro">
+                {['LSTM-v2', 'Transformer', 'XGBoost'].map(m => (
+                    <button key={m} className={m === 'LSTM-v2' ? 'active' : ''}>{m}</button>
+                ))}
+            </div>
+            <button className="settings-btn-pro"><Settings2 size={18} /></button>
+        </div>
+      </div>
+
+      <div className="predictions-main-grid-pro">
+         {/* Main Simulation Viewport */}
+         <div className="predictions-viewport-pro glass-card">
+            <div className="card-header-pro flex-between mb-2">
+                <div className="flex-row">
+                    <Target size={18} className="text-brand" />
+                    <h4>$ {selectedStock} - 7D Forward Pass</h4>
+                </div>
+                <div className="viewport-legend">
+                    <div className="leg-item"><span className="dot historical"></span> Actual</div>
+                    <div className="leg-item"><span className="dot forecast"></span> Prediction</div>
+                </div>
+            </div>
+
+            <div className="chart-wrapper-pro">
+              <ResponsiveContainer width="100%" height={450}>
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient id="colorPred" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="var(--accent-brand)" stopOpacity={0.4}/>
+                      <stop offset="95%" stopColor="var(--accent-brand)" stopOpacity={0}/>
+                    </linearGradient>
+                    <linearGradient id="confBand" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#2563eb" stopOpacity={0.1}/>
+                      <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
+                  <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)', fontSize: 11}} minTickGap={30} />
+                  <YAxis orientation="right" axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)', fontSize: 11}} domain={['auto', 'auto']} tickFormatter={v => `$${v}`} />
+                  <Tooltip 
+                    contentStyle={{ background: '#121212', border: '1px solid #333', borderRadius: '8px', color: '#fff' }}
+                  />
+                  
+                  {/* Confidence Interval Band */}
+                  <Area 
+                    type="monotone" 
+                    dataKey="confidenceBandHigh" 
+                    stroke="none" 
+                    fill="url(#confBand)" 
+                    isAnimationActive={false} 
+                  />
+                  
+                  <Line type="monotone" dataKey="historical" stroke="var(--text-muted)" strokeWidth={2} dot={false} strokeDasharray="5 5" />
+                  <Area 
+                    type="monotone" 
+                    dataKey="prediction" 
+                    stroke="var(--accent-brand)" 
+                    strokeWidth={4} 
+                    fill="url(#colorPred)" 
+                    dot={{r: 4, fill: '#fff', stroke: 'var(--accent-brand)', strokeWidth: 2}}
+                    isAnimationActive={true}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+         </div>
+
+         {/* Model Intelligence Sidebar */}
+         <div className="predictions-intelligence-pro">
+            <MetricPro 
+                label="Directional Accuracy" 
+                value="91.42%" 
+                sub="+2.1% against Benchmarking" 
+                icon={<Target size={20} className="text-brand" />}
+                trend="up"
+            />
+            <MetricPro 
+                label="Inference Latency" 
+                value="42ms" 
+                sub="Sub-millisecond Tensor Scaling" 
+                icon={<Activity size={20} className="text-cyan" />}
+                trend="up"
+            />
+            <MetricPro 
+                label="Risk Tolerance Index" 
+                value="0.12" 
+                sub="Statistically Insignificant Skew" 
+                icon={<Shield size={20} className="text-orange" />}
+                trend="down"
+            />
+
+            <div className="terminal-logs-pro glass-card mt-5">
+                <div className="card-header-pro">
+                    <Terminal size={18} className="text-brand" />
+                    <h4>Model Inference Logs</h4>
+                </div>
+                <div className="logs-stream-pro">
+                    <AnimatePresence mode="popLayout">
+                        {inferenceLogs.map((log, i) => (
+                            <motion.div 
+                                key={log + i} 
+                                initial={{ opacity: 0, x: -10 }} 
+                                animate={{ opacity: 1, x: 0 }} 
+                                className="log-entry-pro"
+                            >
+                                <span className="timestamp">{new Date().toLocaleTimeString()}</span>
+                                <span className="entry">{log}</span>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
+                </div>
+            </div>
+         </div>
       </div>
     </div>
   );

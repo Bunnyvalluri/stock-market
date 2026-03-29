@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, ReferenceLine, Area, AreaChart
+  ResponsiveContainer, Area, AreaChart
 } from 'recharts';
-import { ArrowLeft, TrendingUp, TrendingDown, Activity, BarChart2, AlertCircle, Star, Share2 } from 'lucide-react';
+import { 
+  ArrowLeft, TrendingUp, TrendingDown, Activity, BarChart2, 
+  AlertCircle, Star, Share2, Globe, Shield, Zap, Target, Layers
+} from 'lucide-react';
 import './StockDetail.css';
 
-// --- Mock data generator ---
 const generateOHLC = (base, days) => {
   let price = base;
   return Array.from({ length: days }, (_, i) => {
@@ -25,7 +27,7 @@ const generateOHLC = (base, days) => {
       open: +open.toFixed(2), high: +high.toFixed(2),
       low: +low.toFixed(2),   close: +close.toFixed(2),
       volume,
-      sma20: 0, rsi: 0,
+      sma20: 0,
     };
   });
 };
@@ -46,40 +48,18 @@ const STOCKS = {
   AMZN: { name: 'Amazon.com Inc.', base: 195, sector: 'E-Commerce' },
 };
 
-// Custom Candlestick bar
-const CandlestickBar = (props) => {
-  const { x, y, width, payload } = props;
-  if (!payload) return null;
-  const { open, close, high, low } = payload;
-  const isUp = close >= open;
-  const color = isUp ? '#10b981' : '#ef4444';
-  const barTop = Math.min(open, close);
-  const barH = Math.abs(open - close) || 1;
-
-  // We approximate the pixel positions using the chart domain
-  // This is a simplified visual only
-  return (
-    <g>
-      <line x1={x + width / 2} y1={y - 4} x2={x + width / 2} y2={y + 4} stroke={color} strokeWidth={1.5} />
-      <rect x={x + 1} y={y} width={width - 2} height={Math.max(2, barH)} fill={color} opacity={0.9} rx={1} />
-    </g>
-  );
-};
-
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
   const d = payload[0]?.payload;
   if (!d) return null;
-  const isUp = d.close >= d.open;
   return (
-    <div className="sd-tooltip">
+    <div className="sd-tooltip-pro glass">
       <p className="sd-tt-date">{label}</p>
       <div className="sd-tt-row"><span>Open</span><span>${d.open?.toFixed(2)}</span></div>
-      <div className="sd-tt-row"><span>High</span><span className="text-up">${d.high?.toFixed(2)}</span></div>
-      <div className="sd-tt-row"><span>Low</span><span className="text-down">${d.low?.toFixed(2)}</span></div>
-      <div className="sd-tt-row"><span>Close</span><span className={isUp ? 'text-up' : 'text-down'}>${d.close?.toFixed(2)}</span></div>
+      <div className="sd-tt-row text-up"><span>High</span><span>${d.high?.toFixed(2)}</span></div>
+      <div className="sd-tt-row text-down"><span>Low</span><span>${d.low?.toFixed(2)}</span></div>
+      <div className="sd-tt-row font-bold"><span>Close</span><span>${d.close?.toFixed(2)}</span></div>
       <div className="sd-tt-row"><span>Volume</span><span>{(d.volume / 1_000_000).toFixed(2)}M</span></div>
-      {d.sma20 && <div className="sd-tt-row"><span>SMA20</span><span className="text-cyan">${d.sma20}</span></div>}
     </div>
   );
 };
@@ -124,150 +104,141 @@ export default function StockDetail() {
   ];
 
   return (
-    <div className="sd-container animate-fade-in">
-      {/* Header */}
-      <div className="sd-header">
-        <Link to="/markets" className="sd-back-btn">
-          <ArrowLeft size={18} /> Back to Markets
+    <div className="sd-pro-container animate-fade-in">
+      {/* Institutional Breadcrumb & Core Identity */}
+      <div className="sd-pro-header-wrap">
+        <Link to="/markets" className="sd-pro-back">
+          <ArrowLeft size={16} /> Back to Exchange Matrix
         </Link>
-        <div className="sd-header-actions">
-          <button className={`sd-action-btn ${isWatchlisted ? 'active' : ''}`} onClick={() => setIsWatchlisted(!isWatchlisted)}>
-            <Star size={16} fill={isWatchlisted ? 'currentColor' : 'none'} />
-            {isWatchlisted ? 'Watchlisted' : 'Watchlist'}
-          </button>
-          <button className="sd-action-btn">
-            <Share2 size={16} /> Share
-          </button>
+        <div className="sd-pro-actions">
+           <button className={`sd-pro-btn ${isWatchlisted ? 'active' : ''}`} onClick={() => setIsWatchlisted(!isWatchlisted)}>
+             <Star size={14} fill={isWatchlisted ? 'currentColor' : 'none'} />
+             Watchlist
+           </button>
+           <button className="sd-pro-btn"><Share2 size={14} /> Intelligence Report</button>
         </div>
       </div>
 
-      {/* Stock Identity */}
-      <div className="sd-identity glass-card">
-        <div className="sd-id-left">
-          <div className="sd-ticker-badge">{ticker}</div>
-          <div>
-            <h1 className="sd-company-name">{info.name}</h1>
-            <p className="sd-sector">{info.sector} · NASDAQ</p>
-          </div>
+      <div className="sd-pro-identity-grid glass-card">
+        <div className="sd-pro-id-main">
+            <div className="sd-pro-badge text-gradient">{ticker}</div>
+            <div className="sd-pro-meta">
+               <h1>{info.name}</h1>
+               <p>{info.sector} · NASDAQ Global Select Market</p>
+            </div>
         </div>
-        <div className="sd-id-right">
-          <div className="sd-price">${currentPrice.toFixed(2)}</div>
-          <div className={`sd-change ${isPositive ? 'text-up' : 'text-down'}`}>
-            {isPositive ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
-            {isPositive ? '+' : ''}{change} ({isPositive ? '+' : ''}{changePct}%)
-          </div>
-          <div className="sd-realtime-badge">
-            <span className="sd-rt-dot"></span> Live Price
-          </div>
-        </div>
-      </div>
-
-      {/* Chart + Stats */}
-      <div className="sd-main-grid">
-        {/* Main Chart Panel */}
-        <div className="sd-chart-panel glass-card">
-          <div className="sd-chart-header">
-            <div className="sd-chart-tabs">
-              <button className="sd-chart-tab active"><Activity size={14} /> Price</button>
-              <button className="sd-chart-tab"><BarChart2 size={14} /> Volume</button>
-            </div>
-            <div className="sd-range-tabs">
-              {Object.keys(rangeMap).map(r => (
-                <button
-                  key={r}
-                  className={`sd-range-btn ${range === r ? 'active' : ''}`}
-                  onClick={() => setRange(r)}
-                >{r}</button>
-              ))}
-            </div>
-          </div>
-
-          {/* Area / Candlestick Approximation using AreaChart */}
-          <div className="sd-chart-area">
-            <ResponsiveContainer width="100%" height={380}>
-              <ComposedChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={isPositive ? '#10b981' : '#ef4444'} stopOpacity={0.15} />
-                    <stop offset="95%" stopColor={isPositive ? '#10b981' : '#ef4444'} stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
-                <XAxis dataKey="date" tick={{ fill: '#6b7280', fontSize: 11 }} tickLine={false} axisLine={false} interval={Math.floor(data.length / 6)} />
-                <YAxis domain={['auto', 'auto']} tick={{ fill: '#6b7280', fontSize: 11 }} tickLine={false} axisLine={false} tickFormatter={v => `$${v}`} width={65} />
-                <Tooltip content={<CustomTooltip />} />
-                <Area type="monotone" dataKey="close" stroke={isPositive ? '#10b981' : '#ef4444'} strokeWidth={2} fill="url(#priceGradient)" dot={false} />
-                <Line type="monotone" dataKey="sma20" stroke="#06b6d4" strokeWidth={1.5} dot={false} strokeDasharray="4 2" name="SMA 20" />
-                <Bar dataKey="volume" yAxisId={1} fill="rgba(79,70,229,0.15)" radius={[2, 2, 0, 0]} />
-                <YAxis yAxisId={1} orientation="right" hide />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Legend */}
-          <div className="sd-chart-legend">
-            <div className="sd-legend-item">
-              <span className="sd-legend-dot" style={{ background: isPositive ? '#10b981' : '#ef4444' }}></span>
-              <span>Price</span>
-            </div>
-            <div className="sd-legend-item">
-              <span className="sd-legend-line cyan"></span>
-              <span>SMA 20</span>
-            </div>
-            <div className="sd-legend-item">
-              <span className="sd-legend-dot" style={{ background: '#00b4d8', opacity: 0.6 }}></span>
-              <span>Volume</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Panel - Stats + AI Signal */}
-        <div className="sd-right-panel">
-          {/* AI Signal Card */}
-          <div className="sd-signal-card glass-card">
-            <div className="sd-signal-header">
-              <span className="sd-signal-label">AI Prediction Signal</span>
-              <span className="sd-signal-badge pro">PRO</span>
-            </div>
-            <div className={`sd-signal-value ${isPositive ? 'bullish' : 'bearish'}`}>
-              {isPositive ? <TrendingUp size={24} /> : <TrendingDown size={24} />}
-              <span>{isPositive ? 'BULLISH' : 'BEARISH'}</span>
-            </div>
-            <div className="sd-confidence">
-              <div className="sd-confidence-label">
-                <span>Model Confidence</span>
-                <span className={isPositive ? 'text-up' : 'text-down'}>
-                  {isPositive ? '78.4%' : '63.1%'}
+        <div className="sd-pro-price-block">
+            <div className="sd-pro-price-group">
+                <span className="price">${currentPrice.toFixed(2)}</span>
+                <span className={`change ${isPositive ? 'text-up' : 'text-down'}`}>
+                   {isPositive ? '▲' : '▼'} {Math.abs(change).toFixed(2)} ({isPositive ? '+' : ''}{changePct}%)
                 </span>
-              </div>
-              <div className="sd-confidence-bar">
-                <div
-                  className="sd-confidence-fill"
-                  style={{
-                    width: isPositive ? '78.4%' : '63.1%',
-                    background: isPositive ? '#10b981' : '#ef4444'
-                  }}
-                ></div>
-              </div>
             </div>
-            <p className="sd-signal-note">
-              <AlertCircle size={12} />
-              AI signals are for informational purposes only.
-            </p>
-          </div>
+            <div className="sd-pro-status">
+               <span className="live-pulse"></span> COMPOSITE FEED · EST 14:22:45
+            </div>
+        </div>
+      </div>
 
-          {/* Key Stats */}
-          <div className="sd-stats-card glass-card">
-            <h3 className="sd-stats-title">Key Statistics</h3>
-            <div className="sd-stats-grid">
-              {stats.map(s => (
-                <div key={s.label} className="sd-stat-item">
-                  <span className="sd-stat-label">{s.label}</span>
-                  <span className="sd-stat-value">{s.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+      <div className="sd-pro-main-layout">
+        <div className="sd-pro-col-left">
+           {/* Primary Analysis Chart */}
+           <div className="sd-pro-chart-panel glass-card">
+              <div className="card-header-term flex-between">
+                 <div className="header-left">
+                    <BarChart2 size={18} className="text-brand" />
+                    <h4>Market Price Action</h4>
+                 </div>
+                 <div className="header-right">
+                    <div className="sd-pro-ranges">
+                       {Object.keys(rangeMap).map(r => (
+                          <button key={r} className={range === r ? 'active' : ''} onClick={() => setRange(r)}>{r}</button>
+                       ))}
+                    </div>
+                 </div>
+              </div>
+
+              <div className="sd-pro-chart-viewport">
+                <ResponsiveContainer width="100%" height={420}>
+                  <ComposedChart data={data} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="sdPriceGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={isPositive ? '#10b981' : '#ef4444'} stopOpacity={0.2} />
+                        <stop offset="95%" stopColor={isPositive ? '#10b981' : '#ef4444'} stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
+                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{fill: '#6b7280', fontSize: 11}} interval={Math.floor(data.length / 8)} />
+                    <YAxis orientation="right" axisLine={false} tickLine={false} tick={{fill: '#6b7280', fontSize: 11}} domain={['auto', 'auto']} tickFormatter={v => `$${v}`} width={60} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Area type="monotone" dataKey="close" stroke={isPositive ? '#10b981' : '#ef4444'} strokeWidth={3} fill="url(#sdPriceGrad)" isAnimationActive={false} />
+                    <Line type="monotone" dataKey="sma20" stroke="var(--accent-cyan)" strokeWidth={2} dot={false} strokeDasharray="5 5" />
+                    <Bar dataKey="volume" yAxisId={1} fill="rgba(37,99,235,0.1)" />
+                    <YAxis yAxisId={1} hide />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="sd-pro-legend">
+                 <div className="leg-item"><span className="dot price" style={{background: isPositive ? '#10b981' : '#ef4444'}}></span> PRICE</div>
+                 <div className="leg-item"><span className="line sma" style={{background: 'var(--accent-cyan)'}}></span> SMA (20)</div>
+                 <div className="leg-item"><span className="rect volume"></span> VOLUME</div>
+              </div>
+           </div>
+
+           {/* High-Density Stats Matrix */}
+           <div className="sd-pro-stats-panel glass-card">
+              <div className="card-header-term">
+                 <Activity size={18} className="text-cyan" />
+                 <h4>Institutional Key Statistics</h4>
+              </div>
+              <div className="sd-pro-stats-grid">
+                 {stats.map(s => (
+                    <div key={s.label} className="sd-pro-stat-item">
+                       <span className="label">{s.label}</span>
+                       <span className="val">{s.value}</span>
+                    </div>
+                 ))}
+              </div>
+           </div>
+        </div>
+
+        <div className="sd-pro-col-right">
+           {/* Proprietary AI Inference Card */}
+           <div className="sd-pro-insight-card glass-card">
+              <div className="insight-pro-header">
+                 <div className="insight-pro-label">
+                    <Zap size={16} /> NEURAL FORECAST
+                 </div>
+                 <div className="badge-pro">BETA</div>
+              </div>
+              <div className="insight-pro-body">
+                 <div className="insight-pro-signal text-gradient">
+                    {isPositive ? 'STRONG ACCUMULATION' : 'DISTRIBUTION PHASE'}
+                 </div>
+                 <div className="insight-pro-meter">
+                    <div className="meter-label">Model Confidence Index</div>
+                    <div className="meter-container">
+                       <div className="meter-fill" style={{ width: isPositive ? '82.4%' : '61.8%' }}></div>
+                    </div>
+                    <div className="meter-val">{isPositive ? '82.4%' : '61.8%'} Probability</div>
+                 </div>
+                 <p className="insight-note">Neural weights optimized for $NASDAQ: {ticker} on last trade session.</p>
+              </div>
+           </div>
+
+           {/* Market Breadth / Correlations */}
+           <div className="sd-pro-intelligence glass-card mt-5">
+              <div className="card-header-pro">
+                 <Layers size={18} className="text-orange" />
+                 <h4>Asset Liquidity Matrix</h4>
+              </div>
+              <div className="sd-pro-liquidity-list">
+                 <div className="liq-item"><span>Exchange Liquidity</span><span className="text-up font-bold">OPTIMAL</span></div>
+                 <div className="liq-item"><span>Order Imbalance</span><span className="text-down font-bold">14.2% ASK</span></div>
+                 <div className="liq-item"><span>Volatility (24H)</span><span className="text-primary font-bold">1.2%</span></div>
+              </div>
+           </div>
         </div>
       </div>
     </div>

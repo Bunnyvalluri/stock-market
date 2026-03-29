@@ -6,3 +6,5 @@ numpy
 scikit-learn
 yfinance
 python-dotenv
+firecrawl-py
+openai
