@@ -1,8 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
-// Surgical sanitization: Strips all whitespace, newlines, and non-printable characters ONLY
-const clean = (val) => String(val || "").replace(/[\s\r\n\t]/g, "").trim();
+// Escape-proof sanitization: Strips both real CRLF and literal "\r" / "\n" strings
+const clean = (val) => String(val || "").replace(/\\r/g, "").replace(/\\n/g, "").replace(/[\s\r\n\t]/g, "").trim();
 
 const firebaseConfig = {
   apiKey: clean(import.meta.env.VITE_FIREBASE_API_KEY),
