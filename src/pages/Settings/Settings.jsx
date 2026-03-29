@@ -8,6 +8,7 @@ const Settings = () => {
   const [saveStatus, setSaveStatus] = useState('');
   
   // API Keys state
+  const [alphaKey, setAlphaKey] = useState('');
   const [firecrawlKey, setFirecrawlKey] = useState('');
   const [killSwitch, setKillSwitch] = useState(false);
 
