@@ -69,7 +69,78 @@
 .nav-cta-group {
   display: flex;
   align-items: center;
+  gap: 1.5rem;
+}
+
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  z-index: 1100;
+  padding: 5px;
+}
+
+.mobile-nav-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(10, 10, 10, 0.98);
+  backdrop-filter: blur(20px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 2rem;
+  width: 100%;
+}
+
+.mobile-nav-links a {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.mobile-nav-links a:hover { color: var(--accent-brand); }
+
+.mobile-nav-divider {
+  width: 40px;
+  height: 2px;
+  background: var(--border-light);
+  margin: 1rem 0;
+}
+
+.mobile-login-btn {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #fff;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.mobile-launch-btn {
+  background: var(--accent-brand);
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.1rem;
+  padding: 15px 40px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
 }
 
 .login-link {
@@ -90,7 +161,14 @@
   align-items: center;
   gap: 10px;
   box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25);
+  transition: transform 0.2s, background 0.2s;
 }
+
+.btn-terminal-launch:hover {
+  transform: translateY(-2px);
+  background: #1d4ed8;
+}
+
 
 /* Hero Section - Pro Institutional */
 .hero-institutional {
@@ -257,12 +335,66 @@
 
 .viewport-main { flex: 1; }
 
+.mini-pulse {
+  width: 8px;
+  height: 8px;
+  background: var(--status-up);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--status-up);
+  animation: pulse 2s infinite;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-family: 'Inter', monospace;
+}
+
 .viewport-footer-pro {
   border-top: 1px solid var(--border-light);
-  padding-top: 1rem;
+  padding-top: 1.25rem;
   margin-top: 1.5rem;
   text-align: left;
 }
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Security Hub Styling */
+.security-hub-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.security-matrix-card {
+  box-shadow: 0 0 80px rgba(37, 99, 235, 0.1);
+}
+
+.s-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  border: 1px solid var(--border-light);
+  padding: 6px 12px;
+  border-radius: 4px;
+}
+
+.s-badge span {
+  color: #fff;
+  margin-right: 4px;
+}
+
+.s-feat-item {
+  transition: all 0.3s ease;
+}
+
+.s-feat-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateX(5px);
+}
+
 
 /* Liquidity Track PRO */
 .liquidity-track-pro {
@@ -461,6 +593,8 @@
 
 /* Responsive Adjustments (SaaS & Apple Grade) */
 @media (max-width: 1200px) {
+  .nav-institutional { padding: 1rem 2rem; }
+  .nav-links-desktop { gap: 1.5rem; }
   .perf-grid-pro { grid-template-columns: repeat(2, 1fr); }
   .bento-pro-grid { grid-template-columns: 1fr; }
   .col-span-2 { grid-column: span 1; }
@@ -468,35 +602,54 @@
 }
 
 @media (max-width: 900px) {
-  .viewport-body { flex-direction: column; gap: 2rem; }
-  .viewport-sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-light); padding-right: 0; padding-bottom: 2rem; }
+  .nav-links-desktop { display: none; }
+  .mobile-menu-toggle { display: block; }
+  .hero-pro-title { font-size: 3.5rem; letter-spacing: -2px; }
+  .hero-pro-desc { font-size: 1.2rem; }
+  .viewport-body { flex-direction: column; gap: 2rem; padding: 1.5rem; }
+  .viewport-sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-light); padding-right: 0; padding-bottom: 1.5rem; }
   .v-stat { flex-direction: row; justify-content: space-between; align-items: center; }
+  .v-val { font-size: 1.4rem; }
   .v-graph-skeleton { margin-top: 1rem; }
+  .perf-grid-pro { grid-template-columns: repeat(2, 1fr); }
+  .connection-nodes-wrap { gap: 2rem; }
 }
 
 @media (max-width: 768px) {
+  .hero-institutional { padding-top: 10rem; }
   .hero-pro-title { font-size: 2.8rem; letter-spacing: -1.5px; }
-  .hero-pro-desc { font-size: 1.1rem; }
+  .hero-pro-desc { font-size: 1.1rem; padding: 0; }
+  .pro-badge-wrap { margin-bottom: 2rem; }
   .nav-institutional { padding: 1rem 1.5rem; }
   .performance-pro-section, .engine-pro-section { padding: 4rem 1.5rem; }
-  .perf-grid-pro { grid-template-columns: 1fr; }
+  .perf-grid-pro { grid-template-columns: 1fr; gap: 1rem; }
   .b-pro-content { padding: 2rem; }
-  .hero-pro-ctas { flex-direction: column; width: 100%; padding: 0 2rem; }
-  .btn-pro-primary, .btn-pro-outline { width: 100%; text-align: center; justify-content: center; }
-  .connection-nodes-wrap { flex-direction: column; gap: 2rem; }
+  .hero-pro-ctas { flex-direction: column; width: 100%; max-width: 400px; margin: 0 auto; gap: 1rem; }
+  .btn-pro-primary, .btn-pro-outline { width: 100%; text-align: center; justify-content: center; padding: 1rem; }
+  .connection-nodes-wrap { flex-direction: column; gap: 2rem; align-items: center; }
+  .node-item { font-size: 1.2rem; }
   .footer-institutional { padding: 4rem 1.5rem 2rem; }
-  .f-pro-grid { grid-template-columns: 1fr; gap: 2.5rem; }
-  .f-pro-bottom { flex-direction: column; gap: 1rem; align-items: flex-start; }
+  .f-pro-grid { grid-template-columns: 1fr; gap: 2.5rem; margin-bottom: 4rem; }
+  .f-pro-bottom { flex-direction: column; gap: 1.5rem; align-items: center; text-align: center; }
+  .f-pro-legal { gap: 1.5rem; }
 }
 
 @media (max-width: 480px) {
-  .hero-pro-title { font-size: 2.2rem; }
-  .pro-badge-wrap { flex-direction: column; gap: 4px; padding: 10px; }
-  .hero-pro-viewport { margin-top: 3rem; width: 95%; }
-  .viewport-body { padding: 1.5rem; }
-  .section-head-pro h2 { font-size: 2.5rem; }
-  .ticker-scroll-pro { gap: 1.5rem; font-size: 1.1rem; flex-wrap: wrap; }
+  .hero-institutional { padding-top: 8rem; }
+  .hero-pro-title { font-size: 2.2rem; line-height: 1.1; }
+  .hero-pro-desc { font-size: 1rem; line-height: 1.5; }
+  .pro-badge-wrap { flex-direction: column; gap: 6px; padding: 10px; width: 100%; max-width: 280px; margin: 0 auto 2.5rem; }
+  .hero-pro-viewport { margin-top: 3rem; width: 100%; border-radius: 0; border-left: none; border-right: none; }
+  .viewport-body { padding: 1.25rem; gap: 1.5rem; }
+  .viewport-header { height: 40px; padding: 0 1rem; }
+  .section-head-pro h2 { font-size: 2.2rem; line-height: 1.1; letter-spacing: -1px; }
+  .ticker-scroll-pro { gap: 1rem; font-size: 1rem; flex-wrap: wrap; justify-content: center; }
+  .b-pro-list { margin-top: 1.5rem; gap: 10px; }
+  .b-pro-visual { padding: 1.5rem; }
+  .visual-code-term { font-size: 0.75rem; }
+  .f-pro-identity p { max-width: 100%; }
 }
+
 
 @keyframes pulse {
   0% { opacity: 1; }

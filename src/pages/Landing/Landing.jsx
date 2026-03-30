@@ -6,17 +6,25 @@ import {
   TrendingUp, Cpu, Activity, ShieldCheck, ArrowRight, 
   Database, BarChart3, LineChart, CheckCircle, 
   TerminalSquare, Globe, Zap, Shield, Layers, 
-  Maximize, Briefcase, Gauge, Target
+  Maximize, Briefcase, Gauge, Target, Menu, X,
+  Lock, Server, Fingerprint
 } from 'lucide-react';
+
 import toast from 'react-hot-toast';
 import './Landing.css';
 
 const generateSparkline = () => Array.from({ length: 40 }, (_, i) => ({ time: i, val: 100 + Math.random() * 30 + i }));
 
+
+
 const Landing = () => {
   const navigate = useNavigate();
   const [sparkline, setSparkline] = useState(generateSparkline());
   const [activeModelTab, setActiveModelTab] = useState('LSTM');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -48,11 +56,38 @@ const Landing = () => {
         
         <div className="nav-cta-group">
           <button className="login-link hidden-mobile" onClick={() => navigate('/login')}>Sign In</button>
-          <button className="btn-terminal-launch" onClick={() => navigate('/login')}>
+          <button className="btn-terminal-launch hidden-mobile" onClick={() => navigate('/login')}>
             Launch Terminal <Maximize size={14} />
           </button>
+          <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
+
+        {/* Mobile Navigation Overlay */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div 
+              className="mobile-nav-overlay"
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            >
+              <div className="mobile-nav-links">
+                <a href="#engine" onClick={toggleMobileMenu}>Engine</a>
+                <a href="#performance" onClick={toggleMobileMenu}>Performance</a>
+                <a href="#terminal" onClick={toggleMobileMenu}>Terminal</a>
+                <a href="#pricing" onClick={toggleMobileMenu}>Security</a>
+                <div className="mobile-nav-divider"></div>
+                <button className="mobile-login-btn" onClick={() => { navigate('/login'); toggleMobileMenu(); }}>Sign In</button>
+                <button className="mobile-launch-btn" onClick={() => { navigate('/login'); toggleMobileMenu(); }}>Launch Terminal</button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
+
 
       {/* Hero Section - Quantitative Intel */}
       <section className="hero-institutional">
@@ -113,17 +148,24 @@ const Landing = () => {
         >
           <div className="viewport-header">
             <div className="mac-controls"><span></span><span></span><span></span></div>
-            <div className="viewport-title font-mono">STOCKMIND_TERMINAL_V2.EXE</div>
+            <div className="viewport-title font-mono flex items-center gap-2">
+               <div className="mini-pulse"></div>
+               STOCKMIND_TERMINAL_V2.EXE // SESSION: ACTIVE
+            </div>
           </div>
           <div className="viewport-body">
              <div className="viewport-sidebar">
                 <div className="v-stat">
                    <span className="v-label">Inference Latency</span>
-                   <span className="v-val text-brand">14.2ms</span>
+                   <span className="v-val text-brand tabular-nums">14.22ms</span>
                 </div>
                 <div className="v-stat mt-4">
                    <span className="v-label">Model Confidence</span>
-                   <span className="v-val text-cyan">92.4%</span>
+                   <span className="v-val text-cyan tabular-nums">92.48%</span>
+                </div>
+                <div className="v-stat mt-4">
+                    <span className="v-label">Backtest Grains</span>
+                    <span className="v-val text-orange tabular-nums">4.2M</span>
                 </div>
                 <div className="v-graph-skeleton mt-6">
                    <div className="bar-pro" style={{height: '40%'}}></div>
@@ -133,7 +175,7 @@ const Landing = () => {
                 </div>
              </div>
              <div className="viewport-main">
-                <ResponsiveContainer width="100%" height={240}>
+                <ResponsiveContainer width="100%" height={260}>
                   <AreaChart data={sparkline}>
                     <defs>
                       <linearGradient id="heroPriceGrad" x1="0" y1="0" x2="0" y2="1">
@@ -153,12 +195,66 @@ const Landing = () => {
                   </AreaChart>
                 </ResponsiveContainer>
                 <div className="viewport-footer-pro">
-                    <span className="text-muted text-xs font-mono">TERMINAL FEED: CONNECTED [12,482 TPS]</span>
+                    <div className="flex-between">
+                        <span className="text-muted text-xs font-mono">FEED: CONNECTED [12.4K TPS]</span>
+                        <div className="flex gap-4">
+                           <span className="text-xs font-mono text-brand">NODE: EAST-01</span>
+                           <span className="text-xs font-mono text-cyan">LATENCY: OPTIMAL</span>
+                        </div>
+                    </div>
                 </div>
              </div>
           </div>
         </motion.div>
       </section>
+
+      {/* Security Hub - New (Institutional) */}
+      <section id="pricing" className="security-hub-section py-20">
+          <div className="max-w-7xl mx-auto px-6">
+              <div className="glass-card security-matrix-card p-10 border-brand/30 bg-brand/5">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                      <div>
+                          <div className="flex items-center gap-3 mb-4">
+                              <div className="p-2 bg-brand/20 rounded-lg text-brand"><ShieldCheck size={28} /></div>
+                              <h2 className="text-2xl font-bold uppercase tracking-wider">Enterprise Security Matrix</h2>
+                          </div>
+                          <p className="text-muted mb-8 leading-relaxed">
+                              StockMind AI utilizes military-grade AES-256 encryption for all data transit. Our infrastructure is SOC-2 Type II compliant and undergoes monthly penetration testing by independent security auditors.
+                          </p>
+                          <div className="security-badges flex gap-6">
+                              <div className="s-badge"><span>SOC2</span> CERTIFIED</div>
+                              <div className="s-badge"><span>GDPR</span> COMPLIANT</div>
+                              <div className="s-badge"><span>ISO</span> 27001</div>
+                          </div>
+                      </div>
+                      <div className="security-features-list grid grid-cols-1 gap-4">
+                          <div className="s-feat-item glass p-4 rounded-lg flex gap-4 items-start">
+                             <Fingerprint className="text-brand shrink-0" size={20} />
+                             <div>
+                                <h4 className="text-sm font-bold">Biometric Vaulting</h4>
+                                <p className="text-xs text-muted mt-1">Multi-factor authentication via hardware keys (YubiKey) required for high-volume execution orders.</p>
+                             </div>
+                          </div>
+                          <div className="s-feat-item glass p-4 rounded-lg flex gap-4 items-start">
+                             <Server className="text-cyan shrink-0" size={20} />
+                             <div>
+                                <h4 className="text-sm font-bold">Isolated Execution Nodes</h4>
+                                <p className="text-xs text-muted mt-1">Each institutional instance runs on an air-gapped, dedicated compute cluster for zero cross-contamination.</p>
+                             </div>
+                          </div>
+                          <div className="s-feat-item glass p-4 rounded-lg flex gap-4 items-start">
+                             <Lock className="text-orange shrink-0" size={20} />
+                             <div>
+                                <h4 className="text-sm font-bold">Zero-Knowledge Architecture</h4>
+                                <p className="text-xs text-muted mt-1">Your trading strategies and API credentials are never stored in plain text, even within internal memory.</p>
+                             </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>
+
 
       {/* Corporate Liquidity Bar */}
       <section className="liquidity-track-pro">
