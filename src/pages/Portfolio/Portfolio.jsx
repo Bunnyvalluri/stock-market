@@ -300,44 +300,84 @@ const Portfolio = () => {
          )}
 
          {activeTab === 'RISK' && (
-         <div className="portfolio-holdings-grid-pro glass-card p-6">
-            <div className="flex items-center gap-2 mb-6">
-               <Shield size={18} className="text-orange" />
-               <h3 className="font-bold tracking-wide uppercase">Portfolio Risk Matrix</h3>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-               <div className="glass p-4 rounded-xl border border-light">
-                  <div className="text-sm text-muted font-mono">Value at Risk (95% CI)</div>
-                  <div className="text-2xl font-bold font-mono text-down mt-1">${(totalValue * 0.05).toLocaleString(undefined, {maximumFractionDigits:0})}</div>
-               </div>
-               <div className="glass p-4 rounded-xl border border-light">
-                  <div className="text-sm text-muted font-mono">Systematic Beta vs SPY</div>
-                  <div className="text-2xl font-bold font-mono mt-1">1.24 <span className="text-orange text-sm font-outfit uppercase">Aggressive</span></div>
-               </div>
-               <div className="glass p-4 rounded-xl border border-light">
-                  <div className="text-sm text-muted font-mono">Sharpe Ratio</div>
-                  <div className="text-2xl font-bold font-mono text-brand mt-1">3.42</div>
-               </div>
-               <div className="glass p-4 rounded-xl border border-light">
-                  <div className="text-sm text-muted font-mono">Sortino Ratio</div>
-                  <div className="text-2xl font-bold font-mono text-cyan mt-1">4.18</div>
-               </div>
-            </div>
-            <div className="mt-6 border-t border-light pt-6">
-               <h4 className="font-bold text-xs text-muted uppercase tracking-wider mb-4">Monte Carlo Stress Scenarios</h4>
-               <div className="text-sm font-mono flex flex-col gap-3">
-                  <div className="flex justify-between items-center bg-white/5 p-3 rounded">
-                      <span>S&P Black Swan (-20% Gap)</span>
-                      <span className="text-down font-bold">-$ {(totalValue * 0.248).toLocaleString(undefined, {maximumFractionDigits:0})}</span>
-                  </div>
-                  <div className="flex justify-between items-center bg-white/5 p-3 rounded">
-                      <span>VIX Volatility Expansion (+40%)</span>
-                      <span className="text-up font-bold">+$ {(totalValue * 0.12).toLocaleString(undefined, {maximumFractionDigits:0})}</span>
-                  </div>
-               </div>
-            </div>
-         </div>
+          <div className="portfolio-risk-layout flex flex-col gap-6">
+             <div className="portfolio-holdings-grid-pro glass-card p-6">
+                <div className="flex items-center gap-2 mb-6">
+                   <Shield size={18} className="text-orange" />
+                   <h3 className="font-bold tracking-wide uppercase">Portfolio Risk Matrix</h3>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                   <div className="glass p-4 rounded-xl border border-light">
+                      <div className="text-sm text-muted font-mono">Value at Risk (95% CI)</div>
+                      <div className="text-2xl font-bold font-mono text-down mt-1">${(totalValue * 0.05).toLocaleString(undefined, {maximumFractionDigits:0})}</div>
+                   </div>
+                   <div className="glass p-4 rounded-xl border border-light">
+                      <div className="text-sm text-muted font-mono">Systematic Beta vs SPY</div>
+                      <div className="text-2xl font-bold font-mono mt-1">1.24 <span className="text-orange text-sm font-outfit uppercase">Aggressive</span></div>
+                   </div>
+                   <div className="glass p-4 rounded-xl border border-light">
+                      <div className="text-sm text-muted font-mono">Sharpe Ratio</div>
+                      <div className="text-2xl font-bold font-mono text-brand mt-1">3.42</div>
+                   </div>
+                   <div className="glass p-4 rounded-xl border border-light">
+                      <div className="text-sm text-muted font-mono">Sortino Ratio</div>
+                      <div className="text-2xl font-bold font-mono text-cyan mt-1">4.18</div>
+                   </div>
+                </div>
+                <div className="mt-6 border-t border-light pt-6">
+                   <h4 className="font-bold text-xs text-muted uppercase tracking-wider mb-4">Monte Carlo Stress Scenarios</h4>
+                   <div className="text-sm font-mono flex flex-col gap-3">
+                      <div className="flex justify-between items-center bg-white/5 p-3 rounded">
+                          <span>S&P Black Swan (-20% Gap)</span>
+                          <span className="text-down font-bold">-$ {(totalValue * 0.248).toLocaleString(undefined, {maximumFractionDigits:0})}</span>
+                      </div>
+                      <div className="flex justify-between items-center bg-white/5 p-3 rounded">
+                          <span>VIX Volatility Expansion (+40%)</span>
+                          <span className="text-up font-bold">+$ {(totalValue * 0.12).toLocaleString(undefined, {maximumFractionDigits:0})}</span>
+                      </div>
+                   </div>
+                </div>
+             </div>
+
+             {/* AI Risk Advisory (Phase 5) */}
+             <div className="portfolio-holdings-grid-pro glass-card p-6 border-brand/30 bg-brand/5">
+                <div className="flex items-center gap-2 mb-4">
+                   <Zap size={18} className="text-brand pulse-fast" />
+                   <h3 className="font-bold tracking-wide uppercase text-brand">Autonomous Risk Advisory</h3>
+                </div>
+                <div className="advisory-grid grid grid-cols-1 md:grid-cols-3 gap-4">
+                   <div className="advisory-item p-4 border border-light bg-black/40 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                         <Layers size={14} className="text-orange" />
+                         <span className="text-xs font-bold uppercase text-muted">Concentration Alert</span>
+                      </div>
+                      <p className="text-xs font-medium text-secondary leading-relaxed">
+                         Tech exposure exceeds 65%. Neural Core suggests rotating 12% into Defensive sectors (Healthcare/Energy) to mitigate idiosyncratic sector risk.
+                      </p>
+                   </div>
+                   <div className="advisory-item p-4 border border-light bg-black/40 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                         <Shield size={14} className="text-brand" />
+                         <span className="text-xs font-bold uppercase text-muted">Tail Risk Hedging</span>
+                      </div>
+                      <p className="text-xs font-medium text-secondary leading-relaxed">
+                         High systematic beta detected (1.24). Consider buying $VIX call options or $SPY puts to protect against impending CPI release.
+                      </p>
+                   </div>
+                   <div className="advisory-item p-4 border border-light bg-black/40 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                         <TrendingUp size={14} className="text-up" />
+                         <span className="text-xs font-bold uppercase text-muted">Alpha Opportunity</span>
+                      </div>
+                      <p className="text-xs font-medium text-secondary leading-relaxed">
+                         NVDA momentum is overextended (RSI: 82). Take partial profits and increase weight in AAPL for better risk-adjusted return ratio.
+                      </p>
+                   </div>
+                </div>
+             </div>
+          </div>
          )}
+
 
          {activeTab === 'ROUTING' && (
          <div className="portfolio-holdings-grid-pro glass-card p-6">

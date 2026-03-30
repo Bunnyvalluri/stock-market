@@ -28,11 +28,15 @@ class FirecrawlFinancialAgent:
         # Instantiate Firecrawl
         # Use locally hosted Firecrawl if FIRECRAWL_BASE_URL is set, otherwise use cloud
         base_url = os.getenv("FIRECRAWL_BASE_URL")
-        if base_url:
-            print(f"[*] Firecrawl: Using self-hosted instance at {base_url}")
-            self.app = FirecrawlApp(api_key=firecrawl_api_key, api_url=base_url)
+        self.app = None
+        if firecrawl_api_key:
+            if base_url:
+                print(f"[*] Firecrawl: Using self-hosted instance at {base_url}")
+                self.app = FirecrawlApp(api_key=firecrawl_api_key, api_url=base_url)
+            else:
+                self.app = FirecrawlApp(api_key=firecrawl_api_key)
         else:
-            self.app = FirecrawlApp(api_key=firecrawl_api_key)
+            print("Warning: Firecrawl initialization skipped due to missing API key.")
 
     async def scrape_and_analyze(self, url: str) -> dict:
         """
@@ -42,6 +46,9 @@ class FirecrawlFinancialAgent:
         print(f"[*] Firecrawl: Initializing scrape sequence for -> {url}")
         
         try:
+            if not self.app:
+                return {"error": "Firecrawl agent is not initialized. Please provide FIRECRAWL_API_KEY in .env"}
+            
             # 1. Engage Firecrawl to scrape the website
             # We use markdown because it's the best format for LLMs to digest
             scrape_result = self.app.scrape_url(
@@ -92,6 +99,9 @@ class FirecrawlFinancialAgent:
     # Optional: Firecrawl can also CRAWL an entire domain (e.g., scrape an entire Investor Relations site)
     async def crawl_investor_relations(self, domain_url: str):
         print(f"[*] Firecrawl: Crawling entire domain {domain_url}")
+        if not self.app:
+            return {"error": "Firecrawl agent not initialized."}
+            
         crawl_job = self.app.crawl_url(
             domain_url,
             params={

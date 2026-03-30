@@ -199,7 +199,80 @@
 .meter-fill { position: absolute; left: 0; top: 0; height: 100%; background: var(--accent-brand); border-radius: 99px; box-shadow: 0 0 10px var(--accent-brand); }
 .meter-val { font-size: 0.75rem; font-weight: 800; color: var(--text-secondary); text-align: right; }
 
-.insight-note { font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; font-weight: 500; font-style: italic; }
+.insight-note { font-size: 0.72rem; color: var(--text-muted); line-height: 1.5; font-weight: 500; font-style: italic; opacity: 0.8; }
+
+/* AI Reasoning Breakdown */
+.ai-reasoning-wrap {
+  border-top: 1px solid var(--border-light);
+  padding-top: 1.25rem;
+}
+
+.reasoning-label {
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  margin-bottom: 0.75rem;
+}
+
+.reasoning-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reasoning-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.reasoning-list li:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: var(--border-light);
+  transform: translateX(4px);
+}
+
+.reasoning-list li svg {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+/* Loading States */
+.loading-shimmer {
+  background: linear-gradient(90deg, var(--text-primary) 0%, var(--text-muted) 50%, var(--text-primary) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 2s infinite linear;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.pulse-fast {
+  animation: pulse 1s infinite cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .5; }
+}
 
 /* Liquidity Matrix Side Intelligence */
 .sd-pro-intelligence {

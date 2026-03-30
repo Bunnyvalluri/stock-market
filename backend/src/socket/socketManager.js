@@ -13,7 +13,10 @@ export const initSocket = (httpServer) => {
       methods: ['GET', 'POST'],
       credentials: true,
     },
+    // OSI Layer 5: Session - Force direct WebSocket transport to bypass L7 polling overhead
+    transports: ['websocket'], 
   });
+
 
   io.on('connection', (socket) => {
     console.log(`[Socket.io] Client connected: ${socket.id}`);

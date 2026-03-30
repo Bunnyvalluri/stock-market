@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockMind AI Presentation</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f8fafc;
+            --accent: #22d3ee;
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            box-sizing: border-box;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            text-align: center;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.8) 100%);
+            z-index: 1;
+        }
+        .content {
+            position: relative;
+            z-index: 2;
+            max-width: 1000px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+        p { font-size: 1.5rem; line-height: 1.6; color: #94a3b8; }
+        .highlight { color: var(--accent); font-weight: bold; }
+        .image-container {
+            margin-top: 30px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .image-container img { width: 100%; max-height: 50vh; object-fit: contain; }
+        
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 10;
+            display: flex;
+            gap: 15px;
+        }
+        button {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            font-weight: bold;
+        }
+        button:hover { background: var(--primary); }
+        .counter { position: fixed; bottom: 35px; left: 35px; z-index: 10; font-size: 1.2rem; opacity: 0.5; }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="slides-container">
+        <!-- Slide 1: Intro -->
+        <div class="slide" id="slide1">
+            <div class="content">
+                <h1>StockMind AI</h1>
+                <p>An Institutional-Grade Quantitative Asset Management Terminal</p>
+                <p class="highlight">The Future of Financial Intelligence</p>
+                <div class="image-container">
+                    <img src="file:///C:/Users/vallu/.gemini/antigravity/brain/0729092f-ccb9-4e84-815a-71424825eef7/home_1774839304502.png" alt="Home">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Dashboard -->
+        <div class="slide" id="slide2" style="display:none">
+            <div class="content">
+                <h1>Live Dashboard</h1>
+                <p>Real-time market metrics, active risk vectors, and low-latency system logs (14ms latency).</p>
+                <div class="image-container">
+                    <img src="file:///C:/Users/vallu/.gemini/antigravity/brain/0729092f-ccb9-4e84-815a-71424825eef7/dashboard_1774839366594.png" alt="Dashboard">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: AI Intelligence -->
+        <div class="slide" id="slide3" style="display:none">
+            <div class="content">
+                <h1>AI Predictions</h1>
+                <p>Powered by <span class="highlight">Random Forest & LSTM</span> models. Quantifying absolute alpha through tick-data analysis.</p>
+                <div class="image-container">
+                    <img src="file:///C:/Users/vallu/.gemini/antigravity/brain/0729092f-ccb9-4e84-815a-71424825eef7/predictions_1774839409833.png" alt="Predictions">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Market Intelligence -->
+        <div class="slide" id="slide4" style="display:none">
+            <div class="content">
+                <h1>Global Markets</h1>
+                <p>Interactive heatmaps and sector saturation tracking across 12,000+ global instruments.</p>
+                <div class="image-container">
+                    <img src="file:///C:/Users/vallu/.gemini/antigravity/brain/0729092f-ccb9-4e84-815a-71424825eef7/markets_1774839385711.png" alt="Markets">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Tech Stack -->
+        <div class="slide" id="slide5" style="display:none">
+            <div class="content">
+                <h1>Architecture</h1>
+                <p><span class="highlight">Frontend:</span> React 19 + Vite | <span class="highlight">Backend:</span> Node.js + Socket.io</p>
+                <p><span class="highlight">ML Service:</span> Python FastAPI | <span class="highlight">Database:</span> Firebase Firestore</p>
+                <div class="image-container">
+                    <img src="file:///C:/Users/vallu/.gemini/antigravity/brain/0729092f-ccb9-4e84-815a-71424825eef7/portfolio_1774839428231.png" alt="Portfolio">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Alerts & Conclusion -->
+        <div class="slide" id="slide6" style="display:none">
+            <div class="content">
+                <h1>Smart Alerts</h1>
+                <p>Real-time event engine with server-side push notifications for critical market movements.</p>
+                <div class="image-container">
+                    <img src="file:///C:/Users/vallu/.gemini/antigravity/brain/0729092f-ccb9-4e84-815a-71424825eef7/alerts_1774839445967.png" alt="Alerts">
+                </div>
+                <h2 style="margin-top: 20px; color: white;">Thank You!</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="counter" id="counter">1 / 6</div>
+
+    <div class="controls">
+        <button onclick="prev()">Previous</button>
+        <button onclick="next()" style="background: var(--primary)">Next</button>
+    </div>
+
+    <script>
+        let current = 1;
+        const total = 6;
+        function update() {
+            for(let i=1; i<=total; i++) {
+                document.getElementById('slide' + i).style.display = (i === current) ? 'flex' : 'none';
+            }
+            document.getElementById('counter').innerText = current + ' / ' + total;
+        }
+        function next() {
+            if(current < total) current++;
+            update();
+        }
+        function prev() {
+            if(current > 1) current--;
+            update();
+        }
+        document.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowRight' || e.key === ' ') next();
+            if(e.key === 'ArrowLeft') prev();
+        });
+    </script>
+</body>
+</html>

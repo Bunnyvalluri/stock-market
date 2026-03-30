@@ -8,7 +8,10 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { fetchGlobalQuote } from '../../services/alphaVantage';
+
+import socket from '../../services/socketClient';
 import './Home.css';
+
 
 // Professional Institutional Mock Data
 const mainChartData = Array.from({ length: 40 }, (_, i) => ({
@@ -22,7 +25,6 @@ const initialMarketOverview = [
   { symbol: 'SPX', name: 'S&P 500 Index', price: 5123.45, change: 1.25, isUp: true, vol: '2.4B' },
   { symbol: 'IXIC', name: 'NASDAQ Composite', price: 16234.10, change: -0.45, isUp: false, vol: '4.1B' },
   { symbol: 'DJI', name: 'Dow Jones Industrial', price: 38920.15, change: 0.88, isUp: true, vol: '1.2B' },
-  { symbol: 'VIX', name: 'Volatility Index', price: 14.22, change: -5.20, isUp: false, vol: 'N/A' },
   { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 890.10, change: 5.72, isUp: true, vol: '850M' },
   { symbol: 'BTC', name: 'Bitcoin', price: 68420.50, change: 2.10, isUp: true, vol: '24B' },
 ];
@@ -32,6 +34,25 @@ const newsArticles = [
   { id: 2, source: 'Bloomberg', title: 'Tech Sector Outlook Upgraded Amid AI Integration', sentiment: 'BULLISH', time: '1h ago', impact: 'Medium' },
   { id: 3, source: 'WSJ', title: 'Oil Supply Tightens as Strategic Reserves Dwindle', sentiment: 'BEARISH', time: '3h ago', impact: 'Low' }
 ];
+
+const SentimentMeter = ({ value = 75 }) => (
+  <div className="sentiment-meter-wrap mt-4">
+     <div className="label-group flex-between">
+        <span className="text-muted text-xs font-bold uppercase tracking-widest">Aggregate Signal Conviction</span>
+        <span className="text-brand font-mono text-xs">74.2%</span>
+     </div>
+     <div className="meter-track-pro">
+        <div className="meter-fill-pro" style={{ width: '74.2%' }}></div>
+        <div className="meter-marker-up" style={{ left: '74.2%' }}></div>
+     </div>
+     <div className="scale-labels flex-between mt-1 px-1">
+        <span className="scale-item text-down">Fear</span>
+        <span className="scale-item text-muted">Neutral</span>
+        <span className="scale-item text-up">Greed</span>
+     </div>
+  </div>
+);
+
 
 const StatCard = ({ title, value, change, isUp, icon, glowColor }) => (
   <motion.div 
@@ -75,32 +96,59 @@ const Home = () => {
   const [analyzingId, setAnalyzingId] = useState(null);
   const [analysisResults, setAnalysisResults] = useState({});
   const [systemHealth, setSystemHealth] = useState(99.98);
+  const [latency, setLatency] = useState(14); // OSI Layer 7: Application Latency RTT
 
-  // High Frequency Simulation Logic
+  // RTT Monitoring Logic
+  useEffect(() => {
+    const pingInterval = setInterval(async () => {
+      const start = Date.now();
+      try {
+        await fetch('http://localhost:5000/api/ping');
+        setLatency(Date.now() - start);
+      } catch (e) { /* ignore */ }
+    }, 5000);
+    return () => clearInterval(pingInterval);
+  }, []);
+
+  // ⚡ Phase 2: Live WebSocket Subscription Engine
+  useEffect(() => {
+    // 1. Subscribe to all core tickers
+    initialMarketOverview.forEach(m => socket.emit('subscribe:stock', m.symbol));
+
+    // 2. Listen for real-time price ticks from Backend Poller
+    socket.on('price:update', (data) => {
+      setMarketOverview(prev => prev.map(stock => {
+         if (stock.symbol === data.symbol) {
+             const flash = data.price > stock.price ? 'up' : 'down';
+             return { ...stock, ...data, flash };
+         }
+         return stock;
+      }));
+    });
+
+    // Clean up on unmount
+    return () => {
+      initialMarketOverview.forEach(m => socket.emit('unsubscribe:stock', m.symbol));
+      socket.off('price:update');
+    };
+  }, []);
+
+  // High Frequency Simulation Logic (Non-Price Elements)
   useEffect(() => {
     const streamInterval = setInterval(() => {
-      // 1. Jiggle Market Prices
-      setMarketOverview(prev => prev.map(stock => {
-          const shift = (Math.random() - 0.48) * (stock.price * 0.0005);
-          return {
-            ...stock,
-            price: stock.price + shift,
-            flash: shift > 0 ? 'up' : 'down'
-          };
-      }));
-
-      // 2. Stream Order Book
+      // 1. Stream Order Book (L2 Simulation)
       setOrderBook(prev => ({
         asks: prev.asks.map(a => ({ ...a, size: Math.abs(a.size + (Math.random() - 0.5) * 1.5) })),
         bids: prev.bids.map(b => ({ ...b, size: Math.abs(b.size + (Math.random() - 0.5) * 1.5) }))
       }));
 
-      // 3. Jitter System Health
+      // 2. Jitter System Health
       setSystemHealth(prev => (99.95 + Math.random() * 0.04).toFixed(2));
     }, 1000);
 
     return () => clearInterval(streamInterval);
   }, []);
+
 
   const handleAnalyzeArticle = async (id, title) => {
     setAnalyzingId(id);
@@ -164,11 +212,12 @@ const Home = () => {
             <span className="text-muted">Security:</span>
             <span className="text-primary font-bold">SECURED</span>
           </div>
-          <div className="status-item">
+          <div className="status-item" title="OSI L7 Round-Trip Time Check">
             <Clock size={14} className="text-orange" />
             <span className="text-muted">Latency:</span>
-            <span className="text-brand font-mono">14ms</span>
+            <span className="text-brand font-mono">{latency}ms</span>
           </div>
+
         </div>
         <div className="terminal-actions">
            <Bell size={18} className="icon-btn text-muted" style={{cursor: 'pointer'}} onClick={() => toast('No new high-priority alerts.', {icon: '🔔'})} />
@@ -224,14 +273,15 @@ const Home = () => {
             glowColor="#0e7490" 
         />
         <StatCard 
-            title="Neural Accuracy" 
-            value="91.4%" 
-            change="+0.5% Lift" 
+            title="Global Sentiment" 
+            value="Greed (74)" 
+            change="Institutional Bias" 
             isUp={true} 
-            icon={<Cpu size={20} />} 
-            glowColor="#1d4ed8" 
+            icon={<Activity size={20} />} 
+            glowColor="#10b981" 
         />
       </div>
+
 
       {/* Main Terminal Layout */}
       <div className="terminal-main-layout">
