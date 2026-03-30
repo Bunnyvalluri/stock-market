@@ -51,8 +51,7 @@ const Login = () => {
          setError('Identifier already allocated to a live account.');
       } else if (err.code === 'auth/too-many-requests') {
          setError('Access temporarily throttled. Too many failed sequence attempts.');
-      } else {
-         setError('Authentication failed. Verify secure network connection.');
+         setError(`Authentication failed: ${err.message}`);
       }
     } finally {
       setIsLoading(false);
@@ -105,10 +104,9 @@ const Login = () => {
         >
           <div className="login-pro-header">
              <div className="login-pro-brand">
-                 <div className="lp-icon"><TrendingUp size={24} /></div>
-                 <h2>NEURAL<span className="text-brand">TRADE</span></h2>
+                 <h2>StockMind <span className="text-brand">AI</span></h2>
              </div>
-             <p className="login-pro-sub">{isRegisterMode ? 'PROVISION TERMINAL INSTANCE' : 'SECURE TERMINAL ACCESS'}</p>
+             <p className="login-pro-sub">{isRegisterMode ? 'PROVISION TERMINAL INSTANCE (REGISTER)' : 'SECURE TERMINAL ACCESS (LOGIN)'}</p>
           </div>
 
           <form onSubmit={handleEmailAuth} className="login-pro-form">
@@ -179,10 +177,10 @@ const Login = () => {
           
           <div className="toggle-mode-pro">
              <span className="text-muted">
-                {isRegisterMode ? 'HAVE CREDENTIALS?' : 'REQUIRE DEPLOYMENT?'}
+                {isRegisterMode ? 'HAVE CREDENTIALS?' : 'NO SECURE ACCESS?'}
              </span>
              <button type="button" onClick={() => { setIsRegisterMode(!isRegisterMode); setError(''); }}>
-                {isRegisterMode ? 'AUTHENTICATE' : 'INITIALIZE NODE'}
+                {isRegisterMode ? 'SWITCH TO SECURE LOGIN' : 'PROVISION NEW ACCOUNT'}
              </button>
           </div>
         </motion.div>

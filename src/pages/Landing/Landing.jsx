@@ -76,8 +76,8 @@ const Landing = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            Precision execution <br />
-            <span className="text-shimmer-pro">built on neural code.</span>
+            Institutional AI Trading <br />
+            <span className="text-shimmer-pro">built for maximum performance.</span>
           </motion.h1>
           
           <motion.p 

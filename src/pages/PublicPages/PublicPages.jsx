@@ -117,7 +117,7 @@ export const SecurityInfo = () => (
     icon={Shield}
   >
     <p>
-      Real-time connections don't mean insecure protocols. Our dual-channel architecture implies that all persistent Socket.io streams are authenticated via rolling transient JWT tokens that auto-rotate securely without ever dropping the TCP pipeline. Your live portfolio balances and live neural trade signals are permanently safeguarded.
+      Real-time connections don't mean insecure protocols. Our dual-channel architecture implies that all persistent Socket.io streams are authenticated via rolling transient JWT tokens that auto-rotate securely without ever dropping the TCP pipeline. Your live portfolio balances and live AI trading signals are permanently safeguarded.
     </p>
   </PageLayout>
 );

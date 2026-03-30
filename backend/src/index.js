@@ -26,7 +26,7 @@ app.use(morgan('dev'));
 app.use(express.json());
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
-app.get('/health', (_req, res) => res.json({ status: 'ok', service: 'neuraltrade-backend' }));
+app.get('/health', (_req, res) => res.json({ status: 'ok', service: 'stockmind-backend' }));
 
 // ─── API Routes ───────────────────────────────────────────────────────────────
 // All routes below require a valid Firebase JWT token
@@ -42,7 +42,7 @@ initSocket(httpServer);
 // ─── Start Server ─────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
 httpServer.listen(PORT, () => {
-  console.log(`\n🚀 NeuralTrade Backend running on http://localhost:${PORT}`);
+  console.log(`\n🚀 StockMind AI Backend running on http://localhost:${PORT}`);
   console.log(`📡 Socket.io real-time layer active`);
   console.log(`🤖 ML Service proxy → ${process.env.ML_SERVICE_URL || 'http://localhost:8000'}\n`);
 });
