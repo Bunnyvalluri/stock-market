@@ -393,7 +393,38 @@
 .s-feat-item:hover {
   background: rgba(255, 255, 255, 0.05);
   transform: translateX(5px);
+  border-color: var(--accent-brand) !important;
 }
+
+.s-scan-line {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: linear-gradient(180deg, transparent, rgba(37, 99, 235, 0.1), transparent);
+  animation: scanLoop 4s infinite linear;
+  pointer-events: none;
+}
+
+.scan-delay-1 { animation-delay: 1.2s; }
+.scan-delay-2 { animation-delay: 2.5s; }
+
+@keyframes scanLoop {
+  0% { top: -100%; }
+  100% { top: 100%; }
+}
+
+.s-meta-tag {
+  display: inline-block;
+  font-size: 0.6rem;
+  letter-spacing: 1px;
+  color: var(--accent-brand);
+  background: rgba(37, 99, 235, 0.05);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
 
 
 /* Liquidity Track PRO */

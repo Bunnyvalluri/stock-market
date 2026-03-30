@@ -228,28 +228,35 @@ const Landing = () => {
                           </div>
                       </div>
                       <div className="security-features-list grid grid-cols-1 gap-4">
-                          <div className="s-feat-item glass p-4 rounded-lg flex gap-4 items-start">
-                             <Fingerprint className="text-brand shrink-0" size={20} />
+                          <div className="s-feat-item glass p-4 rounded-lg flex gap-4 items-start relative overflow-hidden group">
+                             <div className="s-scan-line"></div>
+                             <Fingerprint className="text-brand shrink-0 group-hover:scale-110 transition-transform" size={20} />
                              <div>
-                                <h4 className="text-sm font-bold">Biometric Vaulting</h4>
+                                <h4 className="text-sm font-bold">Biometric Vaulting [AE-2]</h4>
                                 <p className="text-xs text-muted mt-1">Multi-factor authentication via hardware keys (YubiKey) required for high-volume execution orders.</p>
+                                <div className="s-meta-tag font-mono mt-2">ENCRYPTION: AES-256-GCM</div>
                              </div>
                           </div>
-                          <div className="s-feat-item glass p-4 rounded-lg flex gap-4 items-start">
-                             <Server className="text-cyan shrink-0" size={20} />
+                          <div className="s-feat-item glass p-4 rounded-lg flex gap-4 items-start relative overflow-hidden group">
+                             <div className="s-scan-line scan-delay-1"></div>
+                             <Server className="text-cyan shrink-0 group-hover:scale-110 transition-transform" size={20} />
                              <div>
                                 <h4 className="text-sm font-bold">Isolated Execution Nodes</h4>
                                 <p className="text-xs text-muted mt-1">Each institutional instance runs on an air-gapped, dedicated compute cluster for zero cross-contamination.</p>
+                                <div className="s-meta-tag font-mono mt-2">PROTOCOL: TLS 1.3 / mTLS</div>
                              </div>
                           </div>
-                          <div className="s-feat-item glass p-4 rounded-lg flex gap-4 items-start">
-                             <Lock className="text-orange shrink-0" size={20} />
+                          <div className="s-feat-item glass p-4 rounded-lg flex gap-4 items-start relative overflow-hidden group">
+                             <div className="s-scan-line scan-delay-2"></div>
+                             <Lock className="text-orange shrink-0 group-hover:scale-110 transition-transform" size={20} />
                              <div>
                                 <h4 className="text-sm font-bold">Zero-Knowledge Architecture</h4>
                                 <p className="text-xs text-muted mt-1">Your trading strategies and API credentials are never stored in plain text, even within internal memory.</p>
+                                <div className="s-meta-tag font-mono mt-2">HASHING: SHA-512-V3</div>
                              </div>
                           </div>
                       </div>
+
                   </div>
               </div>
           </div>
