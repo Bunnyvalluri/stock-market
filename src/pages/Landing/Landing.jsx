@@ -321,9 +321,13 @@ const Landing = () => {
             <span className="tag-pro">STOCKMIND AI INFRASTRUCTURE</span>
             <h2>Sub-Millisecond AI Core</h2>
          </div>
-         
-         <div className="bento-pro-grid">
-            <div className="bento-pro-card col-span-2 horizontal-pro cursor-pointer transition-transform hover:-translate-y-1" onClick={() => navigate('/predictions')}>
+                 <div className="bento-pro-grid">
+            <motion.div 
+               className="bento-pro-card col-span-2 horizontal-pro cursor-pointer transition-transform hover:-translate-y-1" 
+               onClick={() => navigate('/predictions')}
+               whileInView={{ opacity: [0, 1], y: [20, 0] }}
+               viewport={{ once: true }}
+            >
                <div className="b-pro-content">
                   <div className="b-pro-icon"><Cpu size={28} /></div>
                   <h3>Multi-Layer LSTM Architectures</h3>
@@ -345,25 +349,40 @@ const Landing = () => {
                      &#125;
                   </div>
                </div>
-            </div>
+            </motion.div>
             
-            <div className="bento-pro-card cursor-pointer transition-transform hover:-translate-y-1" onClick={() => navigate('/markets')}>
+            <motion.div 
+               className="bento-pro-card cursor-pointer transition-transform hover:-translate-y-1" 
+               onClick={() => navigate('/markets')}
+               whileInView={{ opacity: [0, 1], x: [20, 0] }}
+               viewport={{ once: true }}
+            >
                <div className="b-pro-content">
                   <div className="b-pro-icon icon-cyan"><Zap size={28} /></div>
                   <h3>WebSocket Pulse</h3>
                   <p>Zero-latency data pipelines stream quotes and AI signals directly to your terminal at 144Hz.</p>
                </div>
-            </div>
+            </motion.div>
 
-            <div className="bento-pro-card cursor-pointer transition-transform hover:-translate-y-1" onClick={() => navigate('/predictions')}>
+            <motion.div 
+               className="bento-pro-card cursor-pointer transition-transform hover:-translate-y-1" 
+               onClick={() => navigate('/predictions')}
+               whileInView={{ opacity: [0, 1], x: [-20, 0] }}
+               viewport={{ once: true }}
+            >
                <div className="b-pro-content">
                   <div className="b-pro-icon icon-orange"><Database size={28} /></div>
                   <h3>Firecrawl Dataset</h3>
                   <p>In-situ LLM extraction of unstructured news web-data into actionable sentiment matrices.</p>
                </div>
-            </div>
+            </motion.div>
             
-            <div className="bento-pro-card col-span-2 h-pro-v2 cursor-pointer transition-transform hover:-translate-y-1" onClick={() => navigate('/portfolio')}>
+            <motion.div 
+               className="bento-pro-card col-span-2 h-pro-v2 cursor-pointer transition-transform hover:-translate-y-1" 
+               onClick={() => navigate('/portfolio')}
+               whileInView={{ opacity: [0, 1], y: [20, 0] }}
+               viewport={{ once: true }}
+            >
                <div className="b-pro-content">
                   <div className="b-pro-icon"><Briefcase size={28} /></div>
                   <h3>Total Capital Control</h3>
@@ -375,9 +394,63 @@ const Landing = () => {
                         <div className="dial-sub">OPTIMAL LIQUIDITY</div>
                    </div>
                </div>
-            </div>
-         </div>
-      </section>
+            </motion.div>
+          </div>
+       </section>
+
+       {/* Neural Highway - NEW (The WOW factor) */}
+       <section className="neural-highway-section py-32 relative overflow-hidden">
+          <div className="highway-bg-glow"></div>
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
+                <div className="highway-stats">
+                   <motion.span 
+                      className="tag-pro mb-4 inline-block"
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                   >THE NEURAL HIGHWAY</motion.span>
+                   <motion.h2 
+                      className="text-5xl font-bold mb-6"
+                      initial={{ opacity: 0, x: -30 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                   >Flowing with <span className="text-brand">Alpha.</span></motion.h2>
+                   <p className="text-lg text-muted leading-relaxed">
+                      Our proprietary fiber pathways connect the StockMind AI core directly to NYSE and NASDAQ liquidity pools, bypassing the public internet for absolute execution superiority.
+                   </p>
+                   <div className="flex gap-10 mt-10">
+                       <div className="h-stat">
+                           <div className="h-val font-mono text-3xl text-up">99.99%</div>
+                           <div className="h-lab text-xs uppercase font-bold text-muted">Availability</div>
+                       </div>
+                       <div className="h-stat">
+                           <div className="h-val font-mono text-3xl text-cyan">0.08ms</div>
+                           <div className="h-lab text-xs uppercase font-bold text-muted">Jitter</div>
+                       </div>
+                   </div>
+                </div>
+                <div className="highway-visual relative h-64 md:h-96">
+                   <div className="highway-line"></div>
+                   <motion.div 
+                      className="data-packet p-1"
+                      animate={{ offsetDistance: ["0%", "100%"] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                   >
+                      <Zap size={14} className="text-brand" />
+                   </motion.div>
+                   <motion.div 
+                      className="data-packet p-1"
+                      animate={{ offsetDistance: ["0%", "100%"] }}
+                      transition={{ duration: 4, repeat: Infinity, ease: "linear", delay: 1 }}
+                   >
+                      <Cpu size={14} className="text-cyan" />
+                   </motion.div>
+                   <div className="node-box n-start">STOCKMIND CORE</div>
+                   <div className="node-box n-end">NYSE / NASDAQ</div>
+                </div>
+             </div>
+          </div>
+       </section>
+
 
       {/* Global Connectivity Maps */}
       <section className="global-map-pro mt-20">

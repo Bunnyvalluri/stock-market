@@ -550,15 +550,81 @@
 .c-blue { color: #3b82f6; } .c-gold { color: #f59e0b; } .c-cyan { color: #06b6d4; } .c-red { color: #f43f5e; } .c-purple { color: #8b5cf6; }
 
 /* Global Map Section */
-.connection-nodes-wrap {
-  display: flex;
-  justify-content: center;
-  gap: 4rem;
-  margin-top: 4rem;
+/* Neural Highway Premium Section */
+.neural-highway-section {
+  background: radial-gradient(circle at 100% 50%, rgba(37, 99, 235, 0.05), transparent 50%);
 }
 
-.node-item { font-size: 1.5rem; font-weight: 800; display: flex; flex-direction: column; align-items: center; }
-.node-item .ms { font-size: 0.7rem; color: var(--accent-brand); font-family: monospace; margin-top: 8px; }
+.highway-bg-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120%;
+  height: 120%;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.03) 0%, transparent 60%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.highway-visual {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.highway-line {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-brand), var(--accent-cyan));
+  opacity: 0.2;
+  z-index: 1;
+}
+
+.data-packet {
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  box-shadow: 0 0 15px currentColor;
+  z-index: 3;
+  /* Packet travel logic via offset-path */
+  offset-path: path('M 0 0 L 800 0');
+}
+
+.node-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-family: 'Inter', monospace;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #fff;
+  z-index: 5;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+.node-box::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--accent-brand), transparent);
+  opacity: 0.5;
+  z-index: -1;
+}
+
+.h-stat .h-val {
+  letter-spacing: -1px;
+}
 
 /* Footer Institutional */
 .footer-institutional {
