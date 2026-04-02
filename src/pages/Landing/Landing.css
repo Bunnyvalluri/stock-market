@@ -356,6 +356,10 @@
   color: transparent;
   animation: lp-shimmer 6s infinite linear;
   background-size: 200% auto;
+  font-size: inherit;
+  font-weight: inherit;
+  display: inline-block;
+  white-space: nowrap;
 }
 
 /* Subheading */
