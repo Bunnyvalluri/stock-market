@@ -152,10 +152,13 @@ const Markets = () => {
 
   const filteredData = marketsData.filter(m => {
     const matchesSearch = m.symbol.toLowerCase().includes(searchQuery.toLowerCase()) || m.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = 
+    const matchesCategory =
         activeCategory === 'All Assets' ||
-        (activeCategory === 'Technology' && m.sector === 'Technology') ||
-        (activeCategory === 'Indices' && m.sector === 'Index ETF');
+        (activeCategory === 'Technology' && ['Technology', 'Semiconductor'].includes(m.sector)) ||
+        (activeCategory === 'Indices' && m.sector === 'Index ETF') ||
+        (activeCategory === 'Crypto' && m.sector === 'Forex/Crypto') ||
+        (activeCategory === 'Financials' && m.sector === 'Financials') ||
+        (activeCategory === 'Commodities' && m.sector === 'Commodities');
     return matchesSearch && matchesCategory;
   });
 
@@ -207,13 +210,18 @@ const Markets = () => {
         <div className="main-matrix">
            <div className="matrix-controls">
                 <div className="control-tabs">
-                    <button className={activeCategory === 'All Assets' ? 'active' : ''} onClick={() => { setActiveCategory('All Assets'); toast('Rendering full asset matrix.', {icon:'🗺️'}); }}>All Assets</button>
-                    <button className={activeCategory === 'Technology' ? 'active' : ''} onClick={() => { setActiveCategory('Technology'); toast('Filtering technology equities...', {icon:'💻'}); }}>Technology</button>
-                    <button className={activeCategory === 'Indices' ? 'active' : ''} onClick={() => { setActiveCategory('Indices'); toast('Filtering global indices...', {icon:'📈'}); }}>Indices</button>
+                    {['All Assets', 'Technology', 'Crypto', 'Financials', 'Commodities', 'Indices'].map(cat => (
+                        <button
+                            key={cat}
+                            className={activeCategory === cat ? 'active' : ''}
+                            onClick={() => { setActiveCategory(cat); toast(`Filtering: ${cat}`, { icon: '🗂️' }); }}
+                        >{cat}</button>
+                    ))}
                 </div>
                 <div className="matrix-stats">
-                    <span className="text-muted">Tracking: </span>
-                    <span className="font-bold">2,482 Assets</span>
+                    <span className="text-muted">Showing: </span>
+                    <span className="font-bold">{filteredData.length} assets</span>
+                    <span className="text-muted"> of 15 tracked</span>
                 </div>
            </div>
 

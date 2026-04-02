@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
-import { LineChart, LayoutDashboard, Activity, Database, Settings as SettingsIcon, Bell, Search, Menu, X, TrendingUp, Zap, LogOut } from 'lucide-react';
+import { LayoutDashboard, Activity, Database, Settings as SettingsIcon, Bell, Search, Menu, X, TrendingUp, Zap, LogOut, Clock, ChevronRight } from 'lucide-react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './firebase';
 import { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import './App.css';
 
 import Landing from './pages/Landing/Landing';
@@ -119,29 +120,80 @@ const Sidebar = ({ isOpen, toggleSidebar, user }) => {
 };
 
 // ──────────────────────────────────────────────
+// Live Clock
+// ──────────────────────────────────────────────
+const LiveClock = () => {
+  const [time, setTime] = useState(new Date());
+  useEffect(() => {
+    const t = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <span style={{ fontFamily: 'monospace', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.5px' }}>
+      {time.toLocaleTimeString('en-US', { hour12: false })}
+    </span>
+  );
+};
+
+// ──────────────────────────────────────────────
 // Navbar
 // ──────────────────────────────────────────────
-const Navbar = ({ toggleSidebar }) => (
-  <header className="navbar glass">
-    <div className="nav-left">
-      <button className="menu-toggle" onClick={toggleSidebar}><Menu size={24} /></button>
-      <div className="search-bar">
-        <Search size={18} className="search-icon" />
-        <input type="text" placeholder="Search stocks, models, news..." />
+const PAGE_TITLES = {
+  '/dashboard': 'Dashboard',
+  '/markets': 'Markets',
+  '/predictions': 'AI Insights',
+  '/portfolio': 'Portfolio',
+  '/alerts': 'Smart Alerts',
+  '/settings': 'Settings',
+};
+
+const Navbar = ({ toggleSidebar }) => {
+  const location = useLocation();
+  const pageTitle = PAGE_TITLES[location.pathname] || 'StockMind AI';
+  const [searchVal, setSearchVal] = useState('');
+
+  return (
+    <header className="navbar glass">
+      <div className="nav-left">
+        <button className="menu-toggle" onClick={toggleSidebar}><Menu size={24} /></button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 600 }}>
+          <span style={{ color: 'var(--text-muted)' }}>StockMind AI</span>
+          <ChevronRight size={14} style={{ opacity: 0.4 }} />
+          <span style={{ color: 'var(--text-primary)' }}>{pageTitle}</span>
+        </div>
+        <div className="search-bar" style={{ marginLeft: '1.5rem' }}>
+          <Search size={18} className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search stocks, AI models, news..."
+            value={searchVal}
+            onChange={e => setSearchVal(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter' && searchVal.trim()) { toast(`Searching: "${searchVal}"`, { icon: '🔍' }); setSearchVal(''); } }}
+          />
+        </div>
       </div>
-    </div>
-    <div className="nav-right">
-      <button className="icon-btn">
-        <Bell size={20} />
-        <span className="badge indicator-pulse"></span>
-      </button>
-      <div className="live-status-badge">
-        <span className="live-dot"></span>
-        Live
+      <div className="nav-right">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: 'var(--bg-card)', borderRadius: 'var(--radius-full)', border: '1px solid var(--border-light)' }}>
+          <Clock size={13} style={{ color: 'var(--accent-brand)' }} />
+          <LiveClock />
+        </div>
+        <ThemeToggle />
+        <button
+          className="icon-btn"
+          onClick={() => toast('3 new market alerts triggered. Check Alerts page.', { icon: '🔔' })}
+          title="Notifications"
+        >
+          <Bell size={20} />
+          <span className="badge indicator-pulse"></span>
+        </button>
+        <div className="live-status-badge">
+          <span className="live-dot"></span>
+          Markets Live
+        </div>
       </div>
-    </div>
-  </header>
-);
+    </header>
+  );
+};
 
 // ──────────────────────────────────────────────
 // Dashboard Layout

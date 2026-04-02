@@ -378,33 +378,139 @@ const Portfolio = () => {
          )}
 
 
-         {activeTab === 'ROUTING' && (
-         <div className="portfolio-holdings-grid-pro glass-card p-6">
-            <div className="flex items-center gap-2 mb-6">
+         {activeTab === 'ROUTING' && (() => {
+           const [orderSide, setOrderSide] = React.useState('BUY');
+           const [orderTicker, setOrderTicker] = React.useState('');
+           const [orderShares, setOrderShares] = React.useState('');
+           const [orderType, setOrderType] = React.useState('MKT');
+           const [limitPrice, setLimitPrice] = React.useState('');
+           const estimatedCost = orderShares && limitPrice ? (parseFloat(orderShares) * parseFloat(limitPrice)).toFixed(2) : '—';
+           return (
+           <div className="portfolio-holdings-grid-pro glass-card p-6">
+             <div className="flex items-center gap-2 mb-6">
                <Zap size={18} className="text-up" />
                <h3 className="font-bold tracking-wide uppercase">Direct Market Access (DMA)</h3>
-            </div>
-            <div className="flex flex-col gap-5 max-w-md mx-auto py-4">
-               <div className="flex p-1 bg-black/40 border border-light rounded-lg">
-                   <button className="flex-1 py-2 text-sm font-bold bg-up/20 text-up rounded-md shadow-[0_0_10px_rgba(34,197,94,0.3)]">BUY</button>
-                   <button className="flex-1 py-2 text-sm font-bold text-muted hover:text-white transition-colors">SELL</button>
+               <div style={{ marginLeft: 'auto', fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>VENUE: DARK POOL + LIT</div>
+             </div>
+             <div className="flex flex-col gap-4 max-w-md mx-auto">
+               {/* Side Selector */}
+               <div style={{ display: 'flex', background: 'rgba(0,0,0,0.5)', border: '1px solid var(--border-light)', borderRadius: '10px', padding: '4px' }}>
+                 {['BUY','SELL'].map(side => (
+                   <button
+                     key={side}
+                     onClick={() => setOrderSide(side)}
+                     style={{ flex: 1, padding: '10px', fontWeight: 800, fontSize: '0.85rem', borderRadius: '7px', border: 'none', cursor: 'pointer', transition: 'all 0.2s',
+                       background: orderSide === side ? (side === 'BUY' ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)') : 'transparent',
+                       color: orderSide === side ? (side === 'BUY' ? 'var(--status-up)' : 'var(--status-down)') : 'var(--text-muted)',
+                       boxShadow: orderSide === side ? `0 0 12px ${side === 'BUY' ? 'rgba(16,185,129,0.25)' : 'rgba(239,68,68,0.25)'}` : 'none'
+                     }}
+                   >{side}</button>
+                 ))}
                </div>
-               <input type="text" placeholder="TICKER (e.g. NVDA)" className="bg-black/40 border border-light rounded-md p-4 font-mono text-xl outline-none focus:border-brand transition-colors uppercase" />
-               <input type="number" placeholder="SHARES" className="bg-black/40 border border-light rounded-md p-4 font-mono text-xl outline-none focus:border-brand transition-colors" />
-               <div className="flex gap-2">
-                   <button className="flex-1 bg-white/10 border border-brand text-brand font-bold p-3 text-sm rounded-md shadow-[0_0_10px_rgba(79,70,229,0.3)]">MKT</button>
-                   <button className="flex-1 bg-black/40 border border-light text-muted hover:text-white p-3 text-sm rounded-md transition-colors font-bold">LMT</button>
-                   <button className="flex-1 bg-black/40 border border-light text-muted hover:text-white p-3 text-sm rounded-md transition-colors font-bold">STP</button>
+
+               {/* Ticker */}
+               <div>
+                 <label style={{ fontSize: '0.6rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>TICKER SYMBOL</label>
+                 <input
+                   type="text"
+                   placeholder="e.g. NVDA, AAPL, BTC"
+                   value={orderTicker}
+                   onChange={e => setOrderTicker(e.target.value.toUpperCase())}
+                   style={{ width: '100%', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-light)', borderRadius: '8px', padding: '14px', fontFamily: 'monospace', fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', outline: 'none' }}
+                 />
                </div>
-               <button 
-                  className="w-full bg-up text-black font-extrabold py-4 rounded-lg mt-4 flex items-center justify-center gap-2 hover:bg-green-400 transition-all shadow-[0_4px_15px_rgba(34,197,94,0.4)]" 
-                  onClick={() => toast.success('Order routed to dark-pool prime brokerage.', {icon:'🚀'})}
+
+               {/* Shares */}
+               <div>
+                 <label style={{ fontSize: '0.6rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>QUANTITY (SHARES)</label>
+                 <input
+                   type="number"
+                   placeholder="0"
+                   min="1"
+                   value={orderShares}
+                   onChange={e => setOrderShares(e.target.value)}
+                   style={{ width: '100%', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-light)', borderRadius: '8px', padding: '14px', fontFamily: 'monospace', fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', outline: 'none' }}
+                 />
+               </div>
+
+               {/* Order Type */}
+               <div>
+                 <label style={{ fontSize: '0.6rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>ORDER TYPE</label>
+                 <div style={{ display: 'flex', gap: '8px' }}>
+                   {['MKT','LMT','STP','STP-LMT'].map(t => (
+                     <button
+                       key={t}
+                       onClick={() => setOrderType(t)}
+                       style={{ flex: 1, padding: '10px 6px', fontWeight: 800, fontSize: '0.7rem', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s',
+                         background: orderType === t ? 'rgba(37,99,235,0.15)' : 'rgba(0,0,0,0.4)',
+                         border: orderType === t ? '1px solid var(--accent-brand)' : '1px solid var(--border-light)',
+                         color: orderType === t ? 'var(--accent-brand)' : 'var(--text-muted)',
+                         boxShadow: orderType === t ? '0 0 10px rgba(37,99,235,0.2)' : 'none'
+                       }}
+                     >{t}</button>
+                   ))}
+                 </div>
+               </div>
+
+               {/* Limit Price (only for LMT/STP/STP-LMT) */}
+               {orderType !== 'MKT' && (
+                 <div>
+                   <label style={{ fontSize: '0.6rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>
+                     {orderType === 'STP' ? 'STOP PRICE (USD)' : 'LIMIT PRICE (USD)'}
+                   </label>
+                   <input
+                     type="number"
+                     placeholder="0.00"
+                     value={limitPrice}
+                     onChange={e => setLimitPrice(e.target.value)}
+                     style={{ width: '100%', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-light)', borderRadius: '8px', padding: '14px', fontFamily: 'monospace', fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', outline: 'none' }}
+                   />
+                 </div>
+               )}
+
+               {/* Estimated Cost */}
+               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', border: '1px solid var(--border-light)' }}>
+                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700 }}>EST. ORDER VALUE</span>
+                 <span style={{ fontFamily: 'monospace', fontWeight: 800, color: 'var(--text-primary)' }}>
+                   {orderType === 'MKT' ? '(Market Price)' : estimatedCost === '—' ? '—' : `$${parseFloat(estimatedCost).toLocaleString()}`}
+                 </span>
+               </div>
+
+               {/* Execute Button */}
+               <button
+                 style={{
+                   width: '100%',
+                   background: orderSide === 'BUY' ? 'var(--status-up)' : 'var(--status-down)',
+                   color: '#fff',
+                   border: 'none',
+                   borderRadius: '10px',
+                   padding: '16px',
+                   fontWeight: 800,
+                   fontSize: '0.9rem',
+                   cursor: 'pointer',
+                   display: 'flex',
+                   alignItems: 'center',
+                   justifyContent: 'center',
+                   gap: '8px',
+                   letterSpacing: '0.5px',
+                   boxShadow: orderSide === 'BUY' ? '0 4px 20px rgba(16,185,129,0.35)' : '0 4px 20px rgba(239,68,68,0.35)',
+                   transition: 'all 0.2s'
+                 }}
+                 onClick={() => {
+                   if (!orderTicker.trim()) { toast.error('Enter a ticker symbol.'); return; }
+                   if (!orderShares || parseInt(orderShares) <= 0) { toast.error('Enter a valid share quantity.'); return; }
+                   toast.success(`${orderSide} order for ${orderShares} × ${orderTicker} [${orderType}] routed to prime brokerage.`, { icon: '🚀', duration: 4000 });
+                   setOrderTicker(''); setOrderShares(''); setLimitPrice('');
+                 }}
                >
-                  <Activity size={18} strokeWidth={3} /> EXECUTE TARGET BLOCK
+                 <Activity size={18} strokeWidth={3} />
+                 SUBMIT {orderSide} ORDER — {orderTicker || 'TICKER'} [{orderType}]
                </button>
-            </div>
-         </div>
-         )}
+               <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textAlign: 'center' }}>Simulated order routing. No real trades are executed.</p>
+             </div>
+           </div>
+           );
+         })()}
 
          {/* Right Sidebar: Intelligence & Logs (30% width) */}
          <div className="portfolio-side-pro flex flex-col gap-4">

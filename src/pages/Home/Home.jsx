@@ -228,6 +228,34 @@ const Home = () => {
 
   return (
     <div className="terminal-container animate-fade-in">
+      {/* Personalized Welcome Header */}
+      {(() => {
+        const h = new Date().getHours();
+        const greeting = h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : 'Good Evening';
+        const marketOpen = h >= 9 && h < 16;
+        return (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+            <div>
+              <h1 style={{ fontSize: '1.6rem', fontWeight: 800, letterSpacing: '-0.5px', margin: 0 }}>
+                {greeting}, Investor 👋
+              </h1>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '4px' }}>
+                {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} &nbsp;·&nbsp;
+                <span className={marketOpen ? 'text-up' : 'text-orange'}>
+                  {marketOpen ? '🟢 NYSE/NASDAQ Open' : '🟡 Markets Closed — Pre/Post Hours'}
+                </span>
+              </p>
+            </div>
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>Portfolio Today</div>
+                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--status-up)', fontFamily: 'monospace' }}>+$4,120.45</div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Institutional Top Navigation Bar */}
       <div className="terminal-topbox glass">
         <div className="terminal-status-group">
