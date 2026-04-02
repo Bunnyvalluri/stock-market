@@ -116,8 +116,16 @@
 /* Stats Grid - Terminal Style */
 .terminal-stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 1.25rem;
+}
+
+@media (max-width: 1200px) {
+  .terminal-stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .terminal-stats-grid { grid-template-columns: 1fr; }
 }
 
 .terminal-card {
@@ -169,6 +177,10 @@
   letter-spacing: -2px;
   margin-top: 5px;
   font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 480px) {
+  .stat-value { font-size: 1.5rem; }
 }
 
 .stat-icon-gate {
@@ -247,6 +259,10 @@
   min-height: 450px;
 }
 
+@media (max-width: 768px) {
+  .main-chart-box { min-height: 320px; padding: 1rem; }
+}
+
 .card-header-term {
   display: flex;
   justify-content: space-between;
@@ -254,6 +270,10 @@
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--border-light);
+}
+
+@media (max-width: 640px) {
+  .card-header-term { flex-direction: column; align-items: flex-start; gap: 1rem; }
 }
 
 .header-left {
@@ -294,6 +314,10 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .bottom-row-term { grid-template-columns: 1fr; }
 }
 
 /* Sector Grid */
