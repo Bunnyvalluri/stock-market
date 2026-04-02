@@ -888,3 +888,8 @@
 /* ── Additional Polish ── */
 [data-theme='light'] .tag-up { background: rgba(5,150,105,0.08) !important; color: #059669 !important; border: 1px solid rgba(5,150,105,0.15); }
 [data-theme='light'] .tag-down { background: rgba(220,38,38,0.05) !important; color: #dc2626 !important; border: 1px solid rgba(220,38,38,0.1); }
+
+[data-theme='light'] .sm-pro-label { color: rgba(30,27,75,0.45); }
+[data-theme='light'] .sm-pro-bar-wrap { background: rgba(99,102,241,0.08); }
+[data-theme='light'] .sm-pro-bar { box-shadow: 0 0 12px rgba(79,70,229,0.1); }
+[data-theme='light'] .sm-pro-val { color: #1e1b4b; }

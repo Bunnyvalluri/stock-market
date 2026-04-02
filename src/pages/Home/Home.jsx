@@ -415,20 +415,26 @@ const Home = () => {
           <div className="bottom-row-term">
              <div className="terminal-card sector-watch glass-card">
                 <div className="card-header-term">
-                    <Globe size={16} className="text-cyan" />
-                    <h4>Sector Saturation</h4>
+                    <Layers size={16} className="text-cyan" />
+                    <h4>AI-Driven Sentiment Breakdown</h4>
                 </div>
-                <div className="sector-grid">
+                <div className="sentiment-matrix-pro mt-3">
                     {[
-                        {n: 'Tech', v: '+2.1%', up: true}, {n: 'Finance', v: '-0.4%', up: false},
-                        {n: 'Energy', v: '+0.8%', up: true}, {n: 'Healthcare', v: '-1.2%', up: false}
+                        {label: 'Earnings', val: 82, trend: 'up'},
+                        {label: 'Macro', val: 45, trend: 'down'},
+                        {label: 'ESG Score', val: 68, trend: 'up'},
+                        {label: 'Retail flow', val: 91, trend: 'up'}
                     ].map(s => (
-                        <div key={s.n} className="sector-pill">
-                            <span className="sector-name">{s.n}</span>
-                            <span className={`sector-val ${s.up ? 'up' : 'down'}`}>{s.v}</span>
+                        <div key={s.label} className="sm-pro-row">
+                           <span className="sm-pro-label">{s.label}</span>
+                           <div className="sm-pro-bar-wrap">
+                              <div className={`sm-pro-bar ${s.trend === 'up' ? 'bg-up' : 'bg-down'}`} style={{ width: `${s.val}%`, opacity: 0.7 }}></div>
+                           </div>
+                           <span className={`sm-pro-val ${s.trend === 'up' ? 'text-up' : 'text-down'}`}>{s.val}%</span>
                         </div>
                     ))}
                 </div>
+                <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '12px', fontStyle: 'italic' }}>*Neural-core analysis based on 1.4B daily sentiment tokens.</p>
              </div>
              
              <div className="terminal-card hft-log glass-card">
