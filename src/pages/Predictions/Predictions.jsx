@@ -90,6 +90,25 @@ const Predictions = () => {
     <div className="predictions-pro-container animate-fade-in">
       {/* High-Tech Engine Bar */}
       <div className="engine-status-pro glass">
+         {/* Internal Neural Animation Layer */}
+         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', overflow: 'hidden', pointerEvents: 'none', zIndex: 0, opacity: 0.15 }}>
+            <svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 1000 40">
+               <motion.path
+                  d="M0,20 Q250,5 500,20 T1000,20"
+                  fill="none"
+                  stroke="var(--accent-brand)"
+                  strokeWidth="0.5"
+                  animate={{ d: ["M0,20 Q250,5 500,20 T1000,20", "M0,20 Q250,35 500,20 T1000,20", "M0,20 Q250,5 500,20 T1000,20"] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+               />
+               <circle r="1.5" fill="var(--accent-brand)">
+                  <animateMotion dur="3.5s" repeatCount="indefinite" path="M0,20 Q250,5 500,20 T1000,20" />
+               </circle>
+               <circle r="1.5" fill="var(--accent-brand)">
+                  <animateMotion dur="5s" repeatCount="indefinite" path="M0,20 Q250,35 500,20 T1000,20" />
+               </circle>
+            </svg>
+         </div>
          <div className="engine-item">
             <Server size={14} className="text-cyan" />
             <span className="text-muted">Compute Cluster:</span>
