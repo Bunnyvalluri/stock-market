@@ -20,6 +20,12 @@ import StockDetail from './pages/StockDetail/StockDetail';
 // ──────────────────────────────────────────────
 // Protected Route Guard
 // ──────────────────────────────────────────────
+// ──────────────────────────────────────────────
+// Protected Route Guard
+// ──────────────────────────────────────────────
+// ──────────────────────────────────────────────
+// Protected Route Guard
+// ──────────────────────────────────────────────
 const ProtectedRoute = ({ children }) => {
   const [user, setUser] = useState(undefined); // undefined = still loading
 

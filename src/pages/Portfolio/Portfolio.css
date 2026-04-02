@@ -101,10 +101,25 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 2rem;
-  background: #080808 !important;
-  border: 1px solid var(--border-light) !important;
-  border-radius: 4px !important;
+  padding: 1rem 2rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  background: rgba(var(--bg-card-rgb), 0.2) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+}
+
+.quant-metrics-bar::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-brand), transparent);
+  opacity: 0.3;
 }
 
 .qm-item { display: flex; align-items: center; gap: 1rem; }
@@ -120,18 +135,73 @@
   gap: 1.5rem;
 }
 
-.portfolio-summary-card-pro {
-  padding: 1.5rem;
-  background: #121212 !important;
+.portfolio-summary-card-saas {
+  padding: 2rem 1.5rem;
+  border-radius: var(--radius-lg) !important;
   border: 1px solid var(--border-light) !important;
-  border-radius: 6px !important;
-  /* subtle glow on hover for data focus */
-  transition: box-shadow 0.2s, border-color 0.2s;
+  background: rgba(var(--bg-card-rgb), 0.4) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
 }
 
-.portfolio-summary-card-pro:hover {
-  border-color: rgba(255, 255, 255, 0.15) !important;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+.card-ambient-glow-saas {
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.summary-saas-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-light);
+  background: rgba(var(--bg-card-rgb), 0.6);
+  color: var(--accent-brand);
+}
+
+.summary-saas-pill {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  letter-spacing: -0.2px;
+}
+
+.btn-saas-primary {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, var(--accent-brand), #4f46e5);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-saas-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+  filter: brightness(1.1);
 }
 
 /* Main Layout Grid */
@@ -144,9 +214,10 @@
 
 /* Holdings Matrix - Institutional Dense */
 .portfolio-holdings-grid-pro {
-  background: #121212 !important;
+  background: rgba(var(--bg-card-rgb), 0.4) !important;
   border: 1px solid var(--border-light) !important;
-  border-radius: 6px !important;
+  border-radius: var(--radius-md) !important;
+  backdrop-filter: blur(10px);
 }
 
 .holdings-matrix-pro {
@@ -154,30 +225,45 @@
 }
 
 /* Using general Tailwind classes in JSX, explicitly override some CSS */
+.matrix-head-pro {
+  display: grid;
+  grid-template-columns: 1.5fr 120px 1.2fr 1.2fr 1fr 100px;
+  gap: 1.5rem;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  padding: 16px 1.5rem;
+  border-bottom: 1px solid var(--border-light);
+  background: rgba(0,0,0,0.3);
+  align-items: center;
+}
+
 .matrix-row-pro {
   display: grid;
-  grid-template-columns: 1.2fr 1fr 1.5fr 1.5fr 1.5fr 1fr;
+  grid-template-columns: 1.5fr 120px 1.2fr 1.2fr 1fr 100px;
+  gap: 1.5rem;
   align-items: center;
-  padding: 12px 1rem;
+  padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--border-light);
-  transition: background 0.1s;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .matrix-row-pro:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.05);
+  transform: scale(1.002);
+  z-index: 10;
 }
 
-.matrix-head-pro {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr 1.5fr 1.5fr 1.5fr 1fr;
-  color: var(--text-muted);
-  font-size: 0.65rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 12px 1rem;
-  border-bottom: 1px solid var(--border-medium);
-  background: #0a0a0a;
+/* Explicit Flex Layouts for Matrix Cells to prevent merging */
+.matrix-id-pro,
+.matrix-pnl-pro,
+.matrix-holdings-pro {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  justify-content: center;
 }
 
 /* Text alignment utilities for grid items */

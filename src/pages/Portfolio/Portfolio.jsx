@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
+import Sparkline from '../../components/Sparkline';
 import './Portfolio.css';
 
 const generateHistory = (base) => Array.from({length: 15}, () => ({ val: base + (Math.random() - 0.5) * (base * 0.03) }));
@@ -21,20 +22,27 @@ const initialAssets = [
 
 const COLORS = ['#2563eb', '#06b6d4', '#10b981', '#f59e0b', '#8b5cf6'];
 
-const SummaryStat = ({ label, value, subValue, isUp, icon }) => (
-  <div className="portfolio-summary-card-pro glass-card text-left">
-    <div className="summary-pro-header flex-between">
-       <span className="summary-pro-label text-muted font-bold text-xs uppercase tracking-wider">{label}</span>
-       <div className="summary-pro-icon opacity-70">{icon}</div>
-    </div>
-    <div className="summary-pro-body mt-2">
-       <h2 className="summary-pro-val font-mono text-2xl font-bold">{value}</h2>
-       <div className={`summary-pro-sub mt-1 text-xs font-mono flex items-center gap-1 ${isUp ? 'text-up' : 'text-down'}`}>
-          {isUp ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-          <span>{subValue}</span>
+const SummaryStat = ({ label, value, subValue, isUp, icon, trendData }) => (
+  <motion.div 
+    whileHover={{ translateY: -4 }}
+    className="portfolio-summary-card-saas glass-card"
+  >
+    <div className="card-ambient-glow-saas"></div>
+    <div className="summary-saas-header flex items-center justify-between mb-4">
+       <div className="summary-saas-icon-box glass">
+          {icon}
+       </div>
+       <div className={`summary-saas-pill font-bold ${isUp ? 'text-up bg-up/10' : 'text-down bg-down/10'}`}>
+          {isUp ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
+          {subValue.split(' ')[0]}
        </div>
     </div>
-  </div>
+    <div className="summary-saas-body">
+       <span className="text-muted text-xs font-bold uppercase tracking-widest">{label}</span>
+       <h2 className="text-3xl font-black mt-1 font-outfit tracking-tight">{value}</h2>
+       <p className="text-[11px] text-muted font-medium mt-1">{subValue.includes('Today') ? subValue : `Performance: ${subValue}`}</p>
+    </div>
+  </motion.div>
 );
 
 const Portfolio = () => {
@@ -159,10 +167,10 @@ const Portfolio = () => {
                   <Download size={14} className="mr-1"/> EXPORT CSV
                 </button>
                 <button 
-                  className="btn-pro-primary"
+                  className="btn-saas-primary"
                   onClick={() => { setActiveTab('ROUTING'); toast.success('Capital Deployment sequence initialized.', { icon: '💸' }); }}
                 >
-                  <Plus size={14} className="mr-1"/> DEPLOY CAPITAL
+                  <Plus size={16} className="mr-1"/> DEPLOY CAPITAL
                 </button>
             </div>
         </div>
@@ -225,22 +233,22 @@ const Portfolio = () => {
          
          {activeTab === 'OVERVIEW' && (
          <div className="portfolio-holdings-grid-pro glass-card">
-            <div className="card-header-term flex-between border-b border-light p-4">
-               <div className="flex items-center gap-2">
-                   <Briefcase size={16} className="text-cyan" />
-                   <h4 className="font-bold text-sm tracking-wide uppercase">Asset Allocation Matrix</h4>
+            <div className="card-header-term flex items-center justify-between border-b border-light p-4">
+               <div className="flex items-center gap-3">
+                   <Briefcase size={18} className="text-brand" />
+                   <h3 className="font-bold text-lg tracking-tight">Institutional Asset Matrix</h3>
                </div>
-               <div className="live-status-pro text-xs font-mono flex items-center gap-2">
-                   <div className={`status-dot ${isLive ? 'active bg-up' : 'bg-muted'}`} style={{width: 8, height: 8, borderRadius: '50%'}}></div>
-                   <span>ENGINE: {isLive ? 'SYNCED' : 'OFFLINE'}</span>
+               <div className="live-status-pro text-xs font-bold font-mono py-1 px-3 rounded-full bg-black/40 border border-light flex items-center gap-2">
+                   <div className={`status-dot ${isLive ? 'active-pulse' : 'bg-muted'}`} style={{width: 8, height: 8, borderRadius: '50%', background: isLive ? 'var(--status-up)' : 'var(--text-muted)'}}></div>
+                   <span style={{color: isLive ? 'var(--status-up)' : 'var(--text-muted)'}}>ENGINE: {isLive ? 'SYNCHRONIZED' : 'OFFLINE'}</span>
                </div>
             </div>
             
-            <div className="holdings-matrix-pro w-full overflow-hidden">
-               <div className="matrix-head-pro grid text-xs font-bold text-muted uppercase tracking-wider py-3 px-4 border-b border-light">
-                  <div className="col-span-1">Instrument</div>
-                  <div className="text-center pl-4">7D Trend</div>
-                  <div className="text-right">Market Px</div>
+            <div className="holdings-matrix-pro w-full overflow-x-auto">
+               <div className="matrix-head-pro">
+                  <div className="text-left">Instrument</div>
+                  <div className="text-center">Trend</div>
+                  <div className="text-right">Price</div>
                   <div className="text-right">Unrl PNL</div>
                   <div className="text-right">Position</div>
                   <div className="text-right">Exposure</div>
@@ -254,7 +262,7 @@ const Portfolio = () => {
                      const exposure = (asset.value / totalValue) * 100;
 
                      return (
-                        <div key={asset.symbol} className="matrix-row-pro grid items-center py-3 px-4 border-b border-light hover:bg-white/5 transition-colors">
+                        <div key={asset.symbol} className="matrix-row-pro">
                            <div className="matrix-id-pro col-span-1 flex flex-col">
                               <span className="font-bold text-sm tracking-wide">{asset.symbol}</span>
                               <span className="text-[10px] text-muted font-mono uppercase">{asset.sector}</span>
@@ -262,19 +270,10 @@ const Portfolio = () => {
                            
                            {/* Live Sparkline */}
                            <div className="h-10 w-full pl-4">
-                               <ResponsiveContainer width="100%" height="100%">
-                                   <LineChart data={asset.history}>
-                                       <YAxis domain={['auto', 'auto']} hide />
-                                       <Line 
-                                          type="monotone" 
-                                          dataKey="val" 
-                                          stroke={isUp ? 'var(--status-up)' : 'var(--status-down)'} 
-                                          strokeWidth={2} 
-                                          dot={false}
-                                          isAnimationActive={false}
-                                       />
-                                   </LineChart>
-                               </ResponsiveContainer>
+                               <Sparkline 
+                                  data={asset.history.map(h => ({ price: h.val }))} 
+                                  color={isUp ? 'var(--status-up)' : 'var(--status-down)'} 
+                               />
                            </div>
 
                            <div className={`matrix-price-pro text-right font-mono text-sm font-bold ${asset.tickDir ? `flash-${asset.tickDir}` : ''}`}>
@@ -456,9 +455,9 @@ const Portfolio = () => {
                         <div key={`${log.id}-${i}`} className={`log-item-term ${i === 0 ? 'flash-bg-term' : ''}`}>
                             <span className="l-time">{log.time}</span>
                             <span className="l-symb">{log.module.padEnd(10, ' ')}</span>
-                            <span className="l-qty text-brand">{log.asset.padEnd(6, ' ')}</span>
+                            <span className="l-qty text-brand font-bold">{log.asset.padEnd(6, ' ')}</span>
                             <span className={`l-status font-bold ${log.status === 'OK' ? 'text-up' : 'text-orange'}`}>
-                                [{log.status}]
+                                {log.status === 'OK' ? '✓ READY' : '⚠ WARN'}
                             </span>
                         </div>
                     ))}

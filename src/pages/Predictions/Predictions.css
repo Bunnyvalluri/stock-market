@@ -14,12 +14,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.65rem 1.5rem;
-  border-radius: var(--radius-sm);
+  padding: 0.85rem 1.75rem;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-light);
-  background: rgba(10, 10, 10, 0.8) !important;
-  font-size: 0.8rem;
-  letter-spacing: -0.2px;
+  background: rgba(15, 15, 20, 0.4) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  font-size: 0.75rem;
+  letter-spacing: 0.2px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 
 .engine-item {
@@ -124,11 +127,22 @@
 
 /* Metric Pro Cards */
 .metric-pro-card {
-  padding: 1.25rem;
-  border-radius: var(--radius-md) !important;
-  background: var(--bg-card) !important;
+  padding: 1.5rem;
+  border-radius: var(--radius-lg) !important;
   border: 1px solid var(--border-light) !important;
-  margin-bottom: 1rem;
+  background: rgba(20, 20, 25, 0.4) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.metric-pro-card:hover {
+  background: rgba(25, 25, 35, 0.6) !important;
+  transform: translateY(-5px);
+  border-color: var(--accent-brand) !important;
 }
 
 .metric-pro-header {

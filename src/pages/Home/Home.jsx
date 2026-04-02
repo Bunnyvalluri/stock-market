@@ -53,39 +53,68 @@ const SentimentMeter = ({ value = 75 }) => (
   </div>
 );
 
-
-const StatCard = ({ title, value, change, isUp, icon, glowColor }) => (
-  <motion.div 
-    className="stat-card terminal-card"
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-    style={{ '--card-accent': glowColor }}
-  >
-    <div className="stat-header">
-      <div className="stat-info">
-        <span className="stat-label">{title}</span>
-        <h3 className="stat-value">{value}</h3>
-      </div>
-      <div className="stat-icon-gate" style={{ backgroundColor: `${glowColor}15`, color: glowColor }}>
-        {icon}
-      </div>
-    </div>
-    <div className="stat-footer">
-      <div className={`stat-trend ${isUp ? 'trend-up' : 'trend-down'}`}>
-        {isUp ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
-        <span>{change}</span>
-      </div>
-      <div className="stat-mini-graph">
-        {/* Placeholder for a tiny sparkline */}
-        <div className="spark-bar" style={{ height: '30%', width: '4px' }}></div>
-        <div className="spark-bar" style={{ height: '50%', width: '4px' }}></div>
-        <div className="spark-bar" style={{ height: '80%', width: '4px' }}></div>
-        <div className="spark-bar" style={{ height: '60%', width: '4px' }}></div>
-      </div>
-    </div>
-  </motion.div>
+const Sparkline = ({ data, color, isUp }) => (
+  <div style={{ width: '80px', height: '30px' }}>
+    <ResponsiveContainer width="100%" height="100%">
+      <AreaChart data={data}>
+        <defs>
+          <linearGradient id={`grad-${color}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor={color} stopOpacity={0.3}/>
+            <stop offset="95%" stopColor={color} stopOpacity={0}/>
+          </linearGradient>
+        </defs>
+        <Area 
+          type="monotone" 
+          dataKey="val" 
+          stroke={color} 
+          fill={`url(#grad-${color})`} 
+          strokeWidth={2} 
+          dot={false}
+          isAnimationActive={true}
+        />
+      </AreaChart>
+    </ResponsiveContainer>
+  </div>
 );
+
+const StatCard = ({ title, value, change, isUp, icon, glowColor }) => {
+  const sparkData = Array.from({ length: 10 }, (_, i) => ({ val: 50 + Math.random() * 50 }));
+  
+  return (
+    <motion.div 
+      className="stat-card terminal-card"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ 
+        y: -5,
+        borderColor: glowColor,
+        boxShadow: `0 10px 30px -10px ${glowColor}40`
+      }}
+      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      style={{ '--card-accent': glowColor }}
+    >
+      <div className="stat-header">
+        <div className="stat-info">
+          <span className="stat-label">{title}</span>
+          <h3 className="stat-value">{value}</h3>
+        </div>
+        <div className="stat-icon-gate" style={{ background: `linear-gradient(135deg, ${glowColor}20, ${glowColor}05)`, color: glowColor }}>
+          {icon}
+        </div>
+      </div>
+      <div className="stat-footer">
+        <div className={`stat-trend ${isUp ? 'trend-up' : 'trend-down'}`}>
+          <div className={`trend-pill ${isUp ? 'up' : 'down'}`}>
+            {isUp ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
+            <span>{change}</span>
+          </div>
+        </div>
+        <Sparkline data={sparkData} color={glowColor} isUp={isUp} />
+      </div>
+      <div className="card-ambient-glow" style={{ background: `radial-gradient(circle at top right, ${glowColor}10, transparent 70%)` }}></div>
+    </motion.div>
+  );
+};
 
 const Home = () => {
   const [marketOverview, setMarketOverview] = useState(initialMarketOverview);
@@ -308,30 +337,48 @@ const Home = () => {
                     <AreaChart data={mainChartData}>
                         <defs>
                             <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="var(--accent-brand)" stopOpacity={0.4}/>
+                                <stop offset="5%" stopColor="var(--accent-brand)" stopOpacity={0.2}/>
                                 <stop offset="95%" stopColor="var(--accent-brand)" stopOpacity={0}/>
                             </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.02)" vertical={false} />
                         <XAxis 
                             dataKey="date" 
                             axisLine={false} 
                             tickLine={false} 
-                            tick={{fill: 'var(--text-muted)', fontSize: 11}} 
+                            tick={{fill: 'var(--text-muted)', fontSize: 10, fontWeight: 600}} 
                             minTickGap={40}
                         />
                         <YAxis 
                             orientation="right" 
                             axisLine={false} 
                             tickLine={false} 
-                            tick={{fill: 'var(--text-muted)', fontSize: 11}} 
+                            tick={{fill: 'var(--text-muted)', fontSize: 10, fontWeight: 600}} 
                             domain={['auto', 'auto']}
                         />
                         <Tooltip 
-                            contentStyle={{ background: '#121212', border: '1px solid #333', borderRadius: '8px' }}
-                            itemStyle={{ color: '#fff' }}
+                            contentStyle={{ 
+                                background: 'rgba(10, 10, 10, 0.9)', 
+                                border: '1px solid var(--border-light)', 
+                                borderRadius: '12px',
+                                backdropFilter: 'blur(10px)',
+                                boxShadow: '0 10px 25px rgba(0,0,0,0.4)',
+                                padding: '12px'
+                            }}
+                            itemStyle={{ color: '#fff', fontSize: '12px', fontWeight: '700' }}
+                            labelStyle={{ color: 'var(--text-muted)', fontSize: '10px', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}
+                            cursor={{ stroke: 'var(--accent-brand)', strokeWidth: 1, strokeDasharray: '4 4' }}
                         />
-                        <Area type="monotone" dataKey="price" stroke="var(--accent-brand)" strokeWidth={3} fill="url(#chartGrad)" />
+                        <Area 
+                            type="monotone" 
+                            dataKey="price" 
+                            stroke="var(--accent-brand)" 
+                            strokeWidth={2.5} 
+                            fill="url(#chartGrad)" 
+                            animationDuration={1500}
+                            dot={false}
+                            activeDot={{ r: 5, strokeWidth: 0, fill: 'var(--accent-brand)' }}
+                        />
                     </AreaChart>
                 </ResponsiveContainer>
              </div>

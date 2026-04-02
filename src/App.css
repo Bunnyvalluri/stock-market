@@ -249,7 +249,7 @@
 }
 
 /* Need to define RGB for blur to work cleanly, fallback to pure color with opacity */
-:root[data-theme='dark'] .navbar { background: rgba(11, 15, 25, 0.75); }
+:root[data-theme='dark'] .navbar { background: rgba(5, 7, 15, 0.75); }
 :root[data-theme='light'] .navbar { background: rgba(255, 253, 246, 0.75); }
 
 .nav-left, .nav-right {
