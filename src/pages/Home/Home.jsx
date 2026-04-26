@@ -3,7 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianG
 import { 
   TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, 
   Activity, Cpu, Newspaper, DollarSign, Globe, Shield, 
-  Zap, BarChart3, Clock, Bell, Settings, Filter
+  Zap, BarChart3, Clock, Bell, Settings, Filter, Layers
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
