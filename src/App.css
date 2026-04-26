@@ -395,9 +395,9 @@
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(11, 15, 25, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   z-index: 90;
   opacity: 0;
   transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -414,11 +414,12 @@
     width: 280px;
     padding: 1rem;
     box-shadow: none;
+    border-right: none;
   }
   
   .sidebar.open {
     transform: translateX(0);
-    box-shadow: 20px 0 50px rgba(0,0,0,0.5);
+    box-shadow: 20px 0 50px rgba(0,0,0,0.8);
   }
   
   .main-content {
@@ -427,33 +428,60 @@
   }
   
   .navbar {
-    padding: 0 1rem;
+    padding: 0 1.25rem;
     height: 64px;
-    /* Maintain thick blur on mobile */
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(24px);
+    -webkit-backdrop-filter: saturate(180%) blur(24px);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
   }
   
-  .menu-toggle { display: block; }
-  .mobile-close { display: block; background: var(--bg-card-hover); border-radius: var(--radius-sm); }
+  .menu-toggle { display: block; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); }
+  .mobile-close { display: block; background: rgba(255,255,255,0.1); border-radius: var(--radius-sm); }
   
   .search-bar { display: none; } /* Hide heavy search bar on mobile screens to save space */
   
   .page-wrapper { 
-    padding: 1rem; 
-    padding-bottom: 5rem; /* Safe area for mobile home iOS bars */
+    padding: 1.25rem; 
+    padding-bottom: 6rem; /* Safe area for mobile home iOS bars */
   }
 
   .live-status-badge {
-    padding: 0.3rem 0.6rem;
+    padding: 0.35rem 0.75rem;
     font-size: 0.7rem;
+    border-width: 1px;
   }
 }
 
-/* Deep container fluidity for nested pages */
+/* Deep container fluidity for nested pages & ultra-small mobiles */
 @media (max-width: 480px) {
-  .page-wrapper { padding: 0.75rem; padding-bottom: 5rem; }
-  .navbar { padding: 0 0.75rem; }
-  .icon-btn { width: 38px; height: 38px; }
+  .page-wrapper { padding: 1rem; padding-bottom: 6rem; }
+  .navbar { padding: 0 1rem; gap: 0.5rem; }
+  .icon-btn { width: 40px; height: 40px; }
   .logo-text { font-size: 1.1rem; }
+  
+  /* Make text stack dynamically */
+  .nav-left > div:not(.search-bar) {
+    font-size: 0.75rem;
+  }
+  
+  .live-status-badge {
+    display: flex; /* keep flex */
+  }
+  
+  .live-status-badge {
+    padding: 4px 8px;
+    font-size: 0.65rem;
+    letter-spacing: 0;
+  }
+  
+  /* Hide clock to save horizontal space on very small screens */
+  .nav-right > div:first-child {
+    display: none !important;
+  }
+}
+
+/* Base utility for flexible containers */
+.flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
 }
