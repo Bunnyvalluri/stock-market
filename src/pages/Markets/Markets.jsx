@@ -54,7 +54,7 @@ const MarketChip = ({ data, isLive }) => {
       <div className="mc-premium-header">
         <div className="mc-premium-id">
             <span className="mc-premium-symbol">{data.symbol}</span>
-            <span className="mc-premium-name">{data.name}</span>
+            <span className="mc-premium-name">{data.name || data.symbol}</span>
         </div>
         <div className={`mc-premium-indicator ${isUp ? 'bg-up-light' : 'bg-down-light'}`}>
             {isUp ? <TrendingUp size={16} className="text-up" /> : <TrendingDown size={16} className="text-down" />}
@@ -101,7 +101,7 @@ const Markets = () => {
       pulseDir: null
     }))
   );
-  
+  const [loading, setLoading] = useState(false);
   const [isLive, setIsLive] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
@@ -114,11 +114,39 @@ const Markets = () => {
     isUp: Math.random() > 0.5
   })), []);
 
+  const fetchRealMarkets = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/stocks');
+      const result = await response.json();
+      if (result.status === 'success') {
+        const enriched = result.data.map(stock => ({
+          ...stock,
+          name: stock.symbol,
+          sector: stock.sector || 'Institutional',
+          history: generateHistory(stock.price),
+          pulseDir: null
+        }));
+        setMarketsData(enriched);
+      }
+    } catch (err) {
+      console.error('Failed to fetch real market data:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchRealMarkets();
+    if (isLive) {
+      const interval = setInterval(fetchRealMarkets, 10000);
+      return () => clearInterval(interval);
+    }
+  }, [isLive]);
+
   // Generate ultra-fast trade blocks
   useEffect(() => {
     if (!isLive) return;
     const logInterval = setInterval(() => {
-       const asset = MOCK_TICKERS[Math.floor(Math.random() * MOCK_TICKERS.length)].symbol;
+       const symbols = marketsData.length > 0 ? marketsData.map(m => m.symbol) : ['AAPL', 'NVDA', 'TSLA'];
+       const asset = symbols[Math.floor(Math.random() * symbols.length)];
        const isBuy = Math.random() > 0.5;
        const price = (Math.random() * 500 + 50).toFixed(2);
        const d = new Date();
@@ -130,24 +158,24 @@ const Markets = () => {
          shares: (Math.random() * 25000 + 100).toFixed(0),
          price: price
        };
-       setHftLogs(prev => [newLog, ...prev].slice(0, 8)); // Maintain latest 8 trades
+       setHftLogs(prev => [newLog, ...prev].slice(0, 8));
     }, 400);
 
     return () => clearInterval(logInterval);
-  }, [isLive]);
+  }, [isLive, marketsData]);
 
-  // Simulate price ticks
+  // Simulate price ticks between polls
   useEffect(() => {
     if (!isLive) return;
     const interval = setInterval(() => {
       setMarketsData(prev => prev.map(stock => {
-        if (Math.random() > 0.6) {
-          const shift = (Math.random() - 0.48) * (stock.basePrice * 0.002);
+        if (Math.random() > 0.7) {
+          const shift = (Math.random() - 0.48) * (stock.price * 0.001);
           const newPrice = stock.price + shift;
           return {
             ...stock,
             price: newPrice,
-            change: stock.change + (shift/stock.basePrice)*100,
+            change: stock.change + (shift/stock.price)*100,
             history: [...stock.history.slice(1), {time: Date.now(), val: newPrice}],
             pulseDir: shift > 0 ? 'up' : 'down'
           };
@@ -159,7 +187,7 @@ const Markets = () => {
   }, [isLive]);
 
   const filteredData = marketsData.filter(m => {
-    const matchesSearch = m.symbol.toLowerCase().includes(searchQuery.toLowerCase()) || m.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = m.symbol.toLowerCase().includes(searchQuery.toLowerCase()) || (m.name && m.name.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesCategory = activeCategory === 'All' || m.sector === activeCategory;
     return matchesSearch && matchesCategory;
   });
@@ -173,15 +201,12 @@ const Markets = () => {
 
   return (
     <div className="markets-premium-container animate-fade-in">
-      
-      {/* Background Orbs */}
       <div className="premium-home-bg">
          <div className="home-glow home-glow-1"></div>
          <div className="home-glow home-glow-2"></div>
       </div>
 
       <div className="markets-content-wrapper">
-        
         {/* Indices Bar */}
         <div className="indices-bar-premium glass-panel">
           <div className="indices-scroll">
@@ -239,8 +264,6 @@ const Markets = () => {
         </div>
 
         <div className="markets-layout-grid">
-          
-          {/* Main Matrix */}
           <div className="matrix-col-main">
              <div className="matrix-filters-premium">
                   <div className="filter-tabs">
@@ -274,10 +297,7 @@ const Markets = () => {
              </div>
           </div>
 
-          {/* Side Intelligence */}
           <div className="matrix-col-side">
-              
-              {/* Live Order Flow */}
               <div className="glass-panel side-panel-premium">
                   <div className="panel-header border-bottom">
                       <div className="panel-title">
@@ -286,7 +306,7 @@ const Markets = () => {
                       </div>
                   </div>
                   <div className="live-trades-list">
-                      {hftLogs.map((log, i) => (
+                      {hftLogs.map((log) => (
                           <div key={log.id} className="trade-row-premium">
                               <div className="trade-meta">
                                   <span className="trade-time">{log.time}</span>
@@ -304,7 +324,6 @@ const Markets = () => {
                   </div>
               </div>
 
-              {/* Market Heatmap */}
               <div className="glass-panel side-panel-premium">
                   <div className="panel-header border-bottom">
                       <div className="panel-title">
@@ -327,10 +346,8 @@ const Markets = () => {
                       <span className="text-muted text-xs">Buying Pressure</span>
                   </div>
               </div>
-
           </div>
         </div>
-
       </div>
     </div>
   );

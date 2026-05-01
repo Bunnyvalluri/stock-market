@@ -99,22 +99,44 @@ const Home = () => {
   const [analyzingId, setAnalyzingId] = useState(null);
   const [analysisResults, setAnalysisResults] = useState({});
   const [latency, setLatency] = useState(14);
+  const [systemHealth, setSystemHealth] = useState(98);
 
-  // Ping for latency
+  // Ping for latency and health
   useEffect(() => {
     const pingInterval = setInterval(async () => {
       const start = Date.now();
       try {
-        await fetch('http://localhost:5000/api/ping');
+        const response = await fetch('http://localhost:5000/api/ping');
+        const data = await response.json();
         setLatency(Date.now() - start);
+        if (data.health) setSystemHealth(data.health);
       } catch (e) { /* ignore */ }
     }, 5000);
     return () => clearInterval(pingInterval);
   }, []);
 
-  // WebSocket Simulation / Connection
+  // Fetch real aggregated metrics or fallback to WebSocket
   useEffect(() => {
-    initialMarketOverview.forEach(m => socket.emit('subscribe:stock', m.symbol));
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/stocks');
+        const result = await response.json();
+        if (result.status === 'success') {
+          setMarketOverview(result.data.map(m => ({
+            ...m,
+            name: m.symbol,
+            isUp: m.change >= 0,
+            vol: (m.volume / 1000000).toFixed(1) + 'M'
+          })));
+        }
+      } catch (err) {
+        // Fallback to WebSocket if API fails
+        initialMarketOverview.forEach(m => socket.emit('subscribe:stock', m.symbol));
+      }
+    };
+    
+    fetchStats();
+    
     socket.on('price:update', (data) => {
       setMarketOverview(prev => prev.map(stock => {
          if (stock.symbol === data.symbol) {
@@ -124,6 +146,7 @@ const Home = () => {
          return stock;
       }));
     });
+
     return () => {
       initialMarketOverview.forEach(m => socket.emit('unsubscribe:stock', m.symbol));
       socket.off('price:update');
@@ -149,7 +172,6 @@ const Home = () => {
   const handleDownloadReport = () => {
     toast('Preparing institutional Excel report...', { icon: '📊' });
     
-    // Formatting data as a CSV for Excel compatibility
     const csvContent = [
       ["STOCKMIND AI - QUANTITATIVE INSIGHT REPORT"],
       ["Generated", new Date().toLocaleString()],
@@ -183,7 +205,6 @@ const Home = () => {
     setTimeout(() => {
       toast.success('Optimization Complete. All anomalies fixed.', { id: tid, icon: '🛡️' });
       
-      // Download a "Fix Report"
       const fixContent = [
         ["AUTO-FIX ADJUSTMENT LOG"],
         ["Timestamp", new Date().toLocaleString()],
@@ -228,6 +249,10 @@ const Home = () => {
             <div className="status-pill">
               <Globe size={14} className="text-brand" />
               <span>{latency}ms Latency</span>
+            </div>
+            <div className="status-pill">
+              <Cpu size={14} className="text-cyan" />
+              <span>{systemHealth}% Node Health</span>
             </div>
             <button className="icon-btn-premium"><Bell size={18} /></button>
             <button className="icon-btn-premium"><Settings size={18} /></button>

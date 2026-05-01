@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, Mail, Key, Eye, EyeOff, AlertCircle, ArrowRight, Shield, Zap, TrendingUp } from 'lucide-react';
+import { 
+  Lock, Mail, Key, Eye, EyeOff, AlertCircle, ArrowRight, 
+  Shield, Zap, TrendingUp, Database, ShieldCheck, Fingerprint 
+} from 'lucide-react';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider, githubProvider } from '../../firebase';
+import toast from 'react-hot-toast';
 import './Login.css';
 
 const Login = () => {
@@ -115,7 +119,7 @@ const Login = () => {
                  <h2>StockMind <span className="brand-highlight">AI</span></h2>
              </div>
              <p className="login-premium-sub">
-                {isRegisterMode ? 'Create your institutional account' : 'Welcome back to your terminal'}
+                {isRegisterMode ? 'PROVISION TERMINAL INSTANCE' : 'SECURE TERMINAL ACCESS'}
              </p>
           </div>
 
@@ -134,7 +138,7 @@ const Login = () => {
             </AnimatePresence>
 
             <div className="input-group-premium">
-              <label htmlFor="email-input">Email Address</label>
+              <label htmlFor="email-input">USER IDENTIFIER</label>
               <div className="input-wrapper">
                 <Mail className="input-icon" size={18} />
                 <input 
@@ -142,7 +146,7 @@ const Login = () => {
                   type="email" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@company.com" 
+                  placeholder="analyst@stockmind.ai" 
                   className="custom-input-premium" 
                 />
               </div>
@@ -150,14 +154,14 @@ const Login = () => {
             
             <div className="input-group-premium">
               <div className="label-row-premium">
-                <label htmlFor="password-input">Password</label>
+                <label htmlFor="password-input">ENCRYPTED PASSPHRASE</label>
                 {!isRegisterMode && (
                   <button 
                     type="button" 
                     className="forgot-link-premium" 
                     onClick={() => toast('Password recovery initiated. Check your email.', { icon: '📧' })}
                   >
-                    Forgot password?
+                    Recover Access
                   </button>
                 )}
               </div>
@@ -182,15 +186,15 @@ const Login = () => {
                 <div className="loading-spinner-premium"></div>
               ) : (
                 <>
-                  {isRegisterMode ? 'Create Account' : 'Sign In'}
-                  <ArrowRight size={18} />
+                  {isRegisterMode ? 'INITIALIZE PROVISION' : 'ESTABLISH CONNECTION'}
+                  <ShieldCheck size={18} />
                 </>
               )}
             </button>
           </form>
 
           <div className="divider-premium">
-             <span>or continue with</span>
+             <span>OAUTH GATEWAY</span>
           </div>
 
           <div className="social-auth-premium">
@@ -214,10 +218,10 @@ const Login = () => {
           
           <div className="toggle-mode-premium">
              <span className="text-muted">
-                {isRegisterMode ? 'Already have an account?' : 'Don\'t have an account?'}
+                {isRegisterMode ? 'ALREADY REGISTERED?' : 'NEW INSTITUTIONAL USER?'}
              </span>
              <button type="button" onClick={() => { setIsRegisterMode(!isRegisterMode); setError(''); }}>
-                {isRegisterMode ? 'Sign in' : 'Sign up'}
+                {isRegisterMode ? 'SWITCH TO LOGIN' : 'CREATE ACCOUNT'}
              </button>
           </div>
         </motion.div>
@@ -231,26 +235,34 @@ const Login = () => {
         >
             <div className="side-content">
                 <div className="feature-pill">
-                    <Zap size={14} /> Powering 10M+ Predictions
+                    <Database size={14} /> SYSTEM OPERATIONAL
                 </div>
                 <h2>Next-Generation<br/>Market Intelligence</h2>
-                <p className="side-description">
-                    Access institutional-grade analytics, real-time portfolio syncing, and AI-driven predictive modeling in one unified interface.
-                </p>
                 
+                <div className="terminal-mini mt-6 mb-6">
+                    <div className="terminal-line">&gt; initializing secure tunnel...</div>
+                    <div className="terminal-line">&gt; fetching node clusters...</div>
+                    <div className="terminal-line">&gt; encryption handshake ok.</div>
+                    {email && <div className="terminal-line" style={{ color: 'var(--accent-brand)' }}>&gt; targeting: {email}</div>}
+                    {isLoading && <div className="terminal-line" style={{ color: 'var(--status-up)' }}>&gt; authenticating hash sequence...</div>}
+                    <div className="terminal-line">
+                      &gt; waiting for input<span className="terminal-cursor"></span>
+                    </div>
+                </div>
+
                 <div className="features-list">
                     <div className="feature-item">
-                        <div className="feature-icon"><Shield size={18} /></div>
+                        <div className="feature-icon"><ShieldCheck size={18} /></div>
                         <div>
                             <h4>Bank-Grade Security</h4>
-                            <p>End-to-end encryption for all your data.</p>
+                            <p>End-to-end AES-256 encryption.</p>
                         </div>
                     </div>
                     <div className="feature-item">
-                        <div className="feature-icon"><TrendingUp size={18} /></div>
+                        <div className="feature-icon"><Fingerprint size={18} /></div>
                         <div>
-                            <h4>Real-Time Analytics</h4>
-                            <p>Live order books and sentiment tracking.</p>
+                            <h4>Identity Protection</h4>
+                            <p>Multi-factor biometric handshake.</p>
                         </div>
                     </div>
                 </div>

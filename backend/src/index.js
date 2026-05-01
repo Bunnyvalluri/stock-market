@@ -17,20 +17,32 @@ import alertRoutes from './routes/alerts.js';
 import newsRoutes from './routes/news.js';
 import { verifyFirebaseToken } from './middleware/auth.js';
 import { startStockPoller } from './services/stockPoller.js';
-
+import { errorHandler } from './middleware/errorHandler.js';
+import { rateLimit } from 'express-rate-limit';
 
 const app = express();
 const httpServer = createServer(app);
 
-// ─── Middleware ───────────────────────────────────────────────────────────────
+// ─── Security Middleware ──────────────────────────────────────────────────────
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  message: { error: 'Too many requests from this IP, please try again after 15 minutes' }
+});
+
 app.use(helmet());
+app.use(limiter); // Apply rate limiting to all requests
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: process.env.FRONTEND_URL || ['http://localhost:5173', 'http://localhost:5174'],
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(morgan('dev'));
-app.use(compression()); // OSI Layer 6: Payload Compression
-app.use(responseTime()); // OSI Layer 7: Latency Identification
+app.use(compression());
+app.use(responseTime());
 app.use(express.json());
 
 
@@ -41,12 +53,22 @@ app.get('/api/ping', (_req, res) => res.json({ timestamp: Date.now() })); // For
 
 
 // ─── API Routes ───────────────────────────────────────────────────────────────
-// All routes below require a valid Firebase JWT token
 app.use('/api/stocks',      verifyFirebaseToken, stockRoutes);
 app.use('/api/predict',     verifyFirebaseToken, predictionRoutes);
 app.use('/api/portfolio',   verifyFirebaseToken, portfolioRoutes);
 app.use('/api/alerts',      verifyFirebaseToken, alertRoutes);
 app.use('/api/news',        verifyFirebaseToken, newsRoutes);
+
+// ─── Error Handling (Keep at bottom) ──────────────────────────────────────────
+// 404 Handler
+app.use((req, res, next) => {
+  const error = new Error(`Route ${req.originalUrl} not found`);
+  error.statusCode = 404;
+  next(error);
+});
+
+// Global Error Handler
+app.use(errorHandler);
 
 // ─── Socket.io Real-time ──────────────────────────────────────────────────────
 initSocket(httpServer);

@@ -33,11 +33,40 @@ const usePortfolioEngine = (isLive) => {
   const [portfolioAssets, setPortfolioAssets] = useState(initialAssets);
   const [systemLogs, setSystemLogs] = useState([]);
 
-  useEffect(() => {
-    if (!isLive) return;
-    
-    // High-frequency price jitter
-    const priceInterval = setInterval(() => {
+  // Synchronize portfolio with real-time market data
+  const syncRealTimeData = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/stocks');
+      const result = await response.json();
+      if (result.status === 'success') {
+        const liveMap = result.data.reduce((acc, s) => ({ ...acc, [s.symbol]: s }), {});
+        
+        setPortfolioAssets(current => current.map(asset => {
+          const live = liveMap[asset.symbol];
+          if (live) {
+            const shift = live.price - asset.currentPrice;
+            return {
+              ...asset,
+              currentPrice: live.price,
+              tickDir: shift > 0 ? 'up' : shift < 0 ? 'down' : asset.tickDir,
+              history: [...asset.history.slice(1), { price: live.price }]
+            };
+          }
+          return asset;
+        }));
+
+        const d = new Date();
+        const newLog = {
+          id: Math.random().toString(36).substring(2, 10).toUpperCase(),
+          time: d.toLocaleTimeString(undefined, { hour12: false }),
+          action: 'SYNC_DAEMON',
+          asset: 'MARKET_DATA',
+          status: 'OK'
+        };
+        setSystemLogs(prev => [newLog, ...prev].slice(0, 8));
+      }
+    } catch (err) {
+      // Fallback to synthetic jitter if API is down
       setPortfolioAssets(current => 
         current.map(asset => {
           const shift = (Math.random() - 0.48) * (asset.currentPrice * (asset.beta * 0.0008));
@@ -50,24 +79,15 @@ const usePortfolioEngine = (isLive) => {
           };
         })
       );
-    }, 1500);
+    }
+  };
 
-    // System logs generator
-    const logInterval = setInterval(() => {
-      if (Math.random() > 0.6) {
-         const asset = initialAssets[Math.floor(Math.random() * initialAssets.length)].symbol;
-         const isWarn = Math.random() > 0.9;
-         setSystemLogs(prev => [{
-           id: crypto.randomUUID(),
-           time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'}),
-           action: isWarn ? 'Margin Check' : 'Price Sync',
-           asset,
-           status: isWarn ? 'WARN' : 'OK'
-         }, ...prev].slice(0, 8));
-      }
-    }, 2000);
-
-    return () => { clearInterval(priceInterval); clearInterval(logInterval); };
+  useEffect(() => {
+    syncRealTimeData();
+    if (isLive) {
+      const interval = setInterval(syncRealTimeData, 10000);
+      return () => clearInterval(interval);
+    }
   }, [isLive]);
 
   return { portfolioAssets, systemLogs };
@@ -241,7 +261,14 @@ const OrderRoutingPanel = memo(() => {
        <div className="routing-form-premium">
          <div className="side-selector">
            {['BUY','SELL'].map(side => (
-             <button key={side} className={`side-btn ${orderSide === side ? (side === 'BUY' ? 'active-buy' : 'active-sell') : ''}`} onClick={() => setOrderSide(side)}>{side}</button>
+             <button 
+               key={side} 
+               className={`side-btn ${orderSide === side ? (side === 'BUY' ? 'active-buy' : 'active-sell') : ''}`} 
+               onClick={() => setOrderSide(side)}
+               aria-pressed={orderSide === side}
+             >
+               {side}
+             </button>
            ))}
          </div>
          <div className="form-group">
