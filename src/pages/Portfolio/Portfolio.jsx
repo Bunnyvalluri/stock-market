@@ -50,91 +50,55 @@ const Portfolio = () => {
   const [isLive, setIsLive] = useState(true);
   const [systemLogs, setSystemLogs] = useState([]);
   const [activeTab, setActiveTab] = useState('OVERVIEW');
+  const [loading, setLoading] = useState(true);
 
-  const handleExportCSV = () => {
+  // Synchronize portfolio with real-time market data
+  const syncRealTimeData = async () => {
     try {
-        const headers = ['Symbol', 'Name', 'Sector', 'Shares', 'Avg Price', 'Current Price', 'Total Value', 'Beta', 'Unrealized PNL'];
-        const rows = portfolioAssets.map(asset => {
-            const pnlVal = asset.value - (asset.shares * asset.avgPrice);
-            return [
-                asset.symbol,
-                `"${asset.name}"`,
-                asset.sector,
-                asset.shares,
-                asset.avgPrice.toFixed(2),
-                asset.currentPrice.toFixed(2),
-                asset.value.toFixed(2),
-                asset.beta,
-                pnlVal.toFixed(2)
-            ].join(',');
-        });
+      const response = await fetch('http://localhost:5000/api/stocks');
+      const result = await response.json();
+      if (result.status === 'success') {
+        const liveMap = result.data.reduce((acc, s) => ({ ...acc, [s.symbol]: s }), {});
+        
+        setPortfolioAssets(current => current.map(asset => {
+          const live = liveMap[asset.symbol];
+          if (live) {
+            const shift = live.price - asset.currentPrice;
+            return {
+              ...asset,
+              currentPrice: live.price,
+              value: live.price * asset.shares,
+              tickDir: shift > 0 ? 'up' : shift < 0 ? 'down' : asset.tickDir,
+              history: [...asset.history.slice(1), { val: live.price }]
+            };
+          }
+          return asset;
+        }));
 
-        const csvContent = [headers.join(','), ...rows].join('\n');
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        
-        link.setAttribute('href', url);
-        link.setAttribute('download', `StockMind_Portfolio_${new Date().toISOString().split('T')[0]}.csv`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        toast.success('CSV Export generated and downloaded.', { icon: '📄' });
-    } catch(err) {
-        toast.error('Failed to generate export file.');
+        // Add to system log
+        const d = new Date();
+        const newLog = {
+          id: Math.random().toString(36).substring(2, 10).toUpperCase(),
+          time: d.toLocaleTimeString(undefined, { hour12: false }),
+          module: 'SYNC_DAEMON',
+          asset: 'MARKET_DATA',
+          status: 'OK'
+        };
+        setSystemLogs(prev => [newLog, ...prev].slice(0, 10));
+      }
+    } catch (err) {
+      console.error('Portfolio sync failed:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // High Frequency Data Streams
   useEffect(() => {
-    if (!isLive) return;
-    
-    // 1. Jitter Portfolio Prices
-    const priceInterval = setInterval(() => {
-      setPortfolioAssets(currentAssets => 
-        currentAssets.map(asset => {
-          const volatility = asset.beta * 0.0008; // Higher beta = more jitter
-          const shift = (Math.random() - 0.48) * (asset.currentPrice * volatility);
-          const newPrice = asset.currentPrice + shift;
-          const newHistory = [...asset.history.slice(1), { val: newPrice }];
-          return {
-            ...asset,
-            lastPrice: asset.currentPrice,
-            currentPrice: newPrice,
-            value: newPrice * asset.shares,
-            history: newHistory,
-            tickDir: shift > 0 ? 'up' : 'down'
-          };
-        })
-      );
-    }, 800);
-
-    // 2. Generate Real-time Sync Logs
-    const logInterval = setInterval(() => {
-      if (Math.random() > 0.6) {
-         const asset = initialAssets[Math.random() * initialAssets.length | 0].symbol;
-         const d = new Date();
-         const ms = d.getMilliseconds().toString().padStart(3, '0');
-         const type = Math.random() > 0.5 ? 'SYNC_PRICE' : 'MARGIN_CHK';
-         const status = Math.random() > 0.95 ? 'WARN' : 'OK';
-         
-         const newLog = {
-           id: Math.random().toString(36).substring(2, 10).toUpperCase(),
-           time: `${d.toLocaleTimeString(undefined, {hour12: false})}.${ms}`,
-           module: type,
-           asset: asset,
-           status: status
-         };
-         setSystemLogs(prev => [newLog, ...prev].slice(0, 12));
-      }
-    }, 450);
-
-    return () => {
-      clearInterval(priceInterval);
-      clearInterval(logInterval);
-    };
+    syncRealTimeData();
+    if (isLive) {
+      const interval = setInterval(syncRealTimeData, 10000);
+      return () => clearInterval(interval);
+    }
   }, [isLive]);
 
   const totalValue = portfolioAssets.reduce((sum, asset) => sum + asset.value, 0);

@@ -1,29 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
-import { LayoutDashboard, Activity, Database, Settings as SettingsIcon, Bell, Search, Menu, X, TrendingUp, Zap, LogOut, Clock, ChevronRight } from 'lucide-react';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth } from './firebase';
-import { Toaster } from 'react-hot-toast';
-import toast from 'react-hot-toast';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate, useNavigate } from 'react-router-dom';
+import { 
+  LayoutDashboard, BarChart3, TrendingUp, Briefcase, 
+  Bell, Settings as SettingsIcon, LogOut, Menu, X, Search,
+  Activity, Shield, Globe, Cpu, ChevronRight, Clock, Zap, Database
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import toast, { Toaster } from 'react-hot-toast';
 
-import Landing from './pages/Landing/Landing';
-import Login from './pages/Login/Login';
 import Home from './pages/Home/Home';
+import Markets from './pages/Markets/Markets';
 import Predictions from './pages/Predictions/Predictions';
 import Portfolio from './pages/Portfolio/Portfolio';
-import Markets from './pages/Markets/Markets';
 import Alerts from './pages/Alerts/Alerts';
 import Settings from './pages/Settings/Settings';
-import ThemeToggle from './components/ThemeToggle';
+import Login from './pages/Login/Login';
+import Landing from './pages/Landing/Landing';
 import StockDetail from './pages/StockDetail/StockDetail';
+import ThemeToggle from './components/ThemeToggle';
 
-// ──────────────────────────────────────────────
-// Protected Route Guard
-// ──────────────────────────────────────────────
-// ──────────────────────────────────────────────
-// Protected Route Guard
-// ──────────────────────────────────────────────
+import { auth } from './firebase';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+
+import './App.css';
+
 // ──────────────────────────────────────────────
 // Protected Route Guard
 // ──────────────────────────────────────────────
@@ -69,13 +69,13 @@ const Sidebar = ({ isOpen, toggleSidebar, user }) => {
   const displayName = user?.displayName || user?.email?.split('@')[0] || 'Investor';
 
   return (
-    <aside className={`sidebar glass-card ${isOpen ? 'open' : ''}`}>
+    <aside className={`sidebar glass ${isOpen ? 'open' : ''}`} style={{ width: isOpen ? '280px' : '80px' }}>
       <div className="sidebar-header">
         <div className="logo-container">
           <div className="logo-icon">
             <TrendingUp size={20} color="#fff" />
           </div>
-          <h2 className="logo-text">StockMind <span className="text-gradient">AI</span></h2>
+          {isOpen && <h2 className="logo-text">StockMind <span className="text-gradient">AI</span></h2>}
         </div>
         <button className="mobile-close" onClick={toggleSidebar}><X size={22} /></button>
       </div>
@@ -89,8 +89,11 @@ const Sidebar = ({ isOpen, toggleSidebar, user }) => {
                 className={`nav-link ${location.pathname.startsWith(item.path) ? 'active' : ''}`}
                 onClick={() => { if (window.innerWidth <= 768) toggleSidebar(); }}
               >
-                <div className="nav-icon">{item.icon}</div>
-                <span>{item.name}</span>
+                <div className="nav-icon">
+                  {item.icon}
+                  {location.pathname.startsWith(item.path) && <motion.div layoutId="active-pill" className="active-glow" />}
+                </div>
+                {isOpen && <span>{item.name}</span>}
               </Link>
             </li>
           ))}
@@ -99,19 +102,23 @@ const Sidebar = ({ isOpen, toggleSidebar, user }) => {
 
       <div className="sidebar-footer">
         {user && (
-          <div className="user-profile">
+          <div className="user-profile glass">
             {user.photoURL ? (
               <img src={user.photoURL} alt="avatar" className="avatar-img" />
             ) : (
               <div className="avatar">{initials}</div>
             )}
-            <div className="user-info">
-              <p className="user-name">{displayName}</p>
-              <p className="user-tier text-gradient">Institutional Access</p>
-            </div>
-            <button className="logout-btn" onClick={handleLogout} title="Sign out">
-              <LogOut size={16} />
-            </button>
+            {isOpen && (
+              <div className="user-info">
+                <p className="user-name">{displayName}</p>
+                <p className="user-tier text-gradient">Institutional Access</p>
+              </div>
+            )}
+            {isOpen && (
+              <button className="logout-btn" onClick={handleLogout} title="Sign out">
+                <LogOut size={16} />
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -173,9 +180,11 @@ const Navbar = ({ toggleSidebar }) => {
         </div>
       </div>
       <div className="nav-right">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: 'var(--bg-card)', borderRadius: 'var(--radius-full)', border: '1px solid var(--border-light)' }}>
-          <Clock size={13} style={{ color: 'var(--accent-brand)' }} />
-          <LiveClock />
+        <div className="system-telemetry glass">
+          <div className="telemetry-item">
+            <Clock size={13} style={{ color: 'var(--accent-brand)' }} />
+            <LiveClock />
+          </div>
         </div>
         <ThemeToggle />
         <button
@@ -186,9 +195,9 @@ const Navbar = ({ toggleSidebar }) => {
           <Bell size={20} />
           <span className="badge indicator-pulse"></span>
         </button>
-        <div className="live-status-badge">
+        <div className="live-status-badge glass">
           <span className="live-dot"></span>
-          Markets Live
+          <span>Markets Live</span>
         </div>
       </div>
     </header>
@@ -199,7 +208,7 @@ const Navbar = ({ toggleSidebar }) => {
 // Dashboard Layout
 // ──────────────────────────────────────────────
 const DashboardLayout = ({ children }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [user, setUser] = useState(null);
   const toggleSidebar = () => setSidebarOpen(s => !s);
 
@@ -212,7 +221,7 @@ const DashboardLayout = ({ children }) => {
     <div className="app-container bg-grid-pattern">
       <div className={`mobile-overlay ${sidebarOpen ? 'active' : ''}`} onClick={toggleSidebar}></div>
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} user={user} />
-      <main className="main-content">
+      <main className="main-content" style={{ marginLeft: sidebarOpen ? '280px' : '80px' }}>
         <Navbar toggleSidebar={toggleSidebar} />
         <div className="page-wrapper animate-fade-in">{children}</div>
       </main>
@@ -227,7 +236,6 @@ const DashboardLayout = ({ children }) => {
 function App() {
   return (
     <Router>
-      <ThemeToggle />
       <Toaster 
         position="bottom-right"
         toastOptions={{
@@ -240,12 +248,6 @@ function App() {
             fontFamily: 'Inter, monospace',
             fontSize: '0.8rem',
             fontWeight: '600'
-          },
-          success: {
-            iconTheme: {
-              primary: 'var(--accent-brand)',
-              secondary: '#fff',
-            },
           },
         }}
       />

@@ -139,118 +139,66 @@ const Home = () => {
     return () => clearInterval(pingInterval);
   }, []);
 
-  // ⚡ Phase 2: Live WebSocket Subscription Engine
+  // Fetch real aggregated metrics from the hardened backend
   useEffect(() => {
-    // 1. Subscribe to all core tickers
-    initialMarketOverview.forEach(m => socket.emit('subscribe:stock', m.symbol));
-
-    // 2. Listen for real-time price ticks from Backend Poller
-    socket.on('price:update', (data) => {
-      setMarketOverview(prev => prev.map(stock => {
-         if (stock.symbol === data.symbol) {
-             const flash = data.price > stock.price ? 'up' : 'down';
-             return { ...stock, ...data, flash };
-         }
-         return stock;
-      }));
-    });
-
-    // Clean up on unmount
-    return () => {
-      initialMarketOverview.forEach(m => socket.emit('unsubscribe:stock', m.symbol));
-      socket.off('price:update');
-    };
-  }, []);
-
-  // High Frequency Simulation Logic (Non-Price Elements)
-  useEffect(() => {
-    const streamInterval = setInterval(() => {
-      // 1. Stream Order Book (L2 Simulation)
-      setOrderBook(prev => ({
-        asks: prev.asks.map(a => ({ ...a, size: Math.abs(a.size + (Math.random() - 0.5) * 1.5) })),
-        bids: prev.bids.map(b => ({ ...b, size: Math.abs(b.size + (Math.random() - 0.5) * 1.5) }))
-      }));
-
-      // 2. Jitter System Health
-      setSystemHealth(prev => (99.95 + Math.random() * 0.04).toFixed(2));
-    }, 1000);
-
-    return () => clearInterval(streamInterval);
-  }, []);
-
-
-  const handleAnalyzeArticle = async (id, title) => {
-    setAnalyzingId(id);
-    
-    const mockUrls = {
-      1: "https://finance.yahoo.com/news/stock-market-news-today-latest-updates.html",
-      2: "https://www.cnbc.com/technology/",
-      3: "https://www.wsj.com/finance/commodities-news"
-    };
-
-    try {
-      const response = await fetch('http://localhost:8000/sentiment/scrape', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: mockUrls[id] || "https://finance.yahoo.com" })
-      });
-      
-      const data = await response.json();
-      
-      if (data.status === "success") {
-        setAnalysisResults(prev => ({
-          ...prev,
-          [id]: {
-            sentiment: data.sentiment,
-            confidence: (data.confidence * 100).toFixed(1),
-            takeaway: data.takeaway
-          }
-        }));
-      } else {
-        throw new Error(data.error || "Extraction failed");
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/stocks');
+        const result = await response.json();
+        if (result.status === 'success') {
+          // Compute some aggregate stats from the real data
+          const totalVol = result.data.reduce((s, a) => s + a.volume, 0);
+          const avgPrice = result.data.reduce((s, a) => s + a.price, 0) / result.data.length;
+          
+          setMarketOverview(result.data.map(m => ({
+            ...m,
+            name: m.symbol,
+            isUp: m.change >= 0,
+            vol: (m.volume / 1000000).toFixed(1) + 'M'
+          })));
+        }
+      } catch (err) {
+        console.error('Stats fetch failed:', err);
       }
-    } catch (error) {
-      console.warn("FastAPI backend error, falling back to UI simulation:", error);
-      // Fallback for demo purposes if backend is offline
-      await new Promise(r => setTimeout(r, 1500));
-      setAnalysisResults(prev => ({
-          ...prev,
-          [id]: {
-              sentiment: Math.random() > 0.4 ? 'BULLISH' : 'BEARISH',
-              confidence: (88 + Math.random() * 11).toFixed(1),
-              takeaway: `[MOCK] Algorithmic analysis of ${title.substring(0, 15)}... indicates significant institutional accumulation patterns.`
-          }
-      }));
-    } finally {
-      setAnalyzingId(null);
-    }
-  };
+    };
+    
+    fetchStats();
+    const interval = setInterval(fetchStats, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="terminal-container animate-fade-in">
+    <div className="terminal-container animate-fade-in bg-grid-pattern">
       {/* Personalized Welcome Header */}
       {(() => {
         const h = new Date().getHours();
         const greeting = h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : 'Good Evening';
         const marketOpen = h >= 9 && h < 16;
         return (
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <div>
-              <h1 style={{ fontSize: '1.6rem', fontWeight: 800, letterSpacing: '-0.5px', margin: 0 }}>
-                {greeting}, Investor 👋
-              </h1>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '4px' }}>
-                {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} &nbsp;·&nbsp;
-                <span className={marketOpen ? 'text-up' : 'text-orange'}>
-                  {marketOpen ? '🟢 NYSE/NASDAQ Open' : '🟡 Markets Closed — Pre/Post Hours'}
+          <div className="dashboard-welcome-header">
+            <div className="welcome-text">
+              <motion.h1 
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="text-gradient"
+              >
+                {greeting}, System Admin
+              </motion.h1>
+              <div className="market-status-pills">
+                <span className="pill glass">
+                  <Clock size={12} />
+                  {new Date().toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })}
                 </span>
-              </p>
-            </div>
-            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>Portfolio Today</div>
-                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--status-up)', fontFamily: 'monospace' }}>+$4,120.45</div>
+                <span className={`pill glass ${marketOpen ? 'text-up' : 'text-orange'}`}>
+                  <div className={`status-dot ${marketOpen ? 'active-pulse' : ''}`} />
+                  {marketOpen ? 'NYSE/NASDAQ OPEN' : 'AFTER-HOURS TRADING'}
+                </span>
               </div>
+            </div>
+            
+            <div className="portfolio-glance glass">
+               <span className="glance-label">DAILY P&L</span>
+               <div className="glance-value text-up">+$4,120.45 <ArrowUpRight size={14} /></div>
             </div>
           </div>
         );

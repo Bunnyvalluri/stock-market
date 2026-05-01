@@ -90,26 +90,53 @@ const MarketChip = ({ data, isLive }) => {
 };
 
 const Markets = () => {
-  const [marketsData, setMarketsData] = useState(() => 
-    MOCK_TICKERS.map(t => ({
-      ...t,
-      price: t.basePrice,
-      change: (Math.random() - 0.3) * 2,
-      history: generateHistory(t.basePrice),
-      pulseDir: null
-    }))
-  );
-  
+  const [marketsData, setMarketsData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isLive, setIsLive] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All Assets');
   const [hftLogs, setHftLogs] = useState([]);
 
-  // Generate ultra-fast HFT order blocks
+  // Fetch real data from the hardened backend
+  const fetchRealMarkets = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/stocks', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}` // If needed, though public stocks might be open
+        }
+      });
+      const result = await response.json();
+      if (result.status === 'success') {
+        const enriched = result.data.map(stock => ({
+          ...stock,
+          name: stock.symbol, // Backend might not provide full name
+          sector: 'Institutional',
+          history: generateHistory(stock.price),
+          pulseDir: null
+        }));
+        setMarketsData(enriched);
+      }
+    } catch (err) {
+      console.error('Failed to fetch real market data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRealMarkets();
+    if (isLive) {
+      const interval = setInterval(fetchRealMarkets, 10000); // 10s Poll for real data
+      return () => clearInterval(interval);
+    }
+  }, [isLive]);
+
+  // High Frequency Log Simulation (Retained for aesthetic density)
   useEffect(() => {
     if (!isLive) return;
     const logInterval = setInterval(() => {
-       const asset = MOCK_TICKERS[Math.floor(Math.random() * MOCK_TICKERS.length)].symbol;
+       const symbols = marketsData.length > 0 ? marketsData.map(m => m.symbol) : ['AAPL', 'NVDA', 'TSLA'];
+       const asset = symbols[Math.floor(Math.random() * symbols.length)];
        const isBuy = Math.random() > 0.5;
        const price = (Math.random() * 500 + 50).toFixed(2);
        const d = new Date();
@@ -123,44 +150,23 @@ const Markets = () => {
          shares: (Math.random() * 25000 + 100).toFixed(0),
          price: price
        };
-       setHftLogs(prev => [newLog, ...prev].slice(0, 16)); // Maintain latest 16 fills
-    }, 280); // Ultra-fast raw data stream rate
+       setHftLogs(prev => [newLog, ...prev].slice(0, 16));
+    }, 450);
 
     return () => clearInterval(logInterval);
-  }, [isLive]);
-
-  useEffect(() => {
-    if (!isLive) return;
-    const interval = setInterval(() => {
-      setMarketsData(prev => prev.map(stock => {
-        if (Math.random() > 0.6) {
-          const shift = (Math.random() - 0.48) * (stock.basePrice * 0.002);
-          const newPrice = stock.price + shift;
-          return {
-            ...stock,
-            price: newPrice,
-            change: stock.change + (shift/stock.basePrice)*100,
-            history: [...stock.history.slice(1), {time: Date.now(), price: newPrice}],
-            pulseDir: shift > 0 ? 'up' : 'down'
-          };
-        }
-        return { ...stock, pulseDir: null };
-      }));
-    }, 1500);
-    return () => clearInterval(interval);
-  }, [isLive]);
+  }, [isLive, marketsData]);
 
   const filteredData = marketsData.filter(m => {
-    const matchesSearch = m.symbol.toLowerCase().includes(searchQuery.toLowerCase()) || m.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory =
-        activeCategory === 'All Assets' ||
-        (activeCategory === 'Technology' && ['Technology', 'Semiconductor'].includes(m.sector)) ||
-        (activeCategory === 'Indices' && m.sector === 'Index ETF') ||
-        (activeCategory === 'Crypto' && m.sector === 'Forex/Crypto') ||
-        (activeCategory === 'Financials' && m.sector === 'Financials') ||
-        (activeCategory === 'Commodities' && m.sector === 'Commodities');
-    return matchesSearch && matchesCategory;
+    const matchesSearch = m.symbol.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesSearch;
   });
+
+  if (loading) return (
+    <div className="auth-loading">
+      <div className="auth-loading-spinner"></div>
+      <span>Deep-Indexing Global Market Data...</span>
+    </div>
+  );
 
   return (
     <div className="markets-pro-container animate-fade-in">
