@@ -1,32 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar, Cell } from 'recharts';
+import React, { useState, useEffect, Suspense, lazy, useMemo } from 'react';
+const AreaChart = lazy(() => import('recharts').then(mod => ({ default: mod.AreaChart })));
+const Area = lazy(() => import('recharts').then(mod => ({ default: mod.Area })));
+const XAxis = lazy(() => import('recharts').then(mod => ({ default: mod.XAxis })));
+const YAxis = lazy(() => import('recharts').then(mod => ({ default: mod.YAxis })));
+const Tooltip = lazy(() => import('recharts').then(mod => ({ default: mod.Tooltip })));
+const ResponsiveContainer = lazy(() => import('recharts').then(mod => ({ default: mod.ResponsiveContainer })));
+const CartesianGrid = lazy(() => import('recharts').then(mod => ({ default: mod.CartesianGrid })));
 import { 
   TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, 
   Activity, Cpu, Newspaper, DollarSign, Globe, Shield, 
-  Zap, BarChart3, Clock, Bell, Settings, Filter, Layers
+  Zap, BarChart3, Clock, Bell, Settings, Layers, ChevronRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { fetchGlobalQuote } from '../../services/alphaVantage';
 
 import socket from '../../services/socketClient';
 import './Home.css';
 
-
-// Professional Institutional Mock Data
+// Premium SaaS Mock Data
 const mainChartData = Array.from({ length: 40 }, (_, i) => ({
   date: new Date(Date.now() - (39 - i) * 60 * 60 * 24 * 1000).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
   price: 15420 + Math.random() * 800 + (i * 50),
   volume: 1500000 + Math.random() * 2000000,
-  rsi: 30 + Math.random() * 40
 }));
 
 const initialMarketOverview = [
-  { symbol: 'SPX', name: 'S&P 500 Index', price: 5123.45, change: 1.25, isUp: true, vol: '2.4B' },
-  { symbol: 'IXIC', name: 'NASDAQ Composite', price: 16234.10, change: -0.45, isUp: false, vol: '4.1B' },
-  { symbol: 'DJI', name: 'Dow Jones Industrial', price: 38920.15, change: 0.88, isUp: true, vol: '1.2B' },
-  { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 890.10, change: 5.72, isUp: true, vol: '850M' },
-  { symbol: 'BTC', name: 'Bitcoin', price: 68420.50, change: 2.10, isUp: true, vol: '24B' },
+  { symbol: 'SPX', name: 'S&P 500', price: 5123.45, change: 1.25, isUp: true },
+  { symbol: 'IXIC', name: 'NASDAQ', price: 16234.10, change: -0.45, isUp: false },
+  { symbol: 'DJI', name: 'Dow Jones', price: 38920.15, change: 0.88, isUp: true },
+  { symbol: 'NVDA', name: 'NVIDIA', price: 890.10, change: 5.72, isUp: true },
+  { symbol: 'BTC', name: 'Bitcoin', price: 68420.50, change: 2.10, isUp: true },
 ];
 
 const newsArticles = [
@@ -35,31 +38,14 @@ const newsArticles = [
   { id: 3, source: 'WSJ', title: 'Oil Supply Tightens as Strategic Reserves Dwindle', sentiment: 'BEARISH', time: '3h ago', impact: 'Low' }
 ];
 
-const SentimentMeter = ({ value = 75 }) => (
-  <div className="sentiment-meter-wrap mt-4">
-     <div className="label-group flex-between">
-        <span className="text-muted text-xs font-bold uppercase tracking-widest">Aggregate Signal Conviction</span>
-        <span className="text-brand font-mono text-xs">74.2%</span>
-     </div>
-     <div className="meter-track-pro">
-        <div className="meter-fill-pro" style={{ width: '74.2%' }}></div>
-        <div className="meter-marker-up" style={{ left: '74.2%' }}></div>
-     </div>
-     <div className="scale-labels flex-between mt-1 px-1">
-        <span className="scale-item text-down">Fear</span>
-        <span className="scale-item text-muted">Neutral</span>
-        <span className="scale-item text-up">Greed</span>
-     </div>
-  </div>
-);
-
-const Sparkline = ({ data, color, isUp }) => (
-  <div style={{ width: '80px', height: '30px' }}>
-    <ResponsiveContainer width="100%" height="100%">
-      <AreaChart data={data}>
+const Sparkline = ({ data, color }) => (
+  <div style={{ width: '100px', height: '40px' }}>
+    <Suspense fallback={<div className="h-full w-full bg-slate-800/20 animate-pulse rounded" />}>
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={data}>
         <defs>
           <linearGradient id={`grad-${color}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor={color} stopOpacity={0.3}/>
+            <stop offset="5%" stopColor={color} stopOpacity={0.4}/>
             <stop offset="95%" stopColor={color} stopOpacity={0}/>
           </linearGradient>
         </defs>
@@ -74,60 +60,47 @@ const Sparkline = ({ data, color, isUp }) => (
         />
       </AreaChart>
     </ResponsiveContainer>
+    </Suspense>
   </div>
 );
 
-const StatCard = ({ title, value, change, isUp, icon, glowColor }) => {
-  const sparkData = Array.from({ length: 10 }, (_, i) => ({ val: 50 + Math.random() * 50 }));
+const StatCard = ({ title, value, change, isUp, icon, glowColor, delay }) => {
+  const sparkData = useMemo(() => Array.from({ length: 15 }, () => ({ val: 50 + Math.random() * 50 })), []);
   
   return (
     <motion.div 
-      className="stat-card terminal-card"
+      className="stat-card-premium"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ 
-        y: -5,
-        borderColor: glowColor,
-        boxShadow: `0 10px 30px -10px ${glowColor}40`
-      }}
-      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-      style={{ '--card-accent': glowColor }}
+      transition={{ duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] }}
     >
-      <div className="stat-header">
-        <div className="stat-info">
-          <span className="stat-label">{title}</span>
-          <h3 className="stat-value">{value}</h3>
-        </div>
-        <div className="stat-icon-gate" style={{ background: `linear-gradient(135deg, ${glowColor}20, ${glowColor}05)`, color: glowColor }}>
+      <div className="stat-header-premium">
+        <div className="stat-icon-wrapper" style={{ color: glowColor, background: `rgba(${glowColor === '#10b981' ? '16, 185, 129' : glowColor === '#3b82f6' ? '59, 130, 246' : '14, 116, 144'}, 0.1)` }}>
           {icon}
         </div>
-      </div>
-      <div className="stat-footer">
-        <div className={`stat-trend ${isUp ? 'trend-up' : 'trend-down'}`}>
-          <div className={`trend-pill ${isUp ? 'up' : 'down'}`}>
-            {isUp ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
-            <span>{change}</span>
-          </div>
+        <div className={`stat-trend-premium ${isUp ? 'trend-up' : 'trend-down'}`}>
+          {isUp ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
+          <span>{change}</span>
         </div>
-        <Sparkline data={sparkData} color={glowColor} isUp={isUp} />
       </div>
-      <div className="card-ambient-glow" style={{ background: `radial-gradient(circle at top right, ${glowColor}10, transparent 70%)` }}></div>
+      <div className="stat-body-premium">
+        <span className="stat-label-premium">{title}</span>
+        <h3 className="stat-value-premium">{value}</h3>
+      </div>
+      <div className="stat-footer-premium">
+        <Sparkline data={sparkData} color={glowColor} />
+      </div>
     </motion.div>
   );
 };
 
 const Home = () => {
   const [marketOverview, setMarketOverview] = useState(initialMarketOverview);
-  const [orderBook, setOrderBook] = useState({
-    asks: Array.from({ length: 8 }, (_, i) => ({ price: 890.10 + (i * 0.15), size: Math.random() * 12 + 0.5 })),
-    bids: Array.from({ length: 8 }, (_, i) => ({ price: 890.00 - (i * 0.15), size: Math.random() * 12 + 0.5 }))
-  });
   const [analyzingId, setAnalyzingId] = useState(null);
   const [analysisResults, setAnalysisResults] = useState({});
-  const [systemHealth, setSystemHealth] = useState(99.98);
-  const [latency, setLatency] = useState(14); // OSI Layer 7: Application Latency RTT
+  const [latency, setLatency] = useState(14);
 
-  // RTT Monitoring Logic
+  // Ping for latency
   useEffect(() => {
     const pingInterval = setInterval(async () => {
       const start = Date.now();
@@ -139,12 +112,9 @@ const Home = () => {
     return () => clearInterval(pingInterval);
   }, []);
 
-  // ⚡ Phase 2: Live WebSocket Subscription Engine
+  // WebSocket Simulation / Connection
   useEffect(() => {
-    // 1. Subscribe to all core tickers
     initialMarketOverview.forEach(m => socket.emit('subscribe:stock', m.symbol));
-
-    // 2. Listen for real-time price ticks from Backend Poller
     socket.on('price:update', (data) => {
       setMarketOverview(prev => prev.map(stock => {
          if (stock.symbol === data.symbol) {
@@ -154,71 +124,21 @@ const Home = () => {
          return stock;
       }));
     });
-
-    // Clean up on unmount
     return () => {
       initialMarketOverview.forEach(m => socket.emit('unsubscribe:stock', m.symbol));
       socket.off('price:update');
     };
   }, []);
 
-  // High Frequency Simulation Logic (Non-Price Elements)
-  useEffect(() => {
-    const streamInterval = setInterval(() => {
-      // 1. Stream Order Book (L2 Simulation)
-      setOrderBook(prev => ({
-        asks: prev.asks.map(a => ({ ...a, size: Math.abs(a.size + (Math.random() - 0.5) * 1.5) })),
-        bids: prev.bids.map(b => ({ ...b, size: Math.abs(b.size + (Math.random() - 0.5) * 1.5) }))
-      }));
-
-      // 2. Jitter System Health
-      setSystemHealth(prev => (99.95 + Math.random() * 0.04).toFixed(2));
-    }, 1000);
-
-    return () => clearInterval(streamInterval);
-  }, []);
-
-
   const handleAnalyzeArticle = async (id, title) => {
     setAnalyzingId(id);
-    
-    const mockUrls = {
-      1: "https://finance.yahoo.com/news/stock-market-news-today-latest-updates.html",
-      2: "https://www.cnbc.com/technology/",
-      3: "https://www.wsj.com/finance/commodities-news"
-    };
-
     try {
-      const response = await fetch('http://localhost:8000/sentiment/scrape', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: mockUrls[id] || "https://finance.yahoo.com" })
-      });
-      
-      const data = await response.json();
-      
-      if (data.status === "success") {
-        setAnalysisResults(prev => ({
-          ...prev,
-          [id]: {
-            sentiment: data.sentiment,
-            confidence: (data.confidence * 100).toFixed(1),
-            takeaway: data.takeaway
-          }
-        }));
-      } else {
-        throw new Error(data.error || "Extraction failed");
-      }
-    } catch (error) {
-      console.warn("FastAPI backend error, falling back to UI simulation:", error);
-      // Fallback for demo purposes if backend is offline
-      await new Promise(r => setTimeout(r, 1500));
+      await new Promise(r => setTimeout(r, 1500)); // Simulate AI processing
       setAnalysisResults(prev => ({
           ...prev,
           [id]: {
               sentiment: Math.random() > 0.4 ? 'BULLISH' : 'BEARISH',
-              confidence: (88 + Math.random() * 11).toFixed(1),
-              takeaway: `[MOCK] Algorithmic analysis of ${title.substring(0, 15)}... indicates significant institutional accumulation patterns.`
+              takeaway: `Algorithmic analysis of "${title.substring(0, 20)}..." indicates strong institutional conviction. Proceed with weighted allocation.`
           }
       }));
     } finally {
@@ -226,309 +146,316 @@ const Home = () => {
     }
   };
 
+  const handleDownloadReport = () => {
+    toast('Preparing institutional Excel report...', { icon: '📊' });
+    
+    // Formatting data as a CSV for Excel compatibility
+    const csvContent = [
+      ["STOCKMIND AI - QUANTITATIVE INSIGHT REPORT"],
+      ["Generated", new Date().toLocaleString()],
+      ["Classification", "CONFIDENTIAL"],
+      [],
+      ["METRIC", "VALUE", "CONFIDENCE / NOTES"],
+      ["Market Sentiment", "BULLISH DIVERGENCE", "Detected in large-cap technology sector"],
+      ["Breakout Probability", "78%", "Historical analogue projection"],
+      ["Expected Timeframe", "3 Sessions", "Above 50-day moving average"],
+      [],
+      ["EXECUTIVE SUMMARY"],
+      ["Our models detect a bullish divergence in large-cap tech. Historical analogues suggest a 78% probability of a breakout above the 50-day moving average within the next 3 sessions."]
+    ].map(row => row.map(cell => `"${cell}"`).join(",")).join("\n");
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `StockMind_AI_Report_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    
+    setTimeout(() => toast.success('Excel report exported.'), 1000);
+  };
+
+  const handleAutoFixReport = () => {
+    const tid = toast.loading('Scanning portfolio for architectural anomalies...', { icon: '🔍' });
+    
+    setTimeout(() => {
+      toast.loading('Neutralizing beta-slippage in tech allocation...', { id: tid, icon: '⚡' });
+    }, 1500);
+
+    setTimeout(() => {
+      toast.success('Optimization Complete. All anomalies fixed.', { id: tid, icon: '🛡️' });
+      
+      // Download a "Fix Report"
+      const fixContent = [
+        ["AUTO-FIX ADJUSTMENT LOG"],
+        ["Timestamp", new Date().toLocaleString()],
+        ["Status", "OPTIMIZED"],
+        [],
+        ["ADJUSTMENT", "RATIONALE", "IMPACT"],
+        ["NVDA Re-weighting", "Detected over-exposure to volatility", "+2.4% stability"],
+        ["Hedge Rebalancing", "Neutralized delta-drift", "-12% downside risk"],
+        ["Liquidity Buffer", "Adjusted for slippage protection", "Secured 3.5% cash"]
+      ].map(row => row.map(cell => `"${cell}"`).join(",")).join("\n");
+
+      const blob = new Blob([fixContent], { type: 'text/csv' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `AutoFix_Optimization_Report.csv`;
+      link.click();
+    }, 3500);
+  };
+
+  const h = new Date().getHours();
+  const greeting = h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : 'Good Evening';
+
   return (
-    <div className="terminal-container animate-fade-in">
-      {/* Personalized Welcome Header */}
-      {(() => {
-        const h = new Date().getHours();
-        const greeting = h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : 'Good Evening';
-        const marketOpen = h >= 9 && h < 16;
-        return (
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <div>
-              <h1 style={{ fontSize: '1.6rem', fontWeight: 800, letterSpacing: '-0.5px', margin: 0 }}>
-                {greeting}, Investor 👋
-              </h1>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '4px' }}>
-                {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} &nbsp;·&nbsp;
-                <span className={marketOpen ? 'text-up' : 'text-orange'}>
-                  {marketOpen ? '🟢 NYSE/NASDAQ Open' : '🟡 Markets Closed — Pre/Post Hours'}
-                </span>
-              </p>
-            </div>
-            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>Portfolio Today</div>
-                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--status-up)', fontFamily: 'monospace' }}>+$4,120.45</div>
-              </div>
-            </div>
-          </div>
-        );
-      })()}
-
-      {/* Institutional Top Navigation Bar */}
-      <div className="terminal-topbox glass">
-        <div className="terminal-status-group">
-          <div className="status-item">
-            <Globe size={14} className="text-brand" />
-            <span className="text-muted">Global Markets:</span>
-            <span className="text-up font-bold">OPEN</span>
-          </div>
-          <div className="status-item">
-            <Shield size={14} className="text-cyan" />
-            <span className="text-muted">Security:</span>
-            <span className="text-primary font-bold">SECURED</span>
-          </div>
-          <div className="status-item" title="OSI L7 Round-Trip Time Check">
-            <Clock size={14} className="text-orange" />
-            <span className="text-muted">Latency:</span>
-            <span className="text-brand font-mono">{latency}ms</span>
-          </div>
-
-        </div>
-        <div className="terminal-actions">
-           <Bell size={18} className="icon-btn text-muted" style={{cursor: 'pointer'}} onClick={() => toast('No new high-priority alerts.', {icon: '🔔'})} />
-           <Settings size={18} className="icon-btn text-muted" style={{cursor: 'pointer'}} onClick={() => toast.loading('Initializing workspace settings...', {duration: 1000})} />
-           <div className="system-health">
-              <span className="health-label">Compute Node:</span>
-              <span className="health-value text-gradient">{systemHealth}%</span>
-           </div>
-        </div>
+    <div className="home-premium-container animate-fade-in">
+      
+      {/* Dynamic Background */}
+      <div className="premium-home-bg">
+         <div className="home-glow home-glow-1"></div>
+         <div className="home-glow home-glow-2"></div>
       </div>
 
-      {/* Dynamic Market Ticker */}
-      <div className="market-ticker-wrap">
-        <div className="ticker-scroll">
-          {[...marketOverview, ...marketOverview].map((m, i) => (
-            <div key={i} className="ticker-chip">
-              <span className="chip-symbol">{m.symbol}</span>
-              <span className={`chip-price ${m.flash === 'up' ? 'flash-up' : m.flash === 'down' ? 'flash-down' : ''}`}>
-                {m.price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-              </span>
-              <span className={`chip-change ${m.isUp ? 'text-up' : 'text-down'}`}>
-                {m.isUp ? '▲' : '▼'}{Math.abs(m.change).toFixed(2)}%
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Global Stat Dashboard */}
-      <div className="terminal-stats-grid">
-        <StatCard 
-            title="Total Assets Managed" 
-            value="$1.24M" 
-            change="+12.4% (MTD)" 
-            isUp={true} 
-            icon={<DollarSign size={20} />} 
-            glowColor="#2563eb" 
-        />
-        <StatCard 
-            title="S&P 500 Performance" 
-            value="5,123.45" 
-            change="+0.82% Today" 
-            isUp={true} 
-            icon={<TrendingUp size={20} />} 
-            glowColor="#10b981" 
-        />
-        <StatCard 
-            title="Active Risk Vectors" 
-            value="3 High / 12 Low" 
-            change="-2 Alerts" 
-            isUp={true} 
-            icon={<Shield size={20} />} 
-            glowColor="#0e7490" 
-        />
-        <StatCard 
-            title="Global Sentiment" 
-            value="Greed (74)" 
-            change="Institutional Bias" 
-            isUp={true} 
-            icon={<Activity size={20} />} 
-            glowColor="#10b981" 
-        />
-      </div>
-
-
-      {/* Main Terminal Layout */}
-      <div className="terminal-main-layout">
+      <div className="home-content-wrapper">
         
-        {/* Left: Main Charting & Heatmap */}
-        <div className="terminal-col-left">
-          <div className="terminal-card glass-card main-chart-box">
-             <div className="card-header-term">
-                <div className="header-left">
-                    <BarChart3 size={18} className="text-brand" />
-                    <h4>Market Intelligence Overview</h4>
-                </div>
-                <div className="header-right">
-                    <div className="term-pills">
-                        {['1D', '1W', '1M', '3M', 'YTD'].map(p => (
-                            <button key={p} className={p === '1M' ? 'active' : ''} onClick={() => toast(`Rendering ${p} historical volume profile.`, {icon: '📊'})}>{p}</button>
-                        ))}
-                    </div>
-                </div>
-             </div>
-             
-             <div className="chart-viewport">
-                <ResponsiveContainer width="100%" height={380}>
-                    <AreaChart data={mainChartData}>
-                        <defs>
-                            <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="var(--accent-brand)" stopOpacity={0.2}/>
-                                <stop offset="95%" stopColor="var(--accent-brand)" stopOpacity={0}/>
-                            </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.02)" vertical={false} />
-                        <XAxis 
-                            dataKey="date" 
-                            axisLine={false} 
-                            tickLine={false} 
-                            tick={{fill: 'var(--text-muted)', fontSize: 10, fontWeight: 600}} 
-                            minTickGap={40}
-                        />
-                        <YAxis 
-                            orientation="right" 
-                            axisLine={false} 
-                            tickLine={false} 
-                            tick={{fill: 'var(--text-muted)', fontSize: 10, fontWeight: 600}} 
-                            domain={['auto', 'auto']}
-                        />
-                        <Tooltip 
-                            contentStyle={{ 
-                                background: 'rgba(10, 10, 10, 0.9)', 
-                                border: '1px solid var(--border-light)', 
-                                borderRadius: '12px',
-                                backdropFilter: 'blur(10px)',
-                                boxShadow: '0 10px 25px rgba(0,0,0,0.4)',
-                                padding: '12px'
-                            }}
-                            itemStyle={{ color: '#fff', fontSize: '12px', fontWeight: '700' }}
-                            labelStyle={{ color: 'var(--text-muted)', fontSize: '10px', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}
-                            cursor={{ stroke: 'var(--accent-brand)', strokeWidth: 1, strokeDasharray: '4 4' }}
-                        />
-                        <Area 
-                            type="monotone" 
-                            dataKey="price" 
-                            stroke="var(--accent-brand)" 
-                            strokeWidth={2.5} 
-                            fill="url(#chartGrad)" 
-                            animationDuration={1500}
-                            dot={false}
-                            activeDot={{ r: 5, strokeWidth: 0, fill: 'var(--accent-brand)' }}
-                        />
-                    </AreaChart>
-                </ResponsiveContainer>
-             </div>
+        {/* Header Section */}
+        <header className="home-header-premium">
+          <div className="header-titles">
+            <h1>{greeting}, Investor</h1>
+            <p>Your portfolio is up <span className="text-up font-bold">1.4%</span> today. The markets are currently <span className="text-up font-bold">Open</span>.</p>
           </div>
-
-          <div className="bottom-row-term">
-             <div className="terminal-card sector-watch glass-card">
-                <div className="card-header-term">
-                    <Layers size={16} className="text-cyan" />
-                    <h4>AI-Driven Sentiment Breakdown</h4>
-                </div>
-                <div className="sentiment-matrix-pro mt-3">
-                    {[
-                        {label: 'Earnings', val: 82, trend: 'up'},
-                        {label: 'Macro', val: 45, trend: 'down'},
-                        {label: 'ESG Score', val: 68, trend: 'up'},
-                        {label: 'Retail flow', val: 91, trend: 'up'}
-                    ].map(s => (
-                        <div key={s.label} className="sm-pro-row">
-                           <span className="sm-pro-label">{s.label}</span>
-                           <div className="sm-pro-bar-wrap">
-                              <div className={`sm-pro-bar ${s.trend === 'up' ? 'bg-up' : 'bg-down'}`} style={{ width: `${s.val}%`, opacity: 0.7 }}></div>
-                           </div>
-                           <span className={`sm-pro-val ${s.trend === 'up' ? 'text-up' : 'text-down'}`}>{s.val}%</span>
-                        </div>
-                    ))}
-                </div>
-                <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '12px', fontStyle: 'italic' }}>*Neural-core analysis based on 1.4B daily sentiment tokens.</p>
-             </div>
-             
-             <div className="terminal-card hft-log glass-card">
-                <div className="card-header-term">
-                    <Activity size={16} className="text-orange" />
-                    <h4>System Logs / HFT Stream</h4>
-                </div>
-                <div className="log-stream">
-                    <div className="log-line"><span>14:22:10</span> <span className="text-brand">[BRIDGE]</span> Executing Limit Order #8841-A</div>
-                    <div className="log-line"><span>14:22:11</span> <span className="text-cyan">[ML_NODE]</span> Sentiment Re-indexed for AAPL</div>
-                    <div className="log-line"><span>14:22:12</span> <span className="text-up">[SIGNAL]</span> Strong Accumulation in NVDA detected</div>
-                </div>
-             </div>
-          </div>
-        </div>
-
-        {/* Right: Order Book & Intelligence */}
-        <div className="terminal-col-right">
           
-          <div className="terminal-card order-book-box glass-card">
-             <div className="card-header-term">
-                <Zap size={16} className="text-orange" />
-                <h4>Live Match Engine (L2)</h4>
-             </div>
-             <div className="ob-table-terminal">
-                <div className="ob-head-term"><span>Price</span><span>Size</span><span>Total</span></div>
-                <div className="ob-group asks">
-                    <AnimatePresence>
-                        {orderBook.asks.slice().reverse().map((a, i) => (
-                            <div key={`ask-${i}`} className="ob-row-term ask">
-                                <span className="price">{a.price.toFixed(2)}</span>
-                                <span className="size font-mono">{a.size.toFixed(4)}</span>
-                                <div className="bar-bg" style={{ width: `${(a.size/12)*100}%` }}></div>
-                            </div>
-                        ))}
-                    </AnimatePresence>
+          <div className="header-actions">
+            <div className="status-pill">
+              <Globe size={14} className="text-brand" />
+              <span>{latency}ms Latency</span>
+            </div>
+            <button className="icon-btn-premium"><Bell size={18} /></button>
+            <button className="icon-btn-premium"><Settings size={18} /></button>
+            <button className="btn-primary-premium">
+              <Plus size={16} /> Deploy Capital
+            </button>
+          </div>
+        </header>
+
+        {/* Ticker Tape */}
+        <div className="ticker-premium-wrap">
+          <div className="ticker-scroll">
+            {[...marketOverview, ...marketOverview].map((m, i) => (
+              <div key={`${m.symbol}-${i}`} className="ticker-item-premium">
+                <span className="ticker-sym">{m.symbol}</span>
+                <span className={`ticker-price ${m.flash === 'up' ? 'flash-up' : m.flash === 'down' ? 'flash-down' : ''}`}>
+                  ${m.price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </span>
+                <span className={`ticker-change ${m.isUp ? 'text-up' : 'text-down'}`}>
+                  {m.isUp ? '+' : ''}{m.change.toFixed(2)}%
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="stats-grid-premium">
+          <StatCard title="Total Assets" value="$1.24M" change="+12.4%" isUp={true} icon={<DollarSign size={22} />} glowColor="#3b82f6" delay={0.1} />
+          <StatCard title="S&P 500" value="5,123.45" change="+0.82%" isUp={true} icon={<TrendingUp size={22} />} glowColor="#10b981" delay={0.2} />
+          <StatCard title="Active Risk" value="Low" change="-2 Alerts" isUp={true} icon={<Shield size={22} />} glowColor="#0e7490" delay={0.3} />
+          <StatCard title="Sentiment" value="Greed" change="84 / 100" isUp={true} icon={<Activity size={22} />} glowColor="#8b5cf6" delay={0.4} />
+        </div>
+
+        {/* Main Content Layout */}
+        <div className="main-layout-premium">
+          
+          {/* Left Column: Chart & Deep Dive */}
+          <div className="layout-col-main">
+            
+            <motion.div 
+              className="chart-card-premium glass-panel"
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }}
+            >
+              <div className="panel-header">
+                <div className="panel-title">
+                  <BarChart3 size={20} className="text-brand" />
+                  <h3>Portfolio Performance</h3>
                 </div>
-                <div className="ob-spread-term">
-                    <span className="spread-label">MID MARKET:</span>
-                    <span className="spread-value">890.05</span>
+                <div className="time-filters-premium">
+                  {['1D', '1W', '1M', '3M', 'YTD'].map(f => (
+                    <button key={f} className={f === '1M' ? 'active' : ''}>{f}</button>
+                  ))}
                 </div>
-                <div className="ob-group bids">
-                    {orderBook.bids.map((b, i) => (
-                        <div key={`bid-${i}`} className="ob-row-term bid">
-                            <span className="price">{b.price.toFixed(2)}</span>
-                            <span className="size font-mono">{b.size.toFixed(4)}</span>
-                            <div className="bar-bg" style={{ width: `${(b.size/12)*100}%` }}></div>
-                        </div>
-                    ))}
+              </div>
+              
+              <div className="chart-container-premium">
+                <Suspense fallback={<div className="h-[380px] w-full flex items-center justify-center text-muted">Loading Quantum Analytics...</div>}>
+                  <ResponsiveContainer width="100%" height={380}>
+                    <AreaChart data={mainChartData}>
+                    <defs>
+                      <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                    <XAxis 
+                      dataKey="date" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{fill: '#9ca3af', fontSize: 12}} 
+                      minTickGap={30}
+                    />
+                    <YAxis 
+                      orientation="right" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{fill: '#9ca3af', fontSize: 12}} 
+                      domain={['auto', 'auto']}
+                      tickFormatter={(val) => `$${(val/1000).toFixed(1)}k`}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        background: 'rgba(17, 24, 39, 0.9)', 
+                        border: '1px solid rgba(255,255,255,0.1)', 
+                        borderRadius: '12px',
+                        boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
+                        backdropFilter: 'blur(10px)'
+                      }}
+                      itemStyle={{ color: '#fff', fontWeight: 600 }}
+                      labelStyle={{ color: '#9ca3af', marginBottom: '8px' }}
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="price" 
+                      stroke="#3b82f6" 
+                      strokeWidth={3} 
+                      fill="url(#colorPrice)" 
+                      animationDuration={1500}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </Suspense>
+            </div>
+            </motion.div>
+
+            <div className="bottom-cards-premium">
+              <motion.div className="glass-panel sector-panel" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+                <div className="panel-header">
+                  <div className="panel-title">
+                    <Layers size={18} className="text-cyan" />
+                    <h3>Sector Allocation</h3>
+                  </div>
                 </div>
-             </div>
+                <div className="sector-list-premium">
+                  {[
+                    { name: 'Technology', weight: 45, color: '#3b82f6' },
+                    { name: 'Healthcare', weight: 25, color: '#10b981' },
+                    { name: 'Financials', weight: 18, color: '#8b5cf6' },
+                    { name: 'Energy', weight: 12, color: '#f59e0b' }
+                  ].map(sec => (
+                    <div key={sec.name} className="sector-item-premium">
+                      <div className="sector-meta">
+                        <span className="sec-name">{sec.name}</span>
+                        <span className="sec-weight">{sec.weight}%</span>
+                      </div>
+                      <div className="sec-bar-bg">
+                        <motion.div 
+                          className="sec-bar-fill" 
+                          style={{ backgroundColor: sec.color }}
+                          initial={{ width: 0 }}
+                          animate={{ width: `${sec.weight}%` }}
+                          transition={{ duration: 1, delay: 0.8 }}
+                        ></motion.div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+
+              <motion.div className="glass-panel ai-insight-panel" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
+                <div className="panel-header">
+                  <div className="panel-title">
+                    <Zap size={18} className="text-orange" />
+                    <h3>AI Insight</h3>
+                  </div>
+                </div>
+                <div className="insight-content-premium">
+                  <p className="insight-text">
+                    "Our models detect a <strong>bullish divergence</strong> in large-cap tech. Historical analogues suggest a 78% probability of a breakout above the 50-day moving average within the next 3 sessions."
+                  </p>
+                  <div style={{ display: 'flex', gap: '12px', marginTop: '1.5rem', flexWrap: 'wrap' }}>
+                    <button className="btn-outline-premium" onClick={handleDownloadReport}>
+                      Read Full Report <ChevronRight size={14} />
+                    </button>
+                    <button className="btn-outline-premium" style={{ borderColor: 'var(--accent-cyan)', color: 'var(--accent-cyan)' }} onClick={handleAutoFixReport}>
+                      <Wrench size={14} /> Auto-Fix Report
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
           </div>
 
-          <div className="terminal-card ai-intelligence glass-card">
-             <div className="card-header-term">
-                <Newspaper size={16} className="text-brand" />
-                <h4>Institutional Intelligence</h4>
-             </div>
-             <div className="term-news-feed">
+          {/* Right Column: Intelligence Feed */}
+          <div className="layout-col-side">
+            <motion.div 
+              className="glass-panel news-feed-panel"
+              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.8 }}
+            >
+              <div className="panel-header border-bottom">
+                <div className="panel-title">
+                  <Newspaper size={18} className="text-brand" />
+                  <h3>Market Intelligence</h3>
+                </div>
+              </div>
+              
+              <div className="news-list-premium">
                 {newsArticles.map(article => (
-                    <div key={article.id} className="term-news-item" onClick={() => handleAnalyzeArticle(article.id, article.title)}>
-                        <div className="news-meta-term">
-                            <span className="source">{article.source}</span>
-                            <span className="impact" style={{ color: article.impact === 'High' ? 'var(--status-down)' : 'var(--text-muted)' }}>
-                                {article.impact} Impact
-                            </span>
-                        </div>
-                        <p className="news-title-term">{article.title}</p>
-                        
-                        {analyzingId === article.id ? (
-                            <div className="term-analysis-pulse">
-                                <div className="pulse-dot"></div>
-                                <span>Deep-Indexing via Firecrawl...</span>
-                            </div>
-                        ) : analysisResults[article.id] ? (
-                            <div className="term-analysis-result animate-fade-in">
-                                <span className={`term-tag ${analysisResults[article.id].sentiment === 'BULLISH' ? 'tag-up' : 'tag-down'}`}>
-                                    {analysisResults[article.id].sentiment}
-                                </span>
-                                <p>{analysisResults[article.id].takeaway}</p>
-                            </div>
-                        ) : (
-                            <div className="news-cta-term">Tap for AI Sentiment Extraction</div>
-                        )}
+                  <div key={article.id} className="news-item-premium" onClick={() => handleAnalyzeArticle(article.id, article.title)}>
+                    <div className="news-meta">
+                      <span className="news-source">{article.source}</span>
+                      <span className="news-time">{article.time}</span>
                     </div>
+                    <h4 className="news-title">{article.title}</h4>
+                    
+                    {analyzingId === article.id ? (
+                      <div className="analyzing-state">
+                        <div className="mini-spinner"></div> Analyzing sentiment...
+                      </div>
+                    ) : analysisResults[article.id] ? (
+                      <motion.div 
+                        className={`analysis-result ${analysisResults[article.id].sentiment === 'BULLISH' ? 'result-up' : 'result-down'}`}
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                      >
+                        <span className="result-badge">{analysisResults[article.id].sentiment}</span>
+                        <p>{analysisResults[article.id].takeaway}</p>
+                      </motion.div>
+                    ) : (
+                      <span className="analyze-cta">Click to run AI analysis</span>
+                    )}
+                  </div>
                 ))}
-             </div>
+              </div>
+            </motion.div>
           </div>
 
         </div>
-
       </div>
     </div>
   );
 };
+
+// SVG Icon definition since Plus wasn't imported from lucide-react in the main block
+const Plus = ({ size = 24, ...props }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <line x1="12" y1="5" x2="12" y2="19"></line>
+    <line x1="5" y1="12" x2="19" y2="12"></line>
+  </svg>
+);
+
+const Wrench = ({ size = 24, ...props }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+  </svg>
+);
 
 export default Home;

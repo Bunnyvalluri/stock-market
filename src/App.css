@@ -248,16 +248,15 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(var(--bg-primary-rgb), 0.75);
+  background: var(--glass-bg);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   border-bottom: 1px solid var(--border-light);
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
 }
 
-/* Need to define RGB for blur to work cleanly, fallback to pure color with opacity */
 :root[data-theme='dark'] .navbar { background: rgba(5, 7, 15, 0.75); }
-:root[data-theme='light'] .navbar { background: rgba(255, 253, 246, 0.75); }
+:root[data-theme='light'] .navbar { background: rgba(248, 250, 252, 0.85); }
 
 .nav-left, .nav-right {
   display: flex;
@@ -480,8 +479,44 @@
   }
 }
 
-/* Base utility for flexible containers */
-.flex-wrap {
+/* Floating Theme Toggle - Bottom Right */
+.theme-floating-toggle {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  color: var(--text-primary);
+  border: 1px solid var(--border-medium);
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 9999;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.theme-floating-toggle:hover {
+  transform: scale(1.1) translateY(-5px);
+  background: var(--bg-card-hover);
+  border-color: var(--accent-brand);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4), var(--glow-brand);
+}
+
+.theme-floating-toggle:active {
+  transform: scale(0.95);
+}
+
+@media (max-width: 768px) {
+  .theme-floating-toggle {
+    bottom: 20px;
+    right: 20px;
+    width: 48px;
+    height: 48px;
+  }
 }

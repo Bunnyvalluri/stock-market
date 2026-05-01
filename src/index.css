@@ -59,35 +59,39 @@
 }
 
 :root[data-theme='light'] {
-  /* Customer Requested Premium Light Theme (Clean Fintech) */
-  --bg-primary: #F8FAFC;       /* Soft Gray Background */
-  --bg-secondary: #F1F5F9;     
-  --bg-card: #FFFFFF;          /* Clean White Cards */
-  --bg-card-hover: #F8FAFC;    
+  /* Premium Institutional Light Theme */
+  --bg-primary: #F8FAFC;       /* Slate 50 */
+  --bg-primary-rgb: 248, 250, 252;
+  --bg-secondary: #F1F5F9;     /* Slate 100 */
+  --bg-secondary-rgb: 241, 245, 249;
+  --bg-card: rgba(255, 255, 255, 0.8);
+  --bg-card-rgb: 255, 255, 255;
+  --bg-card-hover: rgba(255, 255, 255, 0.95);
   
   --text-primary: #0F172A;     /* Slate 900 */
-  --text-secondary: #64748B;   /* Slate 500 */
+  --text-secondary: #475569;   /* Slate 600 */
   --text-muted: #94A3B8;       /* Slate 400 */
   
-  --accent-brand: #4F46E5;      /* Primary Indigo */
-  --accent-cyan: #0284C7;       /* Darker Cyan for Light Mode */
-  --accent-magenta: #C026D3;    /* Darker Magenta for Light Mode */
-  --accent-lime: #16A34A;       /* Success Green */
-  --accent-orange: #D97706;     /* Darker Orange for Light Mode */
-  --accent-purple: #7C3AED;     /* Deep Purple */
+  --accent-brand: #3B82F6;      /* Bright Blue */
+  --accent-cyan: #0EA5E9;       /* Sky Blue */
+  --accent-magenta: #DB2777;    
+  --accent-lime: #10B981;       
+  --accent-orange: #F59E0B;     
+  --accent-purple: #8B5CF6;     
   
-  --status-up: #16A34A;         
-  --status-up-bg: #DCFCE7;
+  --status-up: #059669;         
+  --status-up-bg: rgba(5, 150, 105, 0.1);
   --status-down: #DC2626;       
-  --status-down-bg: #FEE2E2;
-  --status-neutral: #94A3B8;    
+  --status-down-bg: rgba(220, 38, 38, 0.1);
+  --status-neutral: #64748B;    
   
-  --border-light: #E2E8F0;
-  --border-medium: #CBD5E1;
-  --border-vibrant: rgba(79, 70, 229, 0.2); 
+  --border-light: rgba(0, 0, 0, 0.05);
+  --border-medium: rgba(0, 0, 0, 0.1);
+  --border-vibrant: rgba(59, 130, 246, 0.2); 
   
-  --glass-bg: var(--bg-card);
-  --terminal-bg: #FFFFFF;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glow-brand: 0 0 30px rgba(59, 130, 246, 0.1);
+  --shadow-premium: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
 }
 
 /* Base Shadow and Hover behaviors for cards, irrespective of theme logic class chaining */

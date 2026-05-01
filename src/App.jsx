@@ -21,12 +21,6 @@ import StockDetail from './pages/StockDetail/StockDetail';
 // ──────────────────────────────────────────────
 // Protected Route Guard
 // ──────────────────────────────────────────────
-// ──────────────────────────────────────────────
-// Protected Route Guard
-// ──────────────────────────────────────────────
-// ──────────────────────────────────────────────
-// Protected Route Guard
-// ──────────────────────────────────────────────
 const ProtectedRoute = ({ children }) => {
   const [user, setUser] = useState(undefined); // undefined = still loading
 
@@ -177,7 +171,7 @@ const Navbar = ({ toggleSidebar }) => {
           <Clock size={13} style={{ color: 'var(--accent-brand)' }} />
           <LiveClock />
         </div>
-        <ThemeToggle />
+
         <button
           className="icon-btn"
           onClick={() => toast('3 new market alerts triggered. Check Alerts page.', { icon: '🔔' })}
@@ -210,7 +204,14 @@ const DashboardLayout = ({ children }) => {
 
   return (
     <div className="app-container bg-grid-pattern">
-      <div className={`mobile-overlay ${sidebarOpen ? 'active' : ''}`} onClick={toggleSidebar}></div>
+      <div 
+        className={`mobile-overlay ${sidebarOpen ? 'active' : ''}`} 
+        onClick={toggleSidebar}
+        onKeyDown={(e) => e.key === 'Enter' && toggleSidebar()}
+        role="button"
+        tabIndex={0}
+        aria-label="Close sidebar"
+      ></div>
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} user={user} />
       <main className="main-content">
         <Navbar toggleSidebar={toggleSidebar} />

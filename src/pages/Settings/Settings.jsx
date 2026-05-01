@@ -1,9 +1,63 @@
-import React, { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, Key, Database, ShieldCheck, Mail, Smartphone, Globe, Save, Terminal } from 'lucide-react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
+import { 
+  Settings as SettingsIcon, Key, Database, ShieldCheck, 
+  Globe, Save, Terminal, Cpu, Layout, Bell, 
+  ChevronRight, Smartphone, Mail, Lock
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import './Settings.css';
 
+// ==========================================
+// CONSTANTS
+// ==========================================
+const SETTINGS_TABS = [
+  { id: 'api', label: 'API Integrations', icon: <Key size={18} /> },
+  { id: 'models', label: 'AI Prediction', icon: <Database size={18} /> },
+  { id: 'security', label: 'Security', icon: <ShieldCheck size={18} /> },
+  { id: 'appearance', label: 'Appearance', icon: <Globe size={18} /> },
+];
+
+// ==========================================
+// MEMOIZED SUB-COMPONENTS
+// ==========================================
+
+const SidebarItem = memo(({ item, isActive, onClick }) => (
+  <button 
+    className={`settings-nav-item ${isActive ? 'active' : ''}`}
+    onClick={() => onClick(item.id)}
+  >
+    <div className="nav-icon">{item.icon}</div>
+    <span>{item.label}</span>
+    {isActive && <motion.div layoutId="activeNav" className="active-nav-indicator" />}
+  </button>
+));
+SidebarItem.displayName = 'SidebarItem';
+
+const BrokerCard = memo(({ name, status, logo, color, isActive, onAction }) => (
+  <div className={`broker-card glass-panel ${isActive ? 'active' : ''}`}>
+    <div className="broker-info">
+       <div className="broker-logo" style={{ background: color }}>{logo}</div>
+       <div className="broker-meta">
+          <h4>{name}</h4>
+          <span className={isActive ? 'status-connected' : 'status-disconnected'}>
+             {status}
+          </span>
+       </div>
+    </div>
+    <button 
+      className={isActive ? 'btn-outline-danger' : 'btn-outline-premium'}
+      onClick={onAction}
+    >
+      {isActive ? 'Disconnect' : 'Connect Broker'}
+    </button>
+  </div>
+));
+BrokerCard.displayName = 'BrokerCard';
+
+// ==========================================
+// MAIN COMPONENT
+// ==========================================
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('api');
   const [saveStatus, setSaveStatus] = useState('');
@@ -11,319 +65,268 @@ const Settings = () => {
   const [openaiKey, setOpenaiKey] = useState('');
 
   useEffect(() => {
-    const savedAlpha = localStorage.getItem('alphaVantageKey');
-    if (savedAlpha) setAlphaKey(savedAlpha);
-    const savedAI = localStorage.getItem('openaiKey');
-    if (savedAI) setOpenaiKey(savedAI);
+    setAlphaKey(localStorage.getItem('alphaVantageKey') || '');
+    setOpenaiKey(localStorage.getItem('openaiKey') || '');
   }, []);
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
       localStorage.setItem('alphaVantageKey', alphaKey);
       localStorage.setItem('openaiKey', openaiKey);
-      setSaveStatus('SAVING SETTINGS...');
-      toast.success('Configuration synced globally.', { icon: '🔐' });
-      setTimeout(() => setSaveStatus('SETTINGS SAVED'), 1000);
+      setSaveStatus('SYNCING...');
+      toast.success('Configuration updated globally', { icon: '🔐' });
+      setTimeout(() => setSaveStatus('SAVED'), 1000);
       setTimeout(() => setSaveStatus(''), 4000);
-  };
+  }, [alphaKey, openaiKey]);
 
   const renderContent = () => {
     switch(activeTab) {
       case 'api':
         return (
-          <div className="settings-section-pro animate-fade-in">
-            <div className="section-head-term">
-                <Key size={18} className="text-brand" />
-                <h2>API Connections</h2>
+          <motion.div className="settings-section" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+            <div className="section-header">
+                <h3>Global Data Keys</h3>
+                <p>Configure external data providers and AI endpoints.</p>
             </div>
-            <p className="subtitle-term text-muted">Manage your external data and AI capabilities.</p>
-            
-            <div className="form-grid-pro">
-              <div className="input-block-pro">
-                <label>ALPHA VANTAGE KEY</label>
-                <input 
-                  type="password" 
-                  placeholder="ALPHAV-XXXX-XXXX" 
-                  value={alphaKey}
-                  onChange={(e) => setAlphaKey(e.target.value)}
-                  className="input-pro" 
-                />
-                <span className="info-txt text-orange">Limits subject to AlphaVantage tier. Real-time websocket enabled on PRO.</span>
-              </div>
-              <div className="input-block-pro">
-                <label>OPENAI API KEY</label>
-                <input 
-                  type="password" 
-                  placeholder="sk-proj-xxxxxxxxxxxx" 
-                  value={openaiKey}
-                  onChange={(e) => setOpenaiKey(e.target.value)}
-                  className="input-pro" 
-                />
-                <span className="info-txt">Required for Firecrawl AI content extraction.</span>
-              </div>
-            </div>
-            
-            <div className="broker-integration-pro mt-8">
-               <label className="section-label">Broker Connections</label>
-               <div className="broker-list-pro">
-                  <div className="broker-item-pro">
-                     <div className="b-id">
-                        <div className="b-logo" style={{background: '#facc15', color: '#000'}}>A</div>
-                        <div className="b-meta">
-                           <h4>Alpaca Trading</h4>
-                           <span className="text-muted">Status: DISCONNECTED</span>
-                        </div>
-                     </div>
-                     <button className="btn-pro-outline" onClick={() => toast.loading('Connecting to Alpaca...', { duration: 2000 })}>CONNECT BROKER</button>
+            <div className="settings-grid">
+               <div className="form-group-premium">
+                  <label htmlFor="alpha-key">Alpha Vantage API Key</label>
+                  <div className="input-wrapper">
+                    <input id="alpha-key" type="password" value={alphaKey} onChange={e => setAlphaKey(e.target.value)} placeholder="••••••••••••" />
+                    <Key size={16} className="input-icon" />
                   </div>
-                  <div className="broker-item-pro active">
-                     <div className="b-id">
-                        <div className="b-logo" style={{background: '#ef4444', color: '#fff'}}>I</div>
-                        <div className="b-meta">
-                           <h4>Interactive Brokers</h4>
-                           <span className="text-up font-mono">Status: CONNECTED</span>
-                        </div>
-                     </div>
-                     <button className="btn-pro-danger" onClick={() => toast.error('Broker interface disconnected.')}>DISCONNECT</button>
+                  <span className="help-text">Used for real-time market telemetry and historical data.</span>
+               </div>
+               <div className="form-group-premium">
+                  <label htmlFor="openai-key">OpenAI Model Endpoint</label>
+                  <div className="input-wrapper">
+                    <input id="openai-key" type="password" value={openaiKey} onChange={e => setOpenaiKey(e.target.value)} placeholder="••••••••••••" />
+                    <Database size={16} className="input-icon" />
                   </div>
-                  <div className="broker-item-pro">
-                     <div className="b-id">
-                        <div className="b-logo" style={{background: '#0f172a', color: '#fff'}}>C</div>
-                        <div className="b-meta">
-                           <h4>Coinbase Advanced</h4>
-                           <span className="text-muted">Status: DISCONNECTED</span>
-                        </div>
-                     </div>
-                     <button className="btn-pro-outline" onClick={() => toast.loading('Connecting to Coinbase...', { duration: 2000 })}>CONNECT BROKER</button>
-                  </div>
+                  <span className="help-text">Required for Firecrawl AI context extraction.</span>
                </div>
             </div>
-          </div>
+            <div className="divider" />
+            <div className="section-header mt-8">
+               <h3>Prime Brokerage Connections</h3>
+               <p>Link your institutional accounts for autonomous trade execution.</p>
+            </div>
+            <div className="broker-grid">
+               <BrokerCard 
+                 name="Alpaca Markets" 
+                 status="Disconnected" 
+                 logo="A" 
+                 color="#facc15" 
+                 onAction={useCallback(() => toast('Initializing Alpaca handshake...'), [])} 
+               />
+               <BrokerCard 
+                 name="Interactive Brokers" 
+                 status="Connected" 
+                 logo="I" 
+                 color="#ef4444" 
+                 isActive={true} 
+                 onAction={useCallback(() => toast.error('Connection severed'), [])} 
+               />
+               <BrokerCard 
+                 name="Coinbase Advanced" 
+                 status="Disconnected" 
+                 logo="C" 
+                 color="#3b82f6" 
+                 onAction={useCallback(() => toast('Connecting to Coinbase API...'), [])} 
+               />
+            </div>
+          </motion.div>
         );
       case 'models':
          return (
-             <div className="settings-section-pro animate-fade-in">
-                <div className="section-head-term">
-                    <Database size={18} className="text-cyan" />
-                    <h2>AI Prediction Settings</h2>
-                </div>
-                <p className="subtitle-term text-muted">Adjust settings for AI-driven market predictions.</p>
-                
-                <div className="form-group-pro">
-                   <label>Prediction Timeframe</label>
-                   <select className="select-pro w-full" onChange={e => toast(`Timeframe: ${e.target.value}`, { icon: '🧠' })}>
-                      <option>7 Days (High Accuracy)</option>
-                      <option>14 Days (Medium Accuracy)</option>
-                      <option>30 Days (Lower Accuracy)</option>
-                   </select>
-                </div>
-                
-                <div className="form-group-pro mt-6">
-                   <label>Primary AI Model</label>
-                   <select className="select-pro w-full" onChange={e => toast(`Model switched: ${e.target.value}`, { icon: '🤖' })}>
-                      <option>LSTM-v2 (Recommended)</option>
-                      <option>Transformer (High Accuracy)</option>
-                      <option>XGBoost (Fast)</option>
-                      <option>Ensemble (All Models)</option>
-                   </select>
-                </div>
-
-                <div className="form-group-pro mt-6">
-                   <label>AI Learning Frequency</label>
-                   <div className="radio-group-pro">
-                      <label className="radio-pro">
-                          <input type="radio" name="cron" /> 
-                          <span>Hourly Update</span>
-                      </label>
-                      <label className="radio-pro">
-                          <input type="radio" name="cron" defaultChecked /> 
-                          <span>Daily Update (Recommended)</span>
-                      </label>
-                      <label className="radio-pro">
-                          <input type="radio" name="cron" /> 
-                          <span>Weekly Update</span>
-                      </label>
-                   </div>
-                </div>
-
-                <div className="form-group-pro mt-6">
-                   <label>Confidence Threshold</label>
-                   <select className="select-pro w-full" onChange={e => toast(`Threshold set: ${e.target.value}`, { icon: '🎯' })}>
-                      <option>70% — Aggressive</option>
-                      <option>80% — Balanced (Default)</option>
-                      <option>90% — Conservative</option>
-                      <option>95% — High-Confidence Only</option>
-                   </select>
-                </div>
-             </div>
+           <motion.div className="settings-section" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+              <div className="section-header">
+                  <h3>Model Hyperparameters</h3>
+                  <p>Fine-tune the intelligence engine's forecasting behavior.</p>
+              </div>
+              <div className="settings-grid">
+                 <div className="form-group-premium">
+                    <label>Default Prediction Horizon</label>
+                    <select className="select-premium" onChange={e => toast(`Horizon set: ${e.target.value}`)}>
+                       <option>7 Days (High Precision)</option>
+                       <option>14 Days (Balanced)</option>
+                       <option>30 Days (Macro Trend)</option>
+                    </select>
+                 </div>
+                 <div className="form-group-premium">
+                    <label>Neural Architecture</label>
+                    <select className="select-premium" onChange={e => toast(`Engine switched: ${e.target.value}`)}>
+                       <option>LSTM-v2 Core</option>
+                       <option>Transformer-XL</option>
+                       <option>Ensemble Meta-Model</option>
+                    </select>
+                 </div>
+                 <div className="form-group-premium">
+                    <label>Inference Confidence Threshold</label>
+                    <select className="select-premium" onChange={e => toast(`Threshold: ${e.target.value}`)}>
+                       <option>80% — Standard</option>
+                       <option>90% — Conservative</option>
+                       <option>95% — High-Conviction Only</option>
+                    </select>
+                 </div>
+              </div>
+           </motion.div>
          );
       case 'security':
          return (
-             <div className="settings-section-pro animate-fade-in">
-                 <div className="section-head-term">
-                    <ShieldCheck size={18} className="text-orange" />
-                    <h2>Security &amp; Risk Control</h2>
+           <motion.div className="settings-section" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+              <div className="section-header">
+                  <h3>Access & Protection</h3>
+                  <p>Secure your terminal and monitor institutional activity logs.</p>
+              </div>
+              <div className="security-cards">
+                 <div className="glass-panel security-card">
+                    <div className="card-top">
+                       <Smartphone size={24} className="text-brand" />
+                       <div className="card-info">
+                          <h4>Multi-Factor Auth</h4>
+                          <p>Current: Google Authenticator</p>
+                       </div>
+                    </div>
+                    <button className="btn-text-link">Update Method <ChevronRight size={14} /></button>
                  </div>
-                 <p className="subtitle-term text-muted">Manage automated protections for your portfolio.</p>
-
-                 <div className="form-grid-pro mt-4">
-                   <div className="input-block-pro">
-                     <label>2FA AUTHENTICATION</label>
-                     <select className="select-pro">
-                       <option>Google Authenticator</option>
-                       <option>SMS (Phone)</option>
-                       <option>Hardware Key (YubiKey)</option>
-                     </select>
-                     <span className="info-txt text-up">2FA is currently ENABLED on your account.</span>
-                   </div>
-                   <div className="input-block-pro">
-                     <label>SESSION TIMEOUT</label>
-                     <select className="select-pro">
-                       <option>15 minutes</option>
-                       <option>30 minutes (Default)</option>
-                       <option>1 hour</option>
-                       <option>Never (Not Recommended)</option>
-                     </select>
-                   </div>
+                 <div className="glass-panel security-card">
+                    <div className="card-top">
+                       <Lock size={24} className="text-cyan" />
+                       <div className="card-info">
+                          <h4>Session Security</h4>
+                          <p>Auto-lock after 30m of inactivity</p>
+                       </div>
+                    </div>
+                    <button className="btn-text-link">Manage Sessions <ChevronRight size={14} /></button>
                  </div>
-
-                 <div className="risk-zone-pro mt-8">
-                     <h3 className="text-down mb-2">⚠️ Automated Liquidation (Stop-Loss)</h3>
-                     <p className="text-muted text-sm mb-4">If a major market crash is detected, the system can automatically sell all positions to protect your capital.</p>
-                     <div className="kill-switch-wrap">
-                         <div>
-                           <div className="text-bold">Emergency Sell All Positions</div>
-                           <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>Irreversible during market hours. Requires 2FA confirmation.</div>
-                         </div>
-                         <button className="btn-pro-kill" onClick={() => toast.error('ACTION BLOCKED: Market hours protection active.', { icon: '🛑' })}>LIQUIDATE ALL</button>
+              </div>
+              <div className="emergency-zone glass-panel mt-8">
+                  <div className="emergency-header">
+                     <AlertTriangle className="text-down" size={24} />
+                     <div className="emergency-info">
+                        <h4 className="text-down">Portfolio Kill Switch</h4>
+                        <p>Triggering this will immediately liquidate all positions to cash on linked brokers. Irreversible during active trading hours.</p>
                      </div>
-                 </div>
-             </div>
+                  </div>
+                  <button className="btn-primary-danger" onClick={() => toast.error('Emergency trigger requires 2FA confirmation.')}>
+                     EXECUTE GLOBAL LIQUIDATION
+                  </button>
+              </div>
+           </motion.div>
          );
       case 'appearance':
          return (
-             <div className="settings-section-pro animate-fade-in">
-                 <div className="section-head-term">
-                    <Globe size={18} className="text-brand" />
-                    <h2>Appearance</h2>
+           <motion.div className="settings-section" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+              <div className="section-header">
+                  <h3>Interface Customization</h3>
+                  <p>Personalize your trading environment.</p>
+              </div>
+              <div className="theme-selector-grid">
+                 <div 
+                   className="theme-option active glass-panel" 
+                   role="button"
+                   tabIndex={0}
+                   onClick={() => toast.success('Obsidian Dark Active')}
+                   onKeyDown={(e) => e.key === 'Enter' && toast.success('Obsidian Dark Active')}
+                 >
+                    <div className="theme-preview dark" />
+                    <div className="theme-label">
+                       <span>Obsidian Dark</span>
+                       <CheckCircle size={14} className="text-brand" />
+                    </div>
                  </div>
-                 <p className="subtitle-term text-muted">Customize the look and feel of your terminal.</p>
-
-                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginTop: '1.5rem', maxWidth: '600px' }}>
-                   <div
-                     onClick={() => { document.documentElement.setAttribute('data-theme','dark'); localStorage.setItem('theme','dark'); toast.success('Dark mode activated.', { icon: '🌙' }); }}
-                     style={{ padding: '1.25rem', borderRadius: '12px', border: '2px solid var(--accent-brand)', background: '#02040A', cursor: 'pointer', transition: 'transform 0.2s' }}
-                     onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
-                     onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-                   >
-                     <div style={{ width: '100%', height: '70px', borderRadius: '8px', background: 'linear-gradient(135deg,#02040A,#090C15)', marginBottom: '0.75rem', border: '1px solid #1E293B', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                       <div style={{ width: '60%', height: '5px', borderRadius: '4px', background: 'linear-gradient(90deg,#3B82F6,#8B5CF6)' }}></div>
-                       <div style={{ width: '40%', height: '5px', borderRadius: '4px', background: '#1E293B' }}></div>
-                     </div>
-                     <div style={{ color: '#F8FAFC', fontWeight: 700, fontSize: '0.9rem' }}>🌙 Dark Mode</div>
-                     <div style={{ color: '#64748B', fontSize: '0.75rem', marginTop: '2px' }}>Infinite Slate — Currently Active</div>
-                   </div>
-                   <div
-                     onClick={() => { document.documentElement.setAttribute('data-theme','light'); localStorage.setItem('theme','light'); toast.success('Light mode activated.', { icon: '☀️' }); }}
-                     style={{ padding: '1.25rem', borderRadius: '12px', border: '1px solid rgba(99,102,241,0.25)', background: '#fafbff', cursor: 'pointer', transition: 'transform 0.2s' }}
-                     onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
-                     onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-                   >
-                     <div style={{ width: '100%', height: '70px', borderRadius: '8px', background: 'linear-gradient(135deg,#f0f4ff,#fdf4ff)', marginBottom: '0.75rem', border: '1px solid rgba(99,102,241,0.15)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                       <div style={{ width: '60%', height: '5px', borderRadius: '4px', background: 'linear-gradient(90deg,#4f46e5,#ec4899)' }}></div>
-                       <div style={{ width: '40%', height: '5px', borderRadius: '4px', background: 'rgba(99,102,241,0.2)' }}></div>
-                     </div>
-                     <div style={{ color: '#0f172a', fontWeight: 700, fontSize: '0.9rem' }}>☀️ Light Mode</div>
-                     <div style={{ color: '#64748B', fontSize: '0.75rem', marginTop: '2px' }}>Premium Indigo — Vibrant</div>
-                   </div>
+                 <div 
+                   className="theme-option glass-panel" 
+                   role="button"
+                   tabIndex={0}
+                   onClick={() => toast('Solaris Light (Disabled in Demo)')}
+                   onKeyDown={(e) => e.key === 'Enter' && toast('Solaris Light (Disabled in Demo)')}
+                 >
+                    <div className="theme-preview light" />
+                    <div className="theme-label">
+                       <span>Solaris Light</span>
+                    </div>
                  </div>
-
-                 <div className="form-group-pro mt-8" style={{ maxWidth: '400px' }}>
-                   <label>Chart Default Timeframe</label>
-                   <select className="select-pro w-full" onChange={e => toast(`Default chart: ${e.target.value}`, { icon: '📊' })}>
-                     <option>1 Day</option>
-                     <option>1 Week</option>
-                     <option>1 Month (Default)</option>
-                     <option>3 Months</option>
-                     <option>YTD</option>
-                   </select>
+              </div>
+              <div className="settings-grid mt-8">
+                 <div className="form-group-premium">
+                    <label>Data Stream Refresh Rate</label>
+                    <select className="select-premium" defaultValue="1s">
+                       <option value="500ms">Real-time (500ms)</option>
+                       <option value="1s">Standard (1s)</option>
+                       <option value="5s">Stable (5s)</option>
+                    </select>
                  </div>
-                 <div className="form-group-pro mt-4" style={{ maxWidth: '400px' }}>
-                   <label>Price Display Format</label>
-                   <select className="select-pro w-full" onChange={e => toast(`Format: ${e.target.value}`, { icon: '💲' })}>
-                     <option>USD — $1,234.56 (Default)</option>
-                     <option>Compact — $1.23K</option>
-                     <option>Full Precision — 1234.5600</option>
-                   </select>
+                 <div className="form-group-premium">
+                    <label>Typography Scale</label>
+                    <select className="select-premium" defaultValue="normal">
+                       <option value="compact">Compact (Dense)</option>
+                       <option value="normal">Standard (Default)</option>
+                    </select>
                  </div>
-                 <div className="form-group-pro mt-4" style={{ maxWidth: '400px' }}>
-                   <label>Data Refresh Rate</label>
-                   <select className="select-pro w-full" onChange={e => toast(`Refresh rate: ${e.target.value}`, { icon: '⚡' })}>
-                     <option>Ultra-Fast — 500ms</option>
-                     <option>Fast — 1 Second (Default)</option>
-                     <option>Normal — 5 Seconds</option>
-                     <option>Slow — 30 Seconds</option>
-                   </select>
-                 </div>
-             </div>
+              </div>
+           </motion.div>
          );
-      default:
-         return null;
+      default: return null;
     }
   };
 
   return (
-    <div className="settings-pro-container animate-fade-in">
-      <div className="settings-pro-header flex-between mb-6">
-         <div className="header-pro-title">
-           <Terminal className="text-brand" size={24} />
-           <div>
-               <h1>System Settings</h1>
-               <p className="text-muted text-sm">Manage your account, API keys, AI models, and security</p>
-           </div>
-         </div>
-         <div className="header-pro-actions flex-row">
-           <AnimatePresence>
-               {saveStatus && (
-                 <motion.span 
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="save-status-pro text-up font-mono"
-                 >
-                    {saveStatus}
-                 </motion.span>
-               )}
-           </AnimatePresence>
-           <button className="btn-pro-primary" onClick={handleSave}>
-               <Save size={14} /> SAVE CHANGES
-           </button>
-         </div>
+    <div className="settings-premium-container animate-fade-in">
+      <div className="premium-home-bg">
+         <div className="home-glow home-glow-1"></div>
+         <div className="home-glow home-glow-2"></div>
       </div>
 
-      <div className="settings-pro-layout glass-card">
-         <div className="settings-pro-sidebar">
-            <nav className="settings-pro-nav">
-               <button className={`nav-pro-item ${activeTab === 'api' ? 'active' : ''}`} onClick={() => setActiveTab('api')}>
-                 <Key size={16} /> API Integrations
-               </button>
-               <button className={`nav-pro-item ${activeTab === 'models' ? 'active' : ''}`} onClick={() => setActiveTab('models')}>
-                 <Database size={16} /> AI Models
-               </button>
-               <button className={`nav-pro-item ${activeTab === 'security' ? 'active' : ''}`} onClick={() => setActiveTab('security')}>
-                 <ShieldCheck size={16} /> Security
-               </button>
-               <button className={`nav-pro-item ${activeTab === 'appearance' ? 'active' : ''}`} onClick={() => setActiveTab('appearance')}>
-                 <Globe size={16} /> Appearance
-               </button>
-            </nav>
-         </div>
-         
-         <div className="settings-pro-content">
-            {renderContent()}
-         </div>
+      <div className="settings-content-wrapper">
+        <div className="page-header-premium">
+          <div className="header-titles">
+              <SettingsIcon className="text-brand" size={28} />
+              <div>
+                  <h1>System Configuration</h1>
+                  <p>Master terminal control, security, and AI hyperparameters.</p>
+              </div>
+          </div>
+          <div className="header-actions-premium">
+              <AnimatePresence>
+                 {saveStatus && (
+                    <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="save-indicator">
+                       {saveStatus}
+                    </motion.span>
+                 )}
+              </AnimatePresence>
+              <button className="btn-primary-premium" onClick={handleSave}>
+                  <Save size={16} /> Save Changes
+              </button>
+          </div>
+        </div>
+
+        <div className="settings-layout-main glass-panel">
+           <div className="settings-sidebar">
+              {SETTINGS_TABS.map(tab => (
+                 <SidebarItem 
+                   key={tab.id} 
+                   item={tab} 
+                   isActive={activeTab === tab.id} 
+                   onClick={setActiveTab} 
+                 />
+              ))}
+           </div>
+           <div className="settings-pane">
+              {renderContent()}
+           </div>
+        </div>
       </div>
     </div>
   );
 };
+
+const AlertTriangle = ({ size = 24, ...props }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+);
+
+const CheckCircle = ({ size = 24, ...props }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+);
 
 export default Settings;
