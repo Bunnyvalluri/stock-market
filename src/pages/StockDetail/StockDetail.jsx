@@ -36,13 +36,6 @@ const generateOHLC = (base, days) => {
 };
 
 
-const calcSMA = (data, period) =>
-  data.map((d, i) => {
-    if (i < period - 1) return { ...d, sma20: null };
-    const avg = data.slice(i - period + 1, i + 1).reduce((s, x) => s + x.close, 0) / period;
-    return { ...d, sma20: +avg.toFixed(2) };
-  });
-
 const STOCKS = {
   AAPL: { name: 'Apple Inc.', base: 185, sector: 'Technology' },
   TSLA: { name: 'Tesla Inc.', base: 245, sector: 'Automotive' },
@@ -51,6 +44,8 @@ const STOCKS = {
   GOOGL: { name: 'Alphabet Inc.', base: 175, sector: 'Technology' },
   AMZN: { name: 'Amazon.com Inc.', base: 195, sector: 'E-Commerce' },
 };
+
+const rangeMap = { '1W': 7, '1M': 30, '3M': 90, '6M': 180, '1Y': 365 };
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -74,7 +69,6 @@ export default function StockDetail() {
   const info = STOCKS[ticker] || { name: ticker, base: 200, sector: 'Unknown' };
 
   const [range, setRange] = useState('3M');
-  const [data, setData] = useState([]);
   const [currentPrice, setCurrentPrice] = useState(info.base);
   const [change, setChange] = useState(0);
   const [changePct, setChangePct] = useState(0);
@@ -82,13 +76,10 @@ export default function StockDetail() {
   const [prediction, setPrediction] = useState(null);
   const [isPredicting, setIsPredicting] = useState(false);
 
-
-  const rangeMap = { '1W': 7, '1M': 30, '3M': 90, '6M': 180, '1Y': 365 };
-
   useEffect(() => {
     const days = rangeMap[range] || 90;
     const raw = generateOHLC(info.base, days);
-    setData(raw);
+    
     const last = raw[raw.length - 1];
     const first = raw[0];
     setCurrentPrice(last.close);
@@ -148,18 +139,18 @@ export default function StockDetail() {
     };
     window.addEventListener('resize', handleResize);
 
+    const isPos = +(last.close - first.close).toFixed(2) >= 0;
+
     // Async Fetch Prediction (Explainability Layer)
     const fetchAIPrediction = async () => {
-
       setIsPredicting(true);
       try {
         const pred = await api.prediction.get(ticker);
         setPrediction(pred);
-      } catch (e) {
+      } catch {
         console.warn('AI Inference Node Offline. Simulating locally...');
-        // Fallback mockup if backend is down - maintain premium look
         setPrediction({
-          trend: isPositive ? 'bullish' : 'bearish',
+          trend: isPos ? 'bullish' : 'bearish',
           confidence: 85.4,
           reasons: [
             "Strong historical buy pressure at this support zone",
@@ -173,8 +164,12 @@ export default function StockDetail() {
     };
 
     fetchAIPrediction();
-  }, [range, ticker]);
 
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      chart.remove();
+    };
+  }, [range, ticker, info.base]);
 
   const isPositive = change >= 0;
 
@@ -191,7 +186,6 @@ export default function StockDetail() {
 
   return (
     <div className="sd-pro-container animate-fade-in">
-      {/* Institutional Breadcrumb & Core Identity */}
       <div className="sd-pro-header-wrap">
         <Link to="/markets" className="sd-pro-back">
           <ArrowLeft size={16} /> Back to Exchange Matrix
@@ -228,7 +222,6 @@ export default function StockDetail() {
 
       <div className="sd-pro-main-layout">
         <div className="sd-pro-col-left">
-           {/* Primary Analysis Chart - TradingView Power */}
            <div className="sd-pro-chart-panel glass-card">
               <div className="card-header-term flex-between">
                  <div className="header-left">
@@ -253,8 +246,6 @@ export default function StockDetail() {
               </div>
            </div>
 
-
-           {/* High-Density Stats Matrix */}
            <div className="sd-pro-stats-panel glass-card">
               <div className="card-header-term">
                  <Activity size={18} className="text-cyan" />
@@ -272,7 +263,6 @@ export default function StockDetail() {
         </div>
 
         <div className="sd-pro-col-right">
-            {/* Proprietary AI Inference Card */}
             <div className="sd-pro-insight-card glass-card">
                <div className="insight-pro-header">
                   <div className="insight-pro-label">
@@ -308,19 +298,17 @@ export default function StockDetail() {
                </div>
             </div>
 
-
-           {/* Market Breadth / Correlations */}
-           <div className="sd-pro-intelligence glass-card mt-5">
-              <div className="card-header-pro">
-                 <Layers size={18} className="text-orange" />
-                 <h4>Asset Liquidity Matrix</h4>
-              </div>
-              <div className="sd-pro-liquidity-list">
-                 <div className="liq-item"><span>Exchange Liquidity</span><span className="text-up font-bold">OPTIMAL</span></div>
-                 <div className="liq-item"><span>Order Imbalance</span><span className="text-down font-bold">14.2% ASK</span></div>
-                 <div className="liq-item"><span>Volatility (24H)</span><span className="text-primary font-bold">1.2%</span></div>
-              </div>
-           </div>
+            <div className="sd-pro-intelligence glass-card mt-5">
+               <div className="card-header-pro">
+                  <Layers size={18} className="text-orange" />
+                  <h4>Asset Liquidity Matrix</h4>
+               </div>
+               <div className="sd-pro-liquidity-list">
+                  <div className="liq-item"><span>Exchange Liquidity</span><span className="text-up font-bold">OPTIMAL</span></div>
+                  <div className="liq-item"><span>Order Imbalance</span><span className="text-down font-bold">14.2% ASK</span></div>
+                  <div className="liq-item"><span>Volatility (24H)</span><span className="text-primary font-bold">1.2%</span></div>
+               </div>
+            </div>
         </div>
       </div>
     </div>

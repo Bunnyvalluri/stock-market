@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, memo, Suspense, lazy } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo, memo, Suspense, lazy } from 'react';
 const LineChart = lazy(() => import('recharts').then(mod => ({ default: mod.LineChart })));
 const Line = lazy(() => import('recharts').then(mod => ({ default: mod.Line })));
 const XAxis = lazy(() => import('recharts').then(mod => ({ default: mod.XAxis })));
@@ -156,53 +156,52 @@ NeuralActivityFeed.displayName = 'NeuralActivityFeed';
 // CUSTOM HOOKS (Logic Extraction)
 // ==========================================
 const useInferenceEngine = (selectedModel, selectedStock) => {
-  const [basePrice, setBasePrice] = useState(INITIAL_BASE_PRICES[selectedStock]);
-  const [chartData, setChartData] = useState([]);
-  const [inferenceLogs, setInferenceLogs] = useState([]);
+  const [chartData, setChartData] = useState(() => generatePredictionData(selectedModel, INITIAL_BASE_PRICES[selectedStock]));
+  const [inferenceLogs, setInferenceLogs] = useState(() => [{
+    id: crypto.randomUUID(),
+    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'}),
+    msg: `Neural baseline established for ${selectedStock}.`
+  }]);
   const [isLive, setIsLive] = useState(true);
+  const basePriceRef = useRef(INITIAL_BASE_PRICES[selectedStock]);
 
-  // Handle model/stock changes - Batched logic
+  // Synchronize when model or stock changes
   useEffect(() => {
     const newBase = INITIAL_BASE_PRICES[selectedStock];
-    const newChartData = generatePredictionData(selectedModel, newBase);
-    const initialLog = {
+    basePriceRef.current = newBase;
+    setChartData(generatePredictionData(selectedModel, newBase));
+    setInferenceLogs(prev => [{
       id: crypto.randomUUID(),
       time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'}),
       msg: `Model architecture [${selectedModel}] compiled for ${selectedStock}.`
-    };
-
-    setBasePrice(newBase);
-    setChartData(newChartData);
-    setInferenceLogs(prev => [initialLog, ...prev].slice(0, 6));
+    }, ...prev].slice(0, 6));
   }, [selectedModel, selectedStock]);
 
   // Handle simulation loop
   useEffect(() => {
     if (!isLive) return;
     const interval = setInterval(() => {
-      setBasePrice(prev => {
-        const shift = (Math.random() - 0.45) * (prev * 0.005);
-        const newPrice = prev + shift;
-        
-        // Update chart synchronously with price
-        setChartData(generatePredictionData(selectedModel, newPrice));
-        
-        // Generate contextual log
-        const logMessages = [
-          `Adjusting attention weights for ${selectedStock} volume spike.`,
-          `Recalculating confidence bands based on live order flow.`,
-          `New target vector projected: $${(newPrice * 1.05).toFixed(2)}`,
-          `Optimizing hyperparameters via dynamic stochastic routing.`
-        ];
-        
-        setInferenceLogs(currentLogs => [{
-            id: crypto.randomUUID(),
-            time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'}),
-            msg: logMessages[Math.floor(Math.random() * logMessages.length)]
-        }, ...currentLogs].slice(0, 6));
-
-        return newPrice;
-      });
+      const prev = basePriceRef.current;
+      const shift = (Math.random() - 0.45) * (prev * 0.005);
+      const newPrice = prev + shift;
+      basePriceRef.current = newPrice;
+      
+      // Update chart synchronously with price
+      setChartData(generatePredictionData(selectedModel, newPrice));
+      
+      // Generate contextual log
+      const logMessages = [
+        `Adjusting attention weights for ${selectedStock} volume spike.`,
+        `Recalculating confidence bands based on live order flow.`,
+        `New target vector projected: $${(newPrice * 1.05).toFixed(2)}`,
+        `Optimizing hyperparameters via dynamic stochastic routing.`
+      ];
+      
+      setInferenceLogs(currentLogs => [{
+          id: crypto.randomUUID(),
+          time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'}),
+          msg: logMessages[Math.floor(Math.random() * logMessages.length)]
+      }, ...currentLogs].slice(0, 6));
     }, 4000);
     
     return () => clearInterval(interval);

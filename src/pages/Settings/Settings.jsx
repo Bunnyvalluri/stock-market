@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, memo } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { 
   Settings as SettingsIcon, Key, Database, ShieldCheck, 
   Globe, Save, Terminal, Cpu, Layout, Bell, 
@@ -61,13 +61,8 @@ BrokerCard.displayName = 'BrokerCard';
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('api');
   const [saveStatus, setSaveStatus] = useState('');
-  const [alphaKey, setAlphaKey] = useState('');
-  const [openaiKey, setOpenaiKey] = useState('');
-
-  useEffect(() => {
-    setAlphaKey(localStorage.getItem('alphaVantageKey') || '');
-    setOpenaiKey(localStorage.getItem('openaiKey') || '');
-  }, []);
+  const [alphaKey, setAlphaKey] = useState(() => localStorage.getItem('alphaVantageKey') || '');
+  const [openaiKey, setOpenaiKey] = useState(() => localStorage.getItem('openaiKey') || '');
 
   const handleSave = useCallback(() => {
       localStorage.setItem('alphaVantageKey', alphaKey);
@@ -77,6 +72,10 @@ const Settings = () => {
       setTimeout(() => setSaveStatus('SAVED'), 1000);
       setTimeout(() => setSaveStatus(''), 4000);
   }, [alphaKey, openaiKey]);
+
+  const handleAlpacaAction = useCallback(() => toast('Initializing Alpaca handshake...'), []);
+  const handleIBAction = useCallback(() => toast.error('Connection severed'), []);
+  const handleCoinbaseAction = useCallback(() => toast('Connecting to Coinbase API...'), []);
 
   const renderContent = () => {
     switch(activeTab) {
@@ -116,7 +115,7 @@ const Settings = () => {
                  status="Disconnected" 
                  logo="A" 
                  color="#facc15" 
-                 onAction={useCallback(() => toast('Initializing Alpaca handshake...'), [])} 
+                 onAction={handleAlpacaAction} 
                />
                <BrokerCard 
                  name="Interactive Brokers" 
@@ -124,14 +123,14 @@ const Settings = () => {
                  logo="I" 
                  color="#ef4444" 
                  isActive={true} 
-                 onAction={useCallback(() => toast.error('Connection severed'), [])} 
+                 onAction={handleIBAction} 
                />
                <BrokerCard 
                  name="Coinbase Advanced" 
                  status="Disconnected" 
                  logo="C" 
                  color="#3b82f6" 
-                 onAction={useCallback(() => toast('Connecting to Coinbase API...'), [])} 
+                 onAction={handleCoinbaseAction} 
                />
             </div>
           </motion.div>

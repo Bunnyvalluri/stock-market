@@ -65,8 +65,8 @@ const usePortfolioEngine = (isLive) => {
         };
         setSystemLogs(prev => [newLog, ...prev].slice(0, 8));
       }
-    } catch (err) {
-      // Fallback to synthetic jitter if API is down
+    } catch {
+        // Fallback to synthetic jitter if API is down
       setPortfolioAssets(current => 
         current.map(asset => {
           const shift = (Math.random() - 0.48) * (asset.currentPrice * (asset.beta * 0.0008));
@@ -83,7 +83,12 @@ const usePortfolioEngine = (isLive) => {
   };
 
   useEffect(() => {
-    syncRealTimeData();
+    // Initial sync
+    const initSync = async () => {
+      await syncRealTimeData();
+    };
+    initSync();
+
     if (isLive) {
       const interval = setInterval(syncRealTimeData, 10000);
       return () => clearInterval(interval);
@@ -310,20 +315,20 @@ OrderRoutingPanel.displayName = 'OrderRoutingPanel';
 // MAIN COMPONENT
 // ==========================================
 const Portfolio = () => {
-  const [isLive, setIsLive] = useState(true);
+  const [isLive] = useState(true);
   const [activeTab, setActiveTab] = useState('OVERVIEW');
   const { portfolioAssets, systemLogs } = usePortfolioEngine(isLive);
 
   // Derived State Memoization
   const { totalValue, totalCost, allocationData } = useMemo(() => {
-    let tValue = 0, tCost = 0;
-    const allocation = portfolioAssets.map(asset => {
+    return portfolioAssets.reduce((acc, asset) => {
       const val = asset.shares * asset.currentPrice;
-      tValue += val;
-      tCost += (asset.shares * asset.avgPrice);
-      return { name: asset.symbol, value: val };
-    });
-    return { totalValue: tValue, totalCost: tCost, allocationData: allocation };
+      const cost = asset.shares * asset.avgPrice;
+      acc.totalValue += val;
+      acc.totalCost += cost;
+      acc.allocationData.push({ name: asset.symbol, value: val });
+      return acc;
+    }, { totalValue: 0, totalCost: 0, allocationData: [] });
   }, [portfolioAssets]);
 
   const totalPNL = totalValue - totalCost;
@@ -347,7 +352,7 @@ const Portfolio = () => {
         link.download = `StockMind_Portfolio_${new Date().toISOString().split('T')[0]}.csv`;
         link.click();
         toast.success('CSV Export downloaded.', { icon: '📄' });
-    } catch(err) {
+    } catch {
         toast.error('Failed to generate export file.');
     }
   }, [portfolioAssets]);
