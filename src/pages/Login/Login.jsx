@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -8,23 +8,16 @@ import {
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider, githubProvider } from '../../firebase';
 import toast from 'react-hot-toast';
-import ReCAPTCHA from 'react-google-recaptcha';
 import './Login.css';
-
-const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
 const Login = () => {
   const navigate = useNavigate();
-  const recaptchaRef = useRef(null);
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isRegisterMode, setIsRegisterMode] = useState(false);
-  const [captchaVerified, setCaptchaVerified] = useState(false);
-  const [captchaError, setCaptchaError] = useState(false);
 
   const validateForm = () => {
     if (!email) return 'Please enter your email address.';
@@ -32,20 +25,6 @@ const Login = () => {
     if (!password) return 'Please enter your password.';
     if (password.length < 8) return 'Password must be at least 8 characters long.';
     return null;
-  };
-
-  const handleCaptchaChange = useCallback((token) => {
-    setCaptchaVerified(!!token);
-    if (token) setCaptchaError(false);
-  }, []);
-
-  const handleCaptchaExpired = useCallback(() => {
-    setCaptchaVerified(false);
-  }, []);
-
-  const resetCaptcha = () => {
-    recaptchaRef.current?.reset();
-    setCaptchaVerified(false);
   };
 
   const handleEmailAuth = async (e) => {
@@ -56,14 +35,7 @@ const Login = () => {
       return;
     }
 
-    if (!captchaVerified) {
-      setCaptchaError(true);
-      setError('Please complete the reCAPTCHA verification.');
-      return;
-    }
-
     setError('');
-    setCaptchaError(false);
     setIsLoading(true);
 
     try {
@@ -77,7 +49,6 @@ const Login = () => {
       navigate('/dashboard');
     } catch (err) {
       console.error(err);
-      resetCaptcha();
       if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
          setError('Invalid email or password. Please try again.');
       } else if (err.code === 'auth/email-already-in-use') {
@@ -210,33 +181,7 @@ const Login = () => {
               </div>
             </div>
 
-            {/* reCAPTCHA v2 Checkbox */}
-            <div className={`recaptcha-wrapper${captchaError ? ' recaptcha-error' : ''}`}>
-              <div className="recaptcha-label">
-                <Shield size={13} />
-                <span>SECURITY VERIFICATION</span>
-              </div>
-              <div className="recaptcha-inner">
-                <ReCAPTCHA
-                  ref={recaptchaRef}
-                  sitekey={RECAPTCHA_SITE_KEY}
-                  theme="dark"
-                  onChange={handleCaptchaChange}
-                  onExpired={handleCaptchaExpired}
-                />
-              </div>
-              {captchaError && (
-                <p className="recaptcha-error-msg">
-                  <AlertCircle size={12} /> Please complete the verification above.
-                </p>
-              )}
-            </div>
-
-            <button 
-              type="submit" 
-              className="btn-premium-submit" 
-              disabled={isLoading || !captchaVerified}
-            >
+            <button type="submit" className="btn-premium-submit" disabled={isLoading}>
               {isLoading ? (
                 <div className="loading-spinner-premium"></div>
               ) : (
@@ -275,7 +220,7 @@ const Login = () => {
              <span className="text-muted">
                 {isRegisterMode ? 'ALREADY REGISTERED?' : 'NEW INSTITUTIONAL USER?'}
              </span>
-             <button type="button" onClick={() => { setIsRegisterMode(!isRegisterMode); setError(''); resetCaptcha(); }}>
+             <button type="button" onClick={() => { setIsRegisterMode(!isRegisterMode); setError(''); }}>
                 {isRegisterMode ? 'SWITCH TO LOGIN' : 'CREATE ACCOUNT'}
              </button>
           </div>
